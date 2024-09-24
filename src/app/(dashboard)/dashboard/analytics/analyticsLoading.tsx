@@ -1,0 +1,3 @@
+export const AnalyticsLoading = () => {
+  return <></>;
+};
