@@ -1,4 +1,4 @@
-import RichText from '@/components/sb-ui/RichText';
+// import RichText from '@/components/sb-ui/RichText';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,9 +8,9 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
-import { client } from '@/lib/contentful';
+import { Timestamp } from 'firebase/firestore';
+// import { client } from '@/lib/contentful';
 import { Metadata } from 'next';
-import { redirect } from 'next/navigation';
 
 type Props = {
   params: { slug: string };
@@ -23,21 +23,27 @@ type Data = {
 };
 
 async function getData(slug: string) {
-  const currentClient = client;
+  // const currentClient = client;
 
   // fetch data
-  const data = await currentClient.getEntries({
-    content_type: 'blogPost',
-    'fields.slug': slug,
-  });
-  if (data.total === 0) {
-    redirect('/blog');
-  }
+  // const data = await currentClient.getEntries({
+  //   content_type: 'blogPost',
+  //   'fields.slug': slug,
+  // });
+  // if (data.total === 0) {
+  //   redirect('/blog');
+  // }
+  // return {
+  //   title: data.items[0].fields.title,
+  //   banner: data.items[0].fields.banner,
+  //   body: data.items[0].fields.body,
+  //   created_at: data.items[0].sys.createdAt,
+  // };
   return {
-    title: data.items[0].fields.title,
-    banner: data.items[0].fields.banner,
-    body: data.items[0].fields.body,
-    created_at: data.items[0].sys.createdAt,
+    title: '',
+    banner: '',
+    body: '',
+    created_at: Timestamp.fromDate(new Date()),
   };
 }
 
@@ -101,7 +107,7 @@ export default async function BlogPost({ params }: Props) {
       <Separator />
       <section className="mx-auto w-full max-w-[2428px]">
         <section className="flex flex-col gap-2 px-4 py-8">
-          <RichText content={data.body} />
+          {/* <RichText content={data.body} /> */}
         </section>
       </section>
     </section>
