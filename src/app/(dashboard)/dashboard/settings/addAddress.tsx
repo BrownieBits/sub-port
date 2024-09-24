@@ -328,12 +328,7 @@ export default function AddAddress(props: Props) {
                         Validating
                       </Button>
                     ) : (
-                      <Button
-                        type="submit"
-                        onClick={() => console.log(form.formState.errors)}
-                      >
-                        Add
-                      </Button>
+                      <Button type="submit">Add</Button>
                     )}
                   </section>
                 </form>

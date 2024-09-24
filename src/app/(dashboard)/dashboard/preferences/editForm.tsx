@@ -318,7 +318,7 @@ export default function EditForm(props: {
                   up on search engines.
                 </p>
               </aside>
-              <aside className="bg-layer-one flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
+              <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
                 <FormField
                   control={form.control}
                   name="name"
@@ -399,7 +399,7 @@ export default function EditForm(props: {
                   brand and personality.
                 </p>
               </aside>
-              <aside className="bg-layer-one flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
+              <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
                 <FormField
                   control={form.control}
                   name="avatar"
@@ -436,7 +436,6 @@ export default function EditForm(props: {
                             <Input
                               type="file"
                               accept="image/*"
-                              disabled={form.formState.isSubmitting}
                               {...field}
                               onChange={(event) => {
                                 // Triggered when user uploaded a new file
@@ -518,7 +517,6 @@ export default function EditForm(props: {
                             <Input
                               type="file"
                               accept="image/*"
-                              disabled={form.formState.isSubmitting}
                               {...field}
                               onChange={(event) => {
                                 // Triggered when user uploaded a new file
@@ -568,7 +566,7 @@ export default function EditForm(props: {
                 </p>
                 <p>Limit who can access your online store.</p>
               </aside>
-              <aside className="bg-layer-one flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
+              <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
                 <FormField
                   control={form.control}
                   name="password_protected"

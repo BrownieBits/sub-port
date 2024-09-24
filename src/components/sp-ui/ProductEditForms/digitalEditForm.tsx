@@ -1,15 +1,13 @@
 'use client';
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Form,
   FormControl,
@@ -29,18 +27,26 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { currency_list } from '@/lib/currencyList';
 import { db, storage } from '@/lib/firebase';
 import { ProductImage } from '@/lib/types';
-import { cn } from '@/lib/utils';
 import { faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import {
+  faCaretLeft,
+  faEllipsis,
   faEye,
   faFile,
   faRefresh,
   faSave,
   faSquarePlus,
+  faSquareUpRight,
   faTrash,
+  faUpload,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -59,6 +65,8 @@ import {
   getDownloadURL,
   ref,
 } from 'firebase/storage';
+import Image from 'next/image';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React from 'react';
 import { useUploadFile } from 'react-firebase-hooks/storage';
@@ -66,6 +74,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import { goTo, revalidate } from './actions';
+import { AiDescriptionWriter } from './aiDescriptionWriter';
 import DraggableImages from './draggableImages';
 
 const MAX_IMAGE_SIZE = 5242880; // 5 MB
@@ -185,7 +194,6 @@ export default function DigitalEditForm(props: Props) {
   const productImagesRef = React.useRef<HTMLInputElement>(null);
   const digitalFileRef = React.useRef<HTMLInputElement>(null);
   const [productImages, setProductImages] = React.useState<ProductImage[]>([]);
-  const [productImageFiles, setProductImageFiles] = React.useState<File[]>([]);
   const [productImageRemovals, setProductImageRemovals] = React.useState<
     string[]
   >([]);
@@ -398,14 +406,17 @@ export default function DigitalEditForm(props: Props) {
     digitalFileRef.current?.click();
   }
 
-  function resetImages(
-    images: ProductImage[],
-    files: File[],
-    removals: string[]
-  ) {
-    setProductImages(images);
-    setProductImageFiles(files);
-    setProductImageRemovals(removals);
+  function removeImage(index: number) {
+    const newProductImages = productImages.slice(0);
+    const newProductImageRemovals = productImageRemovals.slice(0);
+    if (
+      newProductImages[index].image.includes('firebasestorage.googleapis.com')
+    ) {
+      newProductImageRemovals.push(newProductImages[index].image);
+    }
+    newProductImages.splice(index, 1);
+    setProductImages(newProductImages);
+    setProductImageRemovals(newProductImageRemovals);
   }
 
   async function ChangeStatus(action: string) {
@@ -455,70 +466,112 @@ export default function DigitalEditForm(props: Props) {
   return (
     <section className="relative">
       <section className="mx-auto w-full max-w-[1754px]">
-        {props.name !== undefined && (
-          <section className="flex w-full items-center justify-between gap-4 px-4 pt-4">
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink href="/dashboard/products">
-                    Products
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>{props.name}</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </section>
-        )}
-        <section
-          className={cn('flex w-full items-center justify-between gap-4 px-4', {
-            'pb-4 pt-[10px]': props.name !== undefined,
-            'py-4': props.name === undefined,
-          })}
-        >
+        <section className="flex w-full items-center justify-between gap-4 p-4">
           {props.name !== undefined ? (
-            <h1>{props.name}</h1>
+            <section className="flex w-auto items-center gap-4">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link href="/dashboard/products">
+                      <FontAwesomeIcon className="icon" icon={faCaretLeft} />
+                    </Link>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Back to Products</p>
+                </TooltipContent>
+              </Tooltip>
+              <h1 className="line-clamp-1">{props.name}</h1>
+            </section>
           ) : (
-            <h1>Add Product</h1>
+            <h1 className="line-clamp-1">Add Product</h1>
           )}
-          <div className="flex items-center gap-4">
-            {props.status !== undefined && props.status === 'Public' && (
-              <Button
-                variant="outline"
-                title="Make Private"
-                onClick={() => ChangeStatus('Private')}
-                className="text-foreground"
-              >
-                <FontAwesomeIcon className="icon" icon={faEyeSlash} />
-              </Button>
+          <div className="flex w-auto items-center gap-4">
+            {props.status !== undefined && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-foreground"
+                  >
+                    <FontAwesomeIcon className="icon" icon={faEllipsis} />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-[175px] px-0">
+                  <DropdownMenuItem className="px-0">
+                    {props.status !== 'archived' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        title="View Product"
+                        asChild
+                        className="flex h-auto w-full justify-start py-0 text-foreground"
+                      >
+                        <Link href={`/product/${props.docID}`}>
+                          <FontAwesomeIcon
+                            className="icon mr-4"
+                            icon={faSquareUpRight}
+                          />
+                          View Product
+                        </Link>
+                      </Button>
+                    )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="px-0">
+                    {props.status !== undefined &&
+                      props.status === 'Public' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title="Make Private"
+                          onClick={() => ChangeStatus('Private')}
+                          className="flex h-auto w-full justify-start py-0 text-foreground"
+                        >
+                          <FontAwesomeIcon
+                            className="icon mr-4"
+                            icon={faEyeSlash}
+                          />
+                          Make Private
+                        </Button>
+                      )}
+                    {props.status !== undefined &&
+                      props.status === 'Private' && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          title="Make Publix"
+                          onClick={() => ChangeStatus('Public')}
+                          className="flex h-auto w-full justify-start py-0 text-foreground"
+                        >
+                          <FontAwesomeIcon className="icon mr-4" icon={faEye} />
+                          Make Public
+                        </Button>
+                      )}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="px-0">
+                    {props.status !== 'archived' && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        title="Delete"
+                        onClick={() => ChangeStatus('Delete')}
+                        className="flex h-auto w-full justify-start py-0 text-foreground"
+                      >
+                        <FontAwesomeIcon className="icon mr-4" icon={faTrash} />
+                        Delete
+                      </Button>
+                    )}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
-            {props.status !== undefined && props.status === 'Private' && (
-              <Button
-                variant="outline"
-                title="Make Publix"
-                onClick={() => ChangeStatus('Public')}
-                className="text-foreground"
-              >
-                <FontAwesomeIcon className="icon" icon={faEye} />
-              </Button>
-            )}
-            {props.status !== undefined && props.status !== 'archived' && (
-              <Button
-                variant="outline"
-                title="Delete"
-                onClick={() => ChangeStatus('Delete')}
-                className="text-foreground"
-              >
-                <FontAwesomeIcon className="icon" icon={faTrash} />
-              </Button>
-            )}
+
             {!disabled && (
               <Button
                 type="submit"
+                size="sm"
                 onClick={form.handleSubmit(onSubmit)}
-                disabled={disabled}
                 asChild
               >
                 <div>
@@ -547,7 +600,7 @@ export default function DigitalEditForm(props: Props) {
                   shows up on search engines.
                 </p>
               </aside>
-              <aside className="bg-layer-one flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
+              <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
                 <FormField
                   control={form.control}
                   name="name"
@@ -579,6 +632,10 @@ export default function DigitalEditForm(props: Props) {
                           {...field}
                         />
                       </FormControl>
+                      <FormDescription>
+                        Having trouble writing a description? Use Ai to help...{' '}
+                        <AiDescriptionWriter />
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -591,30 +648,7 @@ export default function DigitalEditForm(props: Props) {
                 <p className="pb-4">
                   <b>Images</b>
                 </p>
-                <p className="pb-4">
-                  These will be the images used to show off your product.
-                </p>
-                {productImages.length <= 6 ? (
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      form.setFocus('product_images');
-                      productImagesRef.current?.click();
-                    }}
-                    asChild
-                  >
-                    <div>
-                      <FontAwesomeIcon
-                        className="icon mr-2"
-                        icon={faSquarePlus}
-                      />
-                      Add Image
-                    </div>
-                  </Button>
-                ) : (
-                  <></>
-                )}
-
+                <p>These will be the images used to show off your product.</p>
                 <FormField
                   control={form.control}
                   name="product_images"
@@ -632,7 +666,6 @@ export default function DigitalEditForm(props: Props) {
                               hidden={true}
                               className="hidden"
                               ref={productImagesRef}
-                              disabled={form.formState.isSubmitting}
                               {...field}
                               onChange={(event) => {
                                 // Triggered when user uploaded a new file
@@ -663,10 +696,6 @@ export default function DigitalEditForm(props: Props) {
                                       ),
                                     },
                                   ]);
-                                  setProductImageFiles([
-                                    ...productImageFiles,
-                                    newFiles[newFiles.length - 1],
-                                  ]);
                                 }
                                 onChange(newFiles);
                               }}
@@ -683,13 +712,78 @@ export default function DigitalEditForm(props: Props) {
                   }}
                 />
               </aside>
-              <aside className="bg-layer-one flex w-full flex-1 flex-col gap-8 overflow-x-auto rounded p-8 drop-shadow">
-                <DraggableImages
-                  product_images={productImages}
-                  product_image_files={productImageFiles}
-                  product_images_removals={productImageRemovals}
-                  remove={resetImages}
-                />
+              <aside className="flex w-full flex-1 flex-col gap-8 overflow-x-auto rounded bg-layer-one p-8 drop-shadow">
+                {productImages.length === 0 && (
+                  <section className="grid grid-cols-2 grid-rows-2 gap-4 md:grid-cols-5 md:grid-rows-2">
+                    <section className="col-span-2 row-span-2 aspect-square w-full">
+                      <section className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+                        <Button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            productImagesRef.current?.click();
+                          }}
+                          className="h-full w-full rounded bg-layer-three text-foreground hover:bg-layer-four"
+                        >
+                          <p className="text-4xl">
+                            <FontAwesomeIcon className="icon" icon={faUpload} />
+                          </p>
+                        </Button>
+                      </section>
+                    </section>
+                  </section>
+                )}
+                {productImages.length === 1 && (
+                  <section className="grid grid-cols-2 grid-rows-3 gap-4 md:grid-cols-5 md:grid-rows-2">
+                    <section className="col-span-2 row-span-2 aspect-square w-full">
+                      <section className="relative flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+                        <section className="absolute right-[2px] top-[2px]">
+                          <Button
+                            size="sm"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              removeImage(productImages[0].id);
+                            }}
+                            className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+                          >
+                            <FontAwesomeIcon className="icon" icon={faTrash} />
+                          </Button>
+                        </section>
+                        <Image
+                          src={productImages[0].image}
+                          height={400}
+                          width={400}
+                          alt="Main Product Image"
+                        />
+                      </section>
+                    </section>
+                    <section
+                      className="slot col-start-1 row-start-3 aspect-square md:col-start-3 md:row-start-1"
+                      data-swapy-slot="2"
+                    >
+                      <section className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+                        <Button
+                          onClick={(event) => {
+                            event.preventDefault();
+                            productImagesRef.current?.click();
+                          }}
+                          className="h-full w-full rounded bg-layer-three text-foreground hover:bg-layer-four"
+                        >
+                          <p className="text-4xl">
+                            <FontAwesomeIcon className="icon" icon={faUpload} />
+                          </p>
+                        </Button>
+                      </section>
+                    </section>
+                  </section>
+                )}
+                {productImages.length > 1 && (
+                  <DraggableImages
+                    product_images={productImages}
+                    uploadRef={productImagesRef}
+                    removeImage={removeImage}
+                    reOrderImages={setProductImages}
+                  />
+                )}
               </aside>
             </section>
 
@@ -738,7 +832,6 @@ export default function DigitalEditForm(props: Props) {
                               hidden={true}
                               className="hidden"
                               ref={digitalFileRef}
-                              disabled={form.formState.isSubmitting}
                               {...field}
                               onChange={(event) => {
                                 // Triggered when user uploaded a new file
@@ -776,7 +869,7 @@ export default function DigitalEditForm(props: Props) {
                   }}
                 />
               </aside>
-              <aside className="bg-layer-one flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
+              <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
                 {digitalFile === '' ? (
                   <section className="flex flex-col">
                     <p>
@@ -822,7 +915,7 @@ export default function DigitalEditForm(props: Props) {
                   searchable.
                 </p>
               </aside>
-              <aside className="bg-layer-one flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
+              <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
                 <section className="flex w-full flex-col gap-8 md:flex-row">
                   <FormField
                     control={form.control}

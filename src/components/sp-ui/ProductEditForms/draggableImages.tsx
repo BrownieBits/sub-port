@@ -1,130 +1,389 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { ProductImage } from '@/lib/types';
+import { cn } from '@/lib/utils';
 import {
-  DragDropContext,
-  Draggable,
-  DropResult,
-  Droppable,
-} from '@hello-pangea/dnd';
+  faTrash,
+  faUpDownLeftRight,
+  faUpload,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Image from 'next/image';
 import React from 'react';
-import DraggableImage from './draggableImage';
+import { createSwapy } from 'swapy';
 
 type Props = {
   product_images: ProductImage[];
-  product_image_files: File[];
-  product_images_removals: string[];
-  remove: (images: ProductImage[], files: File[], removals: string[]) => void;
+  uploadRef: React.RefObject<HTMLInputElement>;
+  removeImage: (index: number) => void;
+  reOrderImages: (images: ProductImage[]) => void;
 };
 
 export default function DraggableImages(props: Props) {
   const [productImages, setProductImages] = React.useState<ProductImage[]>([]);
 
-  function onDragEnd(result: DropResult) {
-    const { destination, source, draggableId } = result;
-    if (!destination) {
-      return;
-    }
-    if (destination.index === source.index) {
-      return;
-    }
-    const newProductImages = productImages.slice(0);
-    const element = newProductImages[source.index];
-    const fileElement = props.product_image_files[source.index];
-    newProductImages.splice(source.index, 1);
-    newProductImages.splice(destination.index, 0, element);
-    props.product_image_files.splice(source.index, 1);
-    props.product_image_files.splice(destination.index, 0, fileElement);
-    props.remove(
-      newProductImages,
-      props.product_image_files,
-      props.product_images_removals
-    );
-    setProductImages(props.product_images);
-  }
-  function removeProductImage(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    index: number
-  ) {
-    event.preventDefault();
-    const newProductImages = productImages.slice(0);
-    if (
-      newProductImages[index].image.includes('firebasestorage.googleapis.com')
-    ) {
-      props.product_images_removals.push(props.product_images[index].image);
-    }
-    newProductImages.splice(index, 1);
-    props.product_image_files.splice(index, 1);
-
-    setProductImages(newProductImages);
-    props.remove(
-      newProductImages,
-      props.product_image_files,
-      props.product_images_removals
-    );
+  function removeProductImage(index: number) {
+    props.removeImage(index);
+    setProductImages([]);
   }
 
+  React.useEffect(() => {
+    if (productImages.length > 0) {
+      const container = document.querySelector('.container')!;
+      const swapy = createSwapy(container, {
+        swapMode: 'drop',
+        continuousMode: true,
+        animation: 'spring',
+      });
+      swapy.onSwap(({ data }) => {
+        const newImageOrder: ProductImage[] = data.array.map((item, index) => {
+          return {
+            id: index,
+            image: props.product_images[parseInt(item.itemId!)].image,
+          };
+        });
+        props.reOrderImages(newImageOrder.slice(0));
+        setProductImages([]);
+      });
+
+      return () => {
+        swapy.destroy();
+      };
+    }
+  }, [productImages]);
   React.useEffect(() => {
     setProductImages(props.product_images);
   }, [props.product_images]);
 
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Droppable
-        droppableId="images"
-        isDropDisabled={false}
-        isCombineEnabled={false}
-        ignoreContainerClipping={true}
-        direction="horizontal"
-        renderClone={(draggableProvided, draggableSnapshot, rubric) => (
-          <DraggableImage
-            index={rubric.source.index}
-            image={productImages[rubric.source.index]}
-            draggableProvided={draggableProvided}
-            draggableSnapshot={draggableSnapshot}
-            removeProductImage={removeProductImage}
-          />
-        )}
-      >
-        {(droppableProvided) => (
-          <>
-            {productImages.length <= 0 && (
-              <>
-                <p>
-                  <b>No Images Yet</b>
-                </p>
-                <p className="text-sm">Add images to show off your product.</p>
-              </>
-            )}
+    <section
+      className={cn(
+        'container grid grid-cols-2 gap-4 md:grid-cols-5 md:grid-rows-2',
+        {
+          'grid-rows-3':
+            productImages.length === 1 || productImages.length === 2,
+          'grid-rows-4':
+            productImages.length === 3 || productImages.length === 4,
+          'grid-rows-5': productImages.length >= 5,
+        }
+      )}
+    >
+      {productImages.length > 0 && (
+        <section
+          className="slot col-span-2 row-span-2 aspect-square w-full"
+          data-swapy-slot="1"
+        >
+          <section
+            className="relative flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three"
+            data-swapy-item={productImages[0].id}
+          >
             <section
-              className="grid w-full min-w-[900px] grid-cols-6 items-center gap-8"
-              ref={droppableProvided.innerRef}
-              {...droppableProvided.droppableProps}
+              className="handle absolute left-[2px] top-[2px]"
+              data-swapy-handle
             >
-              {productImages.map((image, index) => (
-                <Draggable
-                  key={`${index}-${image.id.toString()}`}
-                  draggableId={`${index}-${image.id.toString()}`}
-                  index={index}
-                >
-                  {(draggableProvided, draggableSnapshot) => {
-                    return (
-                      <DraggableImage
-                        index={index}
-                        image={image}
-                        draggableProvided={draggableProvided}
-                        draggableSnapshot={draggableSnapshot}
-                        removeProductImage={removeProductImage}
-                      />
-                    );
-                  }}
-                </Draggable>
-              ))}
-              {droppableProvided.placeholder}
+              <Button
+                size="sm"
+                className="h-auto border bg-background p-2 text-foreground hover:bg-layer-two"
+              >
+                <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
+              </Button>
             </section>
-          </>
-        )}
-      </Droppable>
-    </DragDropContext>
+            <section className="absolute right-[2px] top-[2px]">
+              <Button
+                size="sm"
+                onClick={(event) => {
+                  event.preventDefault();
+                  removeProductImage(productImages[0].id);
+                }}
+                className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+              >
+                <FontAwesomeIcon className="icon" icon={faTrash} />
+              </Button>
+            </section>
+            <Image
+              src={productImages[0].image}
+              height={400}
+              width={400}
+              alt="Main Product Image"
+            />
+          </section>
+        </section>
+      )}
+      {productImages.length > 1 && (
+        <section
+          className="slot col-start-1 row-start-3 aspect-square md:col-start-3 md:row-start-1"
+          data-swapy-slot="2"
+        >
+          <section
+            className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three"
+            data-swapy-item={productImages[1].id}
+          >
+            <section
+              className="handle absolute left-[2px] top-[2px]"
+              data-swapy-handle
+            >
+              <Button
+                size="sm"
+                className="h-auto border bg-background p-2 text-foreground hover:bg-layer-two"
+              >
+                <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
+              </Button>
+            </section>
+            <section className="absolute right-[2px] top-[2px]">
+              <Button
+                size="sm"
+                onClick={(event) => {
+                  event.preventDefault();
+                  removeProductImage(productImages[1].id);
+                }}
+                className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+              >
+                <FontAwesomeIcon className="icon" icon={faTrash} />
+              </Button>
+            </section>
+            <Image
+              src={productImages[1].image}
+              height={400}
+              width={400}
+              alt="Main Product Image"
+            />
+          </section>
+        </section>
+      )}
+      {productImages.length > 2 && (
+        <section
+          className="slot col-start-2 row-start-3 aspect-square md:col-start-4 md:row-start-1"
+          data-swapy-slot="3"
+        >
+          <section
+            className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three"
+            data-swapy-item={productImages[2].id}
+          >
+            <section
+              className="handle absolute left-[2px] top-[2px]"
+              data-swapy-handle
+            >
+              <Button
+                size="sm"
+                className="h-auto border bg-background p-2 text-foreground hover:bg-layer-two"
+              >
+                <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
+              </Button>
+            </section>
+            <section className="absolute right-[2px] top-[2px]">
+              <Button
+                size="sm"
+                onClick={(event) => {
+                  event.preventDefault();
+                  removeProductImage(productImages[2].id);
+                }}
+                className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+              >
+                <FontAwesomeIcon className="icon" icon={faTrash} />
+              </Button>
+            </section>
+            <Image
+              src={productImages[2].image}
+              height={400}
+              width={400}
+              alt="Main Product Image"
+            />
+          </section>
+        </section>
+      )}
+      {productImages.length > 3 && (
+        <section
+          className="slot col-start-1 row-start-4 aspect-square md:col-start-5 md:row-start-1"
+          data-swapy-slot="4"
+        >
+          <section
+            className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three"
+            data-swapy-item={productImages[3].id}
+          >
+            <section
+              className="handle absolute left-[2px] top-[2px]"
+              data-swapy-handle
+            >
+              <Button
+                size="sm"
+                className="h-auto border bg-background p-2 text-foreground hover:bg-layer-two"
+              >
+                <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
+              </Button>
+            </section>
+            <section className="absolute right-[2px] top-[2px]">
+              <Button
+                size="sm"
+                onClick={(event) => {
+                  event.preventDefault();
+                  removeProductImage(productImages[3].id);
+                }}
+                className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+              >
+                <FontAwesomeIcon className="icon" icon={faTrash} />
+              </Button>
+            </section>
+            <Image
+              src={productImages[3].image}
+              height={400}
+              width={400}
+              alt="Main Product Image"
+            />
+          </section>
+        </section>
+      )}
+      {productImages.length > 4 && (
+        <section
+          className="slot col-start-2 row-start-4 aspect-square md:col-start-3 md:row-start-2"
+          data-swapy-slot="5"
+        >
+          <section
+            className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three"
+            data-swapy-item={productImages[4].id}
+          >
+            <section
+              className="handle absolute left-[2px] top-[2px]"
+              data-swapy-handle
+            >
+              <Button
+                size="sm"
+                className="h-auto border bg-background p-2 text-foreground hover:bg-layer-two"
+              >
+                <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
+              </Button>
+            </section>
+            <section className="absolute right-[2px] top-[2px]">
+              <Button
+                size="sm"
+                onClick={(event) => {
+                  event.preventDefault();
+                  removeProductImage(productImages[4].id);
+                }}
+                className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+              >
+                <FontAwesomeIcon className="icon" icon={faTrash} />
+              </Button>
+            </section>
+            <Image
+              src={productImages[4].image}
+              height={400}
+              width={400}
+              alt="Main Product Image"
+            />
+          </section>
+        </section>
+      )}
+      {productImages.length > 5 && (
+        <section
+          className="slot col-start-1 row-start-5 aspect-square md:col-start-4 md:row-start-2"
+          data-swapy-slot="6"
+        >
+          <section
+            className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three"
+            data-swapy-item={productImages[5].id}
+          >
+            <section
+              className="handle absolute left-[2px] top-[2px]"
+              data-swapy-handle
+            >
+              <Button
+                size="sm"
+                className="h-auto border bg-background p-2 text-foreground hover:bg-layer-two"
+              >
+                <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
+              </Button>
+            </section>
+            <section className="absolute right-[2px] top-[2px]">
+              <Button
+                size="sm"
+                onClick={(event) => {
+                  event.preventDefault();
+                  removeProductImage(productImages[5].id);
+                }}
+                className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+              >
+                <FontAwesomeIcon className="icon" icon={faTrash} />
+              </Button>
+            </section>
+            <Image
+              src={productImages[5].image}
+              height={400}
+              width={400}
+              alt="Main Product Image"
+            />
+          </section>
+        </section>
+      )}
+
+      {productImages.length === 2 && (
+        <section className="col-start-2 row-start-3 aspect-square md:col-start-4 md:row-start-1">
+          <section className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+            <Button
+              onClick={(event) => {
+                event.preventDefault();
+                props.uploadRef.current?.click();
+              }}
+              className="h-full w-full rounded bg-layer-three text-foreground hover:bg-layer-four"
+            >
+              <p className="text-4xl">
+                <FontAwesomeIcon className="icon" icon={faUpload} />
+              </p>
+            </Button>
+          </section>
+        </section>
+      )}
+      {productImages.length === 3 && (
+        <section className="col-start-1 row-start-4 aspect-square md:col-start-5 md:row-start-1">
+          <section className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+            <Button
+              onClick={(event) => {
+                event.preventDefault();
+                props.uploadRef.current?.click();
+              }}
+              className="h-full w-full rounded bg-layer-three text-foreground hover:bg-layer-four"
+            >
+              <p className="text-4xl">
+                <FontAwesomeIcon className="icon" icon={faUpload} />
+              </p>
+            </Button>
+          </section>
+        </section>
+      )}
+      {productImages.length === 4 && (
+        <section className="col-start-2 row-start-4 aspect-square md:col-start-3 md:row-start-2">
+          <section className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+            <Button
+              onClick={(event) => {
+                event.preventDefault();
+                props.uploadRef.current?.click();
+              }}
+              className="h-full w-full rounded bg-layer-three text-foreground hover:bg-layer-four"
+            >
+              <p className="text-4xl">
+                <FontAwesomeIcon className="icon" icon={faUpload} />
+              </p>
+            </Button>
+          </section>
+        </section>
+      )}
+      {productImages.length === 5 && (
+        <section className="col-start-1 row-start-5 aspect-square md:col-start-4 md:row-start-2">
+          <section className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+            <Button
+              onClick={(event) => {
+                event.preventDefault();
+                props.uploadRef.current?.click();
+              }}
+              className="h-full w-full rounded bg-layer-three text-foreground hover:bg-layer-four"
+            >
+              <p className="text-4xl">
+                <FontAwesomeIcon className="icon" icon={faUpload} />
+              </p>
+            </Button>
+          </section>
+        </section>
+      )}
+    </section>
   );
 }

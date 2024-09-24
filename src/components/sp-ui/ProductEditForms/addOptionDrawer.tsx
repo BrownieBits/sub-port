@@ -80,7 +80,7 @@ export default function AddOptionDrawer(props: Props) {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger>
+      <DrawerTrigger asChild>
         {props.index !== undefined ? (
           <Button
             variant="ghost"

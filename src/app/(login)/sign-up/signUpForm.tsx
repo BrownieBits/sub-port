@@ -150,7 +150,7 @@ export function SignUpForm({
         },
       ],
       users_list: [newUser?.user.uid!],
-      status: 'Private',
+      status: 'Public',
       password_protected: true,
       password: words.join('-'),
       subscription_count: 0,
