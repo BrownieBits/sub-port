@@ -165,7 +165,7 @@ export const ShowMoreText = (props: {
         : `${props.text.substring(0, props.howManyToShow)}...`}
 
       <Drawer open={open} onOpenChange={setOpen}>
-        <DrawerTrigger>
+        <DrawerTrigger asChild>
           <Button
             variant="link"
             className="h-auto p-[0] px-4 text-foreground hover:no-underline"

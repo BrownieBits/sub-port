@@ -21,9 +21,8 @@ import {
   getDoc,
   writeBatch,
 } from 'firebase/firestore';
-import { redirect, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { generate } from 'random-words';
-import { useEffect } from 'react';
 import {
   useAuthState,
   useCreateUserWithEmailAndPassword,
@@ -193,12 +192,6 @@ export function SignUpForm({
     await batch.commit();
     router.push('/dashboard');
   }
-
-  useEffect(() => {
-    if (loggedInUser) {
-      redirect(`/dashboard`);
-    }
-  }, [userLoading]);
 
   return (
     <>

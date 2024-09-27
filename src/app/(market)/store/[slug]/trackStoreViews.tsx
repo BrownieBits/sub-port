@@ -2,6 +2,7 @@
 
 import { analytics, db } from '@/lib/firebase';
 import { getCookie } from 'cookies-next';
+import { subHours } from 'date-fns';
 import { logEvent } from 'firebase/analytics';
 import {
   CollectionReference,
@@ -32,14 +33,12 @@ export default function TrackStoreViews(props: {
       db,
       `stores/${props.store_id}/analytics`
     );
-    const ip = props.ip === 'undefined' ? '0.0.0.0' : props.ip;
     const now = new Date();
-    const threeHoursAgo = new Date(now.getHours() - 3);
+    const threeHoursAgo = subHours(now, 3);
     const q = query(
       analyticsColRef,
-      where('ip', '==', ip),
-      where('store_id', '==', props.store_id),
-      where('created_at', '<', Timestamp.fromDate(threeHoursAgo))
+      where('ip', '==', props.ip),
+      where('created_at', '>', Timestamp.fromDate(threeHoursAgo))
     );
     const querySnapshot = await getDocs(q);
     if (querySnapshot.empty) {

@@ -1,7 +1,7 @@
 import { geolocation, ipAddress } from '@vercel/functions';
 import { NextRequest, NextResponse } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-pathname', request.nextUrl.pathname);
   const geo = geolocation(request);
@@ -14,6 +14,15 @@ export function middleware(request: NextRequest) {
   requestHeaders.set('x-geo-city', city!);
   requestHeaders.set('x-geo-region', region!);
   requestHeaders.set('x-ip', ip!);
+  if (request.nextUrl.pathname.startsWith('/dashboard') && request.cookies.get('user_id') === undefined) {
+    return NextResponse.redirect(new URL(`/sign-in?redirect=${request.nextUrl.pathname}`, request.url))
+  }
+  if (request.nextUrl.pathname.startsWith('/sign-in') && request.cookies.get('user_id') !== undefined) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+  if (request.nextUrl.pathname.startsWith('/sign-up') && request.cookies.get('user_id') !== undefined) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
   return NextResponse.next({
     request: {
       headers: requestHeaders,

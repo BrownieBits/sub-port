@@ -32,14 +32,11 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import { revalidate } from './actions';
 
 type Props = {
   cart_id: string;
   item: Item;
   index: number;
-  updateQuantity: (store: string, index: number, item: Item) => void;
-  removeItem: (store: string, index: number) => void;
 };
 const formSchema = z.object({
   quantity: z.string(),
@@ -58,16 +55,12 @@ export default function ItemDetails(props: Props) {
 
   async function onSubmit() {}
   async function deleteItem() {
-    let cart_item_id = props.item.id;
-    if (props.item.options.length > 0) {
-      cart_item_id = `${props.item.id}_${props.item.options.join('_')}`;
-    }
     const itemRef: DocumentReference = doc(
       db,
       'carts',
       props.cart_id,
       'items',
-      cart_item_id
+      props.item.cart_item_id
     );
     const cartRef: DocumentReference = doc(db, 'carts', props.cart_id);
     const batch = writeBatch(db);
@@ -76,24 +69,17 @@ export default function ItemDetails(props: Props) {
       updated_at: Timestamp.fromDate(new Date()),
     });
     await batch.commit();
-    props.removeItem(props.item.store_id, props.index);
     toast.success('Product Removed', {
       description: `You removed ${props.item.name} ${props.item.options.join(' ')}`,
     });
-    revalidate();
   }
-
   async function onOptionChange(event: string) {
-    let cart_item_id = props.item.id;
-    if (props.item.options.length > 0) {
-      cart_item_id = `${props.item.id}_${props.item.options.join('_')}`;
-    }
     const itemRef: DocumentReference = doc(
       db,
       'carts',
       props.cart_id,
       'items',
-      cart_item_id
+      props.item.cart_item_id
     );
     const cartRef: DocumentReference = doc(db, 'carts', props.cart_id);
     const batch = writeBatch(db);
@@ -104,12 +90,9 @@ export default function ItemDetails(props: Props) {
       updated_at: Timestamp.fromDate(new Date()),
     });
     await batch.commit();
-    props.item.quantity = parseInt(event);
-    props.updateQuantity(props.item.store_id, props.index, props.item);
     toast.success('Product Quantity Updated', {
       description: `You updated the quantity of ${props.item.name} ${props.item.options.join(' ')}`,
     });
-    revalidate();
   }
 
   React.useEffect(() => {
@@ -128,12 +111,12 @@ export default function ItemDetails(props: Props) {
           <section>
             <Link
               href={`/product/${props.item.id}`}
-              className="group flex aspect-square w-[100px] items-center justify-center overflow-hidden rounded border bg-layer-one"
+              className="group flex aspect-square w-[75px] items-center justify-center overflow-hidden rounded border bg-layer-one"
             >
               <Image
                 src={props.item.images[0]}
-                width="300"
-                height="300"
+                width="75"
+                height="75"
                 alt={props.item.name}
                 className="flex w-full"
               />

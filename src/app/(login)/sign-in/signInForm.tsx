@@ -19,8 +19,7 @@ import {
   setDoc,
   Timestamp,
 } from 'firebase/firestore';
-import { redirect, useRouter, useSearchParams } from 'next/navigation';
-import React from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   useAuthState,
   useSignInWithEmailAndPassword,
@@ -89,12 +88,6 @@ export function SignInForm({
     }
     router.push('/dashboard');
   }
-
-  React.useEffect(() => {
-    if (loggedInUser) {
-      redirect(`/dashboard`);
-    }
-  }, [userLoading]);
 
   return (
     <>

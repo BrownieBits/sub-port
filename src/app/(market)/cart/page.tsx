@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { cookies, headers } from 'next/headers';
+import { headers } from 'next/headers';
 import { Suspense } from 'react';
 import CartDetailPage from './cartDetailPage';
 
@@ -30,8 +30,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Cart() {
-  const cookieStore = cookies();
-  const cartId = cookieStore.get(`cart_id`);
   const country = headers().get('x-geo-country') as string;
   const city = headers().get('x-geo-city') as string;
   const region = headers().get('x-geo-region') as string;
@@ -39,13 +37,7 @@ export default async function Cart() {
 
   return (
     <Suspense fallback={<></>}>
-      <CartDetailPage
-        cart_id={cartId?.value!}
-        country={country}
-        city={city}
-        region={region}
-        ip={ip}
-      />
+      <CartDetailPage country={country} city={city} region={region} ip={ip} />
     </Suspense>
   );
 }

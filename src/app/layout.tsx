@@ -1,4 +1,5 @@
 import AuthState from '@/components/sp-ui/AuthState';
+import CartState from '@/components/sp-ui/CartState';
 import CookieConsent from '@/components/sp-ui/CookieConsent';
 import { ThemeProvider } from '@/components/sp-ui/ThemeProvider';
 import { Toaster } from '@/components/ui/sonner';
@@ -83,6 +84,7 @@ export default function RootLayout({
           <CookieConsent />
           <Toaster />
           <AuthState />
+          <CartState />
           <Script
             src="https://kit.fontawesome.com/fd72af6caf.js"
             crossOrigin="anonymous"

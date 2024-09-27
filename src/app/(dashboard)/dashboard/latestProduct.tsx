@@ -76,26 +76,26 @@ export const LatestProduct = (props: { user_id: string }) => {
         </CardHeader>
         <Separator />
         <CardContent className="flex flex-col gap-4">
-          <Skeleton className="bg-layer-two aspect-square w-full rounded" />
-          <Skeleton className="bg-layer-two h-5 w-[125px]" />
+          <Skeleton className="aspect-square w-full rounded bg-layer-two" />
+          <Skeleton className="h-5 w-[125px] bg-layer-two" />
           <section className="flex w-full justify-between gap-4">
-            <Skeleton className="bg-layer-two h-5 w-[125px]" />
-            <Skeleton className="bg-layer-two h-5 w-[50px]" />
+            <Skeleton className="h-5 w-[125px] bg-layer-two" />
+            <Skeleton className="h-5 w-[50px] bg-layer-two" />
           </section>
           <section className="flex w-full justify-between gap-4">
-            <Skeleton className="bg-layer-two h-5 w-[125px]" />
-            <Skeleton className="bg-layer-two h-5 w-[50px]" />
+            <Skeleton className="h-5 w-[125px] bg-layer-two" />
+            <Skeleton className="h-5 w-[50px] bg-layer-two" />
           </section>
           <section className="flex w-full justify-between gap-4">
-            <Skeleton className="bg-layer-two h-5 w-[125px]" />
-            <Skeleton className="bg-layer-two h-5 w-[50px]" />
+            <Skeleton className="h-5 w-[125px] bg-layer-two" />
+            <Skeleton className="h-5 w-[50px] bg-layer-two" />
           </section>
         </CardContent>
         <Separator />
         <CardFooter>
           <section className="flex w-full gap-4">
-            <Skeleton className="bg-layer-two h-[40px] w-[100px]" />
-            <Skeleton className="bg-layer-two h-[40px] w-[100px]" />
+            <Skeleton className="h-[40px] w-[100px] bg-layer-two" />
+            <Skeleton className="h-[40px] w-[100px] bg-layer-two" />
           </section>
         </CardFooter>
       </Card>
@@ -109,7 +109,7 @@ export const LatestProduct = (props: { user_id: string }) => {
         </CardHeader>
         <Separator />
         <CardContent className="flex flex-col items-start gap-4">
-          <Skeleton className="bg-layer-two mt-4 aspect-square w-full rounded" />
+          <Skeleton className="mt-4 aspect-square w-full rounded bg-layer-two" />
 
           <p>
             <b>No Products Yet</b>
@@ -118,15 +118,6 @@ export const LatestProduct = (props: { user_id: string }) => {
           <AddProductButton copy="Create Product" variant="default" />
         </CardContent>
       </Card>
-      //   <section className="flex w-full flex-col items-start gap-4 p-4">
-      //     <h3>Latest Product Performance</h3>
-      //     <Skeleton className="bg-layer-two aspect-square w-full rounded" />
-      //     <p>
-      //       <b>No Products Yet</b>
-      //     </p>
-      //     <p>Create your first product and sell to the world!</p>
-      //     <AddProductButton copy="Create" variant="default" />
-      //   </section>
     );
   }
   return (
@@ -136,7 +127,7 @@ export const LatestProduct = (props: { user_id: string }) => {
       </CardHeader>
       <Separator />
       <CardContent className="flex flex-col gap-4">
-        <section className="bg-layer-one group flex aspect-square items-center justify-center overflow-hidden rounded border">
+        <section className="group flex aspect-square items-center justify-center overflow-hidden rounded border bg-layer-one">
           <Image
             src={latestProduct.images[0]}
             width="1000"
