@@ -7,13 +7,16 @@ import { footer_nav_items } from './footerNavItems';
 import { MenuItems } from './menuItems';
 import { _FooterNavItem, _NavSection } from './types';
 
-export const DashboardNav = async ({ inSheet }: { inSheet: boolean }) => {
+type Props = {
+  inSheet: boolean;
+};
+export const DashboardNav = async (props: Props) => {
   return (
     <ScrollArea className="flex h-full flex-col rounded-md">
       {dashboard_nav_items.map((item: _NavSection) => {
         return (
           <MenuItems
-            inSheet={inSheet}
+            inSheet={props.inSheet}
             items={item.items}
             key={`menu-item-${item.name}`}
           />
@@ -21,7 +24,7 @@ export const DashboardNav = async ({ inSheet }: { inSheet: boolean }) => {
       })}
       <section className={`flex flex-wrap items-center gap-x-2 gap-y-4 p-4`}>
         {footer_nav_items.map((link: _FooterNavItem, index: number) => {
-          if (inSheet) {
+          if (props.inSheet) {
             return (
               <SheetClose asChild key={link.name}>
                 <Link

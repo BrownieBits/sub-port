@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
@@ -17,7 +16,7 @@ import { DashboardNav } from './dashboardNav';
 
 export const DashboardHeader = () => {
   return (
-    <header className="bg-layer-one flex h-[56px] items-center justify-between border-b-[1px] border-b-border px-4">
+    <header className="flex h-[56px] items-center justify-between border-b-[1px] border-b-border bg-layer-one px-4">
       <div className="flex items-center gap-4">
         <Sheet>
           <SheetTrigger className="flex xl:hidden" asChild>
@@ -31,11 +30,9 @@ export const DashboardHeader = () => {
           </SheetTrigger>
           <SheetContent side="left" className="p-0">
             <SheetTitle className="hidden"></SheetTitle>
-            <SheetDescription>
-              <nav className={`bg-layer-one flex h-[100vh] pt-8`}>
-                <DashboardNav inSheet={true} />
-              </nav>
-            </SheetDescription>
+            <nav className={`flex h-[100vh] bg-layer-one pt-8`}>
+              <DashboardNav inSheet={true} />
+            </nav>
           </SheetContent>
         </Sheet>
         <section className="w-[40px] md:w-[120px]">
