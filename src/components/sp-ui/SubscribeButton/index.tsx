@@ -12,37 +12,32 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { auth } from '@/lib/firebase';
+import userStore from '@/stores/userStore';
 import Link from 'next/link';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { SubButton } from './subButton';
 
-export const SubsciberButton = ({
-  store_id,
-  full_width,
-  country,
-  city,
-  region,
-  ip,
-}: {
+type Props = {
   store_id: string;
   full_width: boolean;
   country: string;
   city: string;
   region: string;
   ip: string;
-}) => {
-  const [user, userLoading, userError] = useAuthState(auth);
+};
 
-  if (userLoading) {
+export const SubsciberButton = (props: Props) => {
+  const user_loaded = userStore((state) => state.user_loaded);
+  const user_id = userStore((state) => state.user_id);
+
+  if (!user_loaded) {
     return <Button variant="ghost">Loading</Button>;
   }
 
-  if (!userLoading && !user) {
+  if (user_loaded && user_id === '') {
     return (
       <AlertDialog>
         <AlertDialogTrigger>
-          <Button asChild className={full_width ? 'w-full' : ''}>
+          <Button asChild className={props.full_width ? 'w-full' : ''}>
             Subscribe
           </Button>
         </AlertDialogTrigger>
@@ -59,7 +54,9 @@ export const SubsciberButton = ({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction asChild>
-              <Link href={`/sign-in?redirect=/store/${store_id}`}>Sign In</Link>
+              <Link href={`/sign-in?redirect=/store/${props.store_id}`}>
+                Sign In
+              </Link>
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -69,13 +66,12 @@ export const SubsciberButton = ({
 
   return (
     <SubButton
-      store_id={store_id}
-      user_id={user?.uid!}
-      full_width={full_width}
-      country={country}
-      city={city}
-      region={region}
-      ip={ip}
+      store_id={props.store_id}
+      full_width={props.full_width}
+      country={props.country}
+      city={props.city}
+      region={props.region}
+      ip={props.ip}
     />
   );
 };

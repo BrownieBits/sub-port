@@ -397,7 +397,6 @@ export default async function Checkout() {
       />
       <TrackCheckout
         store_ids={data.store_ids!}
-        user_id={user_id?.value}
         country={country}
         city={city}
         region={region}

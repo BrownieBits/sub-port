@@ -1,7 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/firebase';
-import { getCookie } from 'cookies-next';
+import userStore from '@/stores/userStore';
 import {
   DocumentReference,
   Timestamp,
@@ -25,7 +25,8 @@ type UserInfo = {
   stripe_payouts_enabled?: boolean;
 };
 export default function StripeIntegration() {
-  const user_id = getCookie('user_id');
+  const user_loaded = userStore((state) => state.user_loaded);
+  const user_id = userStore((state) => state.user_id);
   const [user, setUser] = React.useState<UserInfo | null>(null);
   const [stripeConnectID, setStripeConnectID] = React.useState<string | null>(
     null
@@ -41,7 +42,7 @@ export default function StripeIntegration() {
     setStripeConnectID(connectID);
     const linkURL = await CreateStripeLinkURL(connectID);
     setStripeLinkURL(linkURL);
-    const userRef: DocumentReference = doc(db, 'users', user_id!);
+    const userRef: DocumentReference = doc(db, 'users', user_id);
     await updateDoc(userRef, {
       stripe_connect_id: connectID,
       stripe_charges_engabled: false,
@@ -52,7 +53,7 @@ export default function StripeIntegration() {
   }
   React.useEffect(() => {
     const getData = async () => {
-      const userRef: DocumentReference = doc(db, 'users', user_id!);
+      const userRef: DocumentReference = doc(db, 'users', user_id);
       const userDoc = await getDoc(userRef);
       const userData = {
         id: userDoc.id,
@@ -79,8 +80,10 @@ export default function StripeIntegration() {
 
       setUser(userData);
     };
-    getData();
-  }, []);
+    if (user_loaded) {
+      getData();
+    }
+  }, [user_loaded]);
   if (user === null) {
     return <></>;
   }

@@ -12,6 +12,7 @@ const userStore = create<_UserStore>(set => ({
     user_country: '',
     user_currency: '',
     user_store: '',
+    user_loaded: false,
     setUser: (props: _SetUserProps) => set(() => ({
         user_id: props.user_id,
         user_email: props.user_email,
@@ -33,6 +34,9 @@ const userStore = create<_UserStore>(set => ({
         user_store: '',
         user_store_avatart: '',
         user_store_name: '',
+    })),
+    setUserLoaded: (loaded: boolean) => set(() => ({
+        user_loaded: true,
     }))
 }))
 

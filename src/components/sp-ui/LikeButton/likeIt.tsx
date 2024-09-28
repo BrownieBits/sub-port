@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { db } from '@/lib/firebase';
+import userStore from '@/stores/userStore';
 import { faThumbsUp as faThumbsUpRegular } from '@fortawesome/free-regular-svg-icons';
 import { faSpinner, faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -20,34 +21,26 @@ import {
 import React from 'react';
 import { revalidate } from './actions';
 
-export const LikeIt = ({
-  product_id,
-  like_count,
-  user_id,
-  store_id,
-  country,
-  city,
-  region,
-  ip,
-}: {
+type Props = {
   product_id: string;
   like_count: number;
-  user_id: string;
   store_id: string;
   country: string;
   city: string;
   region: string;
   ip: string;
-}) => {
+};
+export const LikeIt = (props: Props) => {
+  const user_id = userStore((state) => state.user_id);
   const [isLiked, setIsLiked] = React.useState<boolean | null>(null);
 
   async function UpdateSubStatus(action: 'Like' | 'Unlike') {
     const analyticsColRef: CollectionReference = collection(
       db,
-      `stores/${store_id}/analytics`
+      `stores/${props.store_id}/analytics`
     );
-    const docRef = doc(db, 'products', product_id);
-    const likeRef = doc(db, 'users', user_id, 'likes', product_id);
+    const docRef = doc(db, 'products', props.product_id);
+    const likeRef = doc(db, 'users', user_id, 'likes', props.product_id);
     if (action === 'Like') {
       await runTransaction(db, async (transaction) => {
         const productDoc = await transaction.get(docRef);
@@ -61,13 +54,13 @@ export const LikeIt = ({
         date: Timestamp.fromDate(new Date()),
       });
       await addDoc(analyticsColRef, {
-        city: city === 'undefined' ? 'Mos Eisley' : city,
-        country: country === 'undefined' ? 'SW' : country,
+        city: props.city,
+        country: props.country,
         created_at: Timestamp.fromDate(new Date()),
-        ip: ip === 'undefined' ? '0.0.0.0' : ip,
-        product_id: product_id,
-        region: region === 'undefined' ? 'TAT' : region,
-        store_id: store_id,
+        ip: props.ip,
+        product_id: props.product_id,
+        region: props.region,
+        store_id: props.store_id,
         type: 'like',
         user_id: user_id !== undefined ? user_id : null,
       });
@@ -81,25 +74,25 @@ export const LikeIt = ({
         transaction.update(docRef, { like_count: newLikes });
       });
       await addDoc(analyticsColRef, {
-        city: city === 'undefined' ? 'Mos Eisley' : city,
-        country: country === 'undefined' ? 'SW' : country,
+        city: props.city,
+        country: props.country,
         created_at: Timestamp.fromDate(new Date()),
-        ip: ip === 'undefined' ? '0.0.0.0' : ip,
-        product_id: product_id,
-        region: region === 'undefined' ? 'TAT' : region,
-        store_id: store_id,
+        ip: props.ip,
+        product_id: props.product_id,
+        region: props.region,
+        store_id: props.store_id,
         type: 'unlike',
         user_id: user_id,
       });
       await deleteDoc(likeRef);
     }
-    revalidate(product_id);
+    revalidate(props.product_id);
     return 'Success';
   }
 
   React.useEffect(() => {
     const getIsLiked: Unsubscribe = async () => {
-      const docRef = doc(db, 'users', user_id, 'likes', product_id);
+      const docRef = doc(db, 'users', user_id, 'likes', props.product_id);
       const unsubscribe = await onSnapshot(docRef, (snapshot) => {
         if (!snapshot.exists()) {
           setIsLiked(false);
@@ -129,7 +122,7 @@ export const LikeIt = ({
             className="icon mr-2 h-4 w-4 border-r pr-2"
             icon={faThumbsUpRegular}
           />
-          {like_count} Like{like_count > 1 ? 's' : ''}
+          {props.like_count} Like{props.like_count > 1 ? 's' : ''}
         </section>
       </Button>
     );
@@ -142,7 +135,7 @@ export const LikeIt = ({
           className="icon mr-2 h-4 w-4 border-r pr-2"
           icon={faThumbsUp}
         />
-        {like_count} Like{like_count > 1 ? 's' : ''}
+        {props.like_count} Like{props.like_count > 1 ? 's' : ''}
       </section>
     </Button>
   );

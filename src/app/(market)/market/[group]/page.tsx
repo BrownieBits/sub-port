@@ -1,8 +1,25 @@
 import ProductCard from '@/components/sp-ui/ProductCard';
 import { Separator } from '@/components/ui/separator';
 
+import { db } from '@/lib/firebase';
 import { GridProduct } from '@/lib/types';
-import { DocumentData, QuerySnapshot, Timestamp } from 'firebase/firestore';
+import {
+  collection,
+  CollectionReference,
+  doc,
+  DocumentData,
+  DocumentReference,
+  DocumentSnapshot,
+  getDoc,
+  getDocs,
+  limit,
+  or,
+  orderBy,
+  query,
+  QuerySnapshot,
+  Timestamp,
+  where,
+} from 'firebase/firestore';
 import { Metadata } from 'next';
 import { NoProducts } from './noProducts';
 
@@ -16,62 +33,80 @@ type Data = {
 };
 
 async function getData(group: string) {
-  // const data = await currentClient.getEntries({
-  //   content_type: 'marketplacePage',
-  //   'fields.slug': `${group}`,
-  // });
-  // if (data.items.length === 0) {
-  //   return {
-  //     error: 'No Page',
-  //   };
-  // } else {
-  //   const productsColRef = collection(db, 'products');
-  //   if (data.items[0].fields.type === 'Trending') {
-  //     const q = query(
-  //       productsColRef,
-  //       where('revenue', '>=', data.items[0].fields.trendingOver),
-  //       orderBy('revenue')
-  //     );
-  //     const productsData: QuerySnapshot<DocumentData, DocumentData> =
-  //       await getDocs(q);
+  const categoryRef: DocumentReference = doc(
+    db,
+    'marketplace_categories',
+    group
+  );
+  const categoryDoc: DocumentSnapshot = await getDoc(categoryRef);
 
-  //     return {
-  //       title: data.items[0].fields.title,
-  //       products: productsData,
-  //     };
-  //   } else if (data.items[0].fields.type === 'Manual') {
-  //     const products = data.items[0].fields.productList.map((item: string) => {
-  //       return item;
-  //     });
-  //     const q = query(productsColRef, where('__name__', 'in', products));
-  //     const productsData: QuerySnapshot<DocumentData, DocumentData> =
-  //       await getDocs(q);
-  //     return {
-  //       title: data.items[0].fields.title,
-  //       products: productsData,
-  //     };
-  //   } else if (data.items[0].fields.type === 'Tags') {
-  //     const q = query(
-  //       productsColRef,
-  //       or(
-  //         where('tags', 'array-contains-any', data.items[0].fields.tags),
-  //         where('admin_tags', 'array-contains-any', data.items[0].fields.tags)
-  //       )
-  //     );
-  //     const productsData: QuerySnapshot<DocumentData, DocumentData> =
-  //       await getDocs(q);
-  //     return {
-  //       title: data.items[0].fields.title,
-  //       products: productsData,
-  //     };
-  //   }
-  //   return {
-  //     title: data.items[0].fields.title,
-  //   };
-  // }
-  return {
-    error: 'No Page',
-  };
+  if (!categoryDoc.exists()) {
+    return {
+      error: 'No Page',
+    };
+  } else {
+    const productsColRef: CollectionReference = collection(db, 'products');
+    if (categoryDoc.data().type === 'trending') {
+      const q = query(
+        productsColRef,
+        where('revenue', '>=', categoryDoc.data().trending_over),
+        where('status', '==', 'Public'),
+        orderBy('revenue')
+      );
+      const productsData: QuerySnapshot<DocumentData, DocumentData> =
+        await getDocs(q);
+
+      return {
+        title: categoryDoc.data().name,
+        products: productsData,
+      };
+    } else if (categoryDoc.data().type === 'manual') {
+      const products = categoryDoc.data().products_list.map((item: string) => {
+        return item;
+      });
+      const q = query(
+        productsColRef,
+        where('__name__', 'in', products),
+        where('status', '==', 'Public')
+      );
+      const productsData: QuerySnapshot<DocumentData, DocumentData> =
+        await getDocs(q);
+      return {
+        title: categoryDoc.data().name,
+        products: productsData,
+      };
+    } else if (categoryDoc.data().type === 'tags') {
+      const q = query(
+        productsColRef,
+        or(
+          where('tags', 'array-contains-any', categoryDoc.data().tags),
+          where('admin_tags', 'array-contains-any', categoryDoc.data().tags)
+        )
+      );
+      const productsData: QuerySnapshot<DocumentData, DocumentData> =
+        await getDocs(q);
+      return {
+        title: categoryDoc.data().name,
+        products: productsData,
+      };
+    } else if (categoryDoc.data().type === 'new') {
+      const q = query(
+        productsColRef,
+        where('status', '==', 'Public'),
+        orderBy('created_at', 'desc'),
+        limit(150)
+      );
+      const productsData: QuerySnapshot<DocumentData, DocumentData> =
+        await getDocs(q);
+      return {
+        title: categoryDoc.data().name,
+        products: productsData,
+      };
+    }
+    return {
+      title: categoryDoc.data().name,
+    };
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -81,8 +116,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: 'Marketplace',
     };
   }
-  const description = '';
-  // const description = `Discover a vast selection of ${data.title} products at SubPort. Find everything from ${data.products?.docs[0].data().name} to ${data.products?.docs[1].data().name} and more. Compare prices, read reviews, and enjoy safe and secure shopping. Explore our diverse range of ${params.group} products today!`;
+  let description =
+    'Discover a vast selection of ${data.title} products at SubPort. ';
+  if (data.products?.docs.length! > 1) {
+    description += `Find everything from ${data.products?.docs[0].data().name} to ${data.products?.docs[1].data().name} and more. `;
+  }
+  description += `Compare prices, read reviews, and enjoy safe and secure shopping. Explore our diverse range of ${params.group} products today!`;
   return {
     title: `${data.title} Marketplace`,
     description: description,

@@ -19,7 +19,6 @@ import { doc } from 'firebase/firestore';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useSignOut } from 'react-firebase-hooks/auth';
 import { useDocument } from 'react-firebase-hooks/firestore';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import {
@@ -42,13 +41,12 @@ export const UserDropdown = () => {
   const default_store = getCookie('default_store') || 'f';
   const docRef = doc(db, 'stores', default_store!);
   const [value, loadingDoc, docError] = useDocument(docRef);
-  const [signOut, loading, error] = useSignOut(auth);
   const { push } = useRouter();
   const { setTheme } = useTheme();
 
   async function onSubmit() {
+    await auth.signOut();
     push('/sign-in');
-    await signOut();
   }
 
   if (user_store === '') {

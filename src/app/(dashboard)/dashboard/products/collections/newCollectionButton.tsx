@@ -29,11 +29,11 @@ import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { db } from '@/lib/firebase';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import userStore from '@/stores/userStore';
 import { faClose, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
-import { getCookie } from 'cookies-next';
 import {
   DocumentData,
   DocumentReference,
@@ -62,8 +62,9 @@ const formSchema = z.object({
 });
 
 export default function NewCollectionButton() {
-  const default_store = getCookie('default_store');
-  const user_id = getCookie('user_id');
+  const user_loaded = userStore((state) => state.user_loaded);
+  const user_id = userStore((state) => state.user_id);
+  const default_store = userStore((state) => state.user_store);
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const [open, setOpen] = React.useState(false);
   const [error, setError] = React.useState('');
@@ -113,6 +114,10 @@ export default function NewCollectionButton() {
       push(`/dashboard/products/collections/${encodedTitle}`);
       return;
     }
+  }
+
+  if (!user_loaded) {
+    return <></>;
   }
 
   if (isDesktop) {

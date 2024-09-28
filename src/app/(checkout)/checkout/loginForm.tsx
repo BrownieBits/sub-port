@@ -94,10 +94,10 @@ export default function LoginForm(props: Props) {
     await setDoc(eventsDoc, {
       type: 'sign-in',
       user_id: user?.user.uid,
-      country: props.country === 'undefined' ? 'SW' : props.country,
-      city: props.city === 'undefined' ? 'Mos Eisley' : props.city,
-      region: props.region === 'undefined' ? 'TAT' : props.region,
-      ip: props.ip === 'undefined' ? '0.0.0.0' : props.ip,
+      country: props.country,
+      city: props.city,
+      region: props.region,
+      ip: props.ip,
       created_at: Timestamp.fromDate(new Date()),
     });
 

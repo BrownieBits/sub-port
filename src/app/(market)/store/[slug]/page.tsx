@@ -21,8 +21,10 @@ import { Metadata } from 'next';
 import { revalidatePath } from 'next/cache';
 import { cookies, headers } from 'next/headers';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { StorePasswordForm } from './password-protection';
 import { ShowMoreText } from './showMoreText';
+import StoreLoading from './storeLoading';
 import TrackStoreViews from './trackStoreViews';
 
 type Props = {
@@ -143,7 +145,7 @@ export default async function Store({ params }: Props) {
     return (
       <section>
         <section className="align-center flex h-[calc(100vh-56px)] w-full flex-col items-center justify-center gap-4 px-4 py-8">
-          <section className="bg-layer-one flex flex-col rounded border p-8">
+          <section className="flex flex-col rounded border bg-layer-one p-8">
             <p className="pb-4">
               <b>{data.store.data().name} is password protected</b>
             </p>
@@ -172,139 +174,141 @@ export default async function Store({ params }: Props) {
     };
   });
   return (
-    <section>
-      <section className="mx-auto w-full max-w-[2428px]">
-        {data.store.data().banner_url === '' ? (
-          <></>
-        ) : (
-          <section
-            className="flex aspect-[6/1] items-center justify-start overflow-hidden rounded md:aspect-[128/15]"
-            style={{
-              background: `url(${data.store.data().banner_url})`,
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
-            }}
-          ></section>
-        )}
-        <section className="flex w-full flex-col items-start justify-between gap-4 px-4 py-4 md:flex-row md:items-center">
-          <section className="flex items-center gap-4">
-            <Link href={`/store/${params.slug}`} className="">
-              <ShowAvatar store_id={data.store.id} size="lg" />
-            </Link>
-            <div className="flex flex-col gap-1">
-              <h1 className="text-xl">{data.store.data().name}</h1>
-              <section className="flex w-full flex-wrap gap-1 md:w-auto">
-                <p className="w-auto text-sm text-muted-foreground">
-                  @{params.slug}
-                </p>
-                <span className="text-sm text-muted-foreground">&bull;</span>
-                <p className="w-auto text-sm text-muted-foreground">
-                  {data.store.data().subscription_count} subscriber
-                  {data.store.data().subscription_count > 1 ? 's' : ''}
-                </p>
-                <span className="text-sm text-muted-foreground">&bull;</span>
-                <p className="block w-auto text-sm text-muted-foreground">
-                  {data.products.docs.length} product
-                  {data.products.docs.length > 1 ? 's' : ''}
-                </p>
-              </section>
-              <section className="hidden md:flex">
-                <ShowMoreText
-                  text={data.store.data().description}
-                  howManyToShow={50}
-                  store_name={params.slug}
-                  location={data.store.data().country}
-                  created_at={data.store.data().created_at}
-                  view_count={data.store.data().view_count}
-                  product_count={data.products.docs.length}
-                  subscription_count={data.store.data().subscription_count}
-                />
-              </section>
-            </div>
-          </section>
-          <section className="flex md:hidden">
-            <ShowMoreText
-              text={data.store.data().description}
-              howManyToShow={50}
-              store_name={params.slug}
-              location={data.store.data().country}
-              created_at={data.store.data().created_at}
-              view_count={data.store.data().view_count}
-              product_count={data.products.docs.length}
-              subscription_count={data.store.data().subscription_count}
-            />
-          </section>
-          <section className="flex w-full md:w-auto">
-            <SubsciberButton
-              store_id={params.slug}
-              full_width={true}
-              country={country}
-              city={city}
-              region={region}
-              ip={ip}
-            />
-          </section>
-        </section>
-
-        {data.collections.docs.length === 0 ? (
-          <></>
-        ) : (
-          <section className="flex w-full justify-start gap-8 border-transparent px-4">
-            <Button
-              asChild
-              variant="link"
-              className="text-md rounded-none border-b-[2px] px-0 text-foreground hover:no-underline"
-            >
-              <Link
-                href={`/store/${params.slug}`}
-                aria-label={`${params.slug} Store`}
-              >
-                Home
+    <Suspense fallback={<StoreLoading />}>
+      <>
+        <section className="mx-auto w-full max-w-[2428px]">
+          {data.store.data().banner_url === '' ? (
+            <></>
+          ) : (
+            <section
+              className="flex aspect-[6/1] items-center justify-start overflow-hidden rounded md:aspect-[128/15]"
+              style={{
+                background: `url(${data.store.data().banner_url})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            ></section>
+          )}
+          <section className="flex w-full flex-col items-start justify-between gap-4 px-4 py-4 md:flex-row md:items-center">
+            <section className="flex items-center gap-4">
+              <Link href={`/store/${params.slug}`} className="">
+                <ShowAvatar store_id={data.store.id} size="lg" />
               </Link>
-            </Button>
-            {data.collections?.docs?.map((doc) => (
+              <div className="flex flex-col gap-1">
+                <h1 className="text-xl">{data.store.data().name}</h1>
+                <section className="flex w-full flex-wrap gap-1 md:w-auto">
+                  <p className="w-auto text-sm text-muted-foreground">
+                    @{params.slug}
+                  </p>
+                  <span className="text-sm text-muted-foreground">&bull;</span>
+                  <p className="w-auto text-sm text-muted-foreground">
+                    {data.store.data().subscription_count} subscriber
+                    {data.store.data().subscription_count > 1 ? 's' : ''}
+                  </p>
+                  <span className="text-sm text-muted-foreground">&bull;</span>
+                  <p className="block w-auto text-sm text-muted-foreground">
+                    {data.products.docs.length} product
+                    {data.products.docs.length > 1 ? 's' : ''}
+                  </p>
+                </section>
+                <section className="hidden md:flex">
+                  <ShowMoreText
+                    text={data.store.data().description}
+                    howManyToShow={50}
+                    store_name={params.slug}
+                    location={data.store.data().country}
+                    created_at={data.store.data().created_at}
+                    view_count={data.store.data().view_count}
+                    product_count={data.products.docs.length}
+                    subscription_count={data.store.data().subscription_count}
+                  />
+                </section>
+              </div>
+            </section>
+            <section className="flex md:hidden">
+              <ShowMoreText
+                text={data.store.data().description}
+                howManyToShow={50}
+                store_name={params.slug}
+                location={data.store.data().country}
+                created_at={data.store.data().created_at}
+                view_count={data.store.data().view_count}
+                product_count={data.products.docs.length}
+                subscription_count={data.store.data().subscription_count}
+              />
+            </section>
+            <section className="flex w-full md:w-auto">
+              <SubsciberButton
+                store_id={params.slug}
+                full_width={true}
+                country={country}
+                city={city}
+                region={region}
+                ip={ip}
+              />
+            </section>
+          </section>
+
+          {data.collections.docs.length === 0 ? (
+            <></>
+          ) : (
+            <section className="flex w-full justify-start gap-8 border-transparent px-4">
               <Button
                 asChild
                 variant="link"
-                className="text-md rounded-none border-b-[2px] border-transparent px-0 text-foreground hover:no-underline"
-                key={doc.id}
+                className="text-md rounded-none border-b-[2px] px-0 text-foreground hover:no-underline"
               >
                 <Link
-                  href={`/store/${params.slug}/collection/${doc.id}`}
-                  aria-label="Products"
+                  href={`/store/${params.slug}`}
+                  aria-label={`${params.slug} Store`}
                 >
-                  {doc.data().name}
+                  Home
                 </Link>
               </Button>
-            ))}
-          </section>
-        )}
-      </section>
-      <Separator />
-      <section className="mx-auto w-full max-w-[2428px]">
-        {products?.length! > 0 ? (
-          <section className="grid grid-cols-1 gap-8 p-4 md:grid-cols-3 xl:grid-cols-6">
-            {products?.map((doc) => (
-              <ProductCard
-                product={doc}
-                show_creator={false}
-                key={doc.id}
-                avatar={data.store.data().avatar_url}
-              />
-            ))}
-          </section>
-        ) : (
-          <p>This store has no products at this time.</p>
-        )}
-      </section>
-      <TrackStoreViews
-        country={country}
-        city={city}
-        region={region}
-        ip={ip}
-        store_id={params.slug}
-        store_name={data.store.data().name}
-      />
-    </section>
+              {data.collections?.docs?.map((doc) => (
+                <Button
+                  asChild
+                  variant="link"
+                  className="text-md rounded-none border-b-[2px] border-transparent px-0 text-foreground hover:no-underline"
+                  key={doc.id}
+                >
+                  <Link
+                    href={`/store/${params.slug}/collection/${doc.id}`}
+                    aria-label="Products"
+                  >
+                    {doc.data().name}
+                  </Link>
+                </Button>
+              ))}
+            </section>
+          )}
+        </section>
+        <Separator />
+        <section className="mx-auto w-full max-w-[2428px]">
+          {products?.length! > 0 ? (
+            <section className="grid grid-cols-1 gap-8 p-4 md:grid-cols-3 xl:grid-cols-6">
+              {products?.map((doc) => (
+                <ProductCard
+                  product={doc}
+                  show_creator={false}
+                  key={doc.id}
+                  avatar={data.store.data().avatar_url}
+                />
+              ))}
+            </section>
+          ) : (
+            <p>This store has no products at this time.</p>
+          )}
+        </section>
+        <TrackStoreViews
+          country={country}
+          city={city}
+          region={region}
+          ip={ip}
+          store_id={params.slug}
+          store_name={data.store.data().name}
+        />
+      </>
+    </Suspense>
   );
 }

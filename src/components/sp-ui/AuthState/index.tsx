@@ -10,6 +10,7 @@ import { doc, DocumentReference, onSnapshot } from 'firebase/firestore';
 export default function AuthState() {
   const setUser = userStore((state) => state.setUser);
   const clearUser = userStore((state) => state.clearUser);
+  const setUserLoaded = userStore((state) => state.setUserLoaded);
 
   async function SetCookies(user_info: _SetUserProps) {
     const today = new Date();
@@ -60,6 +61,7 @@ export default function AuthState() {
       deleteCookie('default_store');
       deleteCookie('user_email');
     }
+    setUserLoaded(true);
   });
 
   return <></>;

@@ -14,7 +14,9 @@ import {
 } from 'firebase/firestore';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { Suspense } from 'react';
 import ProductDetailPage from './productDetailPage';
+import ProductLoading from './productLoading';
 import TrackProductViews from './trackProductView';
 import { options, variants } from './typedef';
 
@@ -158,7 +160,7 @@ export default async function ProductPage({ params }: Props) {
   }
 
   return (
-    <>
+    <Suspense fallback={<ProductLoading />}>
       <ProductDetailPage
         store_id={data.store?.id}
         avatar={data.store?.data().avatar_url}
@@ -195,6 +197,6 @@ export default async function ProductPage({ params }: Props) {
         store_name={data.store?.data().name}
         store_id={data.store?.id}
       />
-    </>
+    </Suspense>
   );
 }

@@ -12,22 +12,13 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { auth } from '@/lib/firebase';
+import userStore from '@/stores/userStore';
 import { faThumbsUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Link from 'next/link';
-import { useAuthState } from 'react-firebase-hooks/auth';
 import { LikeIt } from './likeIt';
 
-export const LikeButton = ({
-  product_id,
-  like_count,
-  store_id,
-  country,
-  city,
-  region,
-  ip,
-}: {
+type Props = {
   product_id: string;
   like_count: number;
   store_id: string;
@@ -35,14 +26,17 @@ export const LikeButton = ({
   city: string;
   region: string;
   ip: string;
-}) => {
-  const [user, userLoading, userError] = useAuthState(auth);
+};
 
-  if (userLoading) {
+export const LikeButton = (props: Props) => {
+  const user_loaded = userStore((state) => state.user_loaded);
+  const user_id = userStore((state) => state.user_id);
+
+  if (!user_loaded) {
     return <Button variant="ghost">Loading</Button>;
   }
 
-  if (!userLoading && !user) {
+  if (user_loaded && user_id === '') {
     return (
       <AlertDialog>
         <AlertDialogTrigger>
@@ -67,7 +61,7 @@ export const LikeButton = ({
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction asChild>
-              <Link href={`sign-in?redirect=/product/${product_id}`}>
+              <Link href={`sign-in?redirect=/product/${props.product_id}`}>
                 Sign In
               </Link>
             </AlertDialogAction>
@@ -79,14 +73,13 @@ export const LikeButton = ({
 
   return (
     <LikeIt
-      product_id={product_id}
-      like_count={like_count}
-      user_id={user?.uid!}
-      store_id={store_id}
-      country={country}
-      city={city}
-      region={region}
-      ip={ip}
+      product_id={props.product_id}
+      like_count={props.like_count}
+      store_id={props.store_id}
+      country={props.country}
+      city={props.city}
+      region={props.region}
+      ip={props.ip}
     />
   );
 };

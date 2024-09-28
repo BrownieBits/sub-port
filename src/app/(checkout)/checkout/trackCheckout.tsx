@@ -1,6 +1,7 @@
 'use client';
 
 import { analytics, db } from '@/lib/firebase';
+import userStore from '@/stores/userStore';
 import { subHours } from 'date-fns';
 import { logEvent } from 'firebase/analytics';
 import {
@@ -18,12 +19,14 @@ import React from 'react';
 
 export default function TrackCheckout(props: {
   store_ids: string[];
-  user_id: string | undefined;
   country: string;
   city: string;
   region: string;
   ip: string;
 }) {
+  const user_loaded = userStore((state) => state.user_loaded);
+  const user_id = userStore((state) => state.user_id);
+
   async function getAndSetAnalytics() {
     const batch = writeBatch(db);
     await Promise.all(
@@ -46,11 +49,11 @@ export default function TrackCheckout(props: {
           batch.set(analyticsDoc, {
             type: 'checkout_reached',
             store_id: store,
-            user_id: props.user_id !== undefined ? props.user_id : null,
-            country: props.country === 'undefined' ? 'SW' : props.country,
-            city: props.city === 'undefined' ? 'Mos Eisley' : props.city,
-            region: props.region === 'undefined' ? 'TAT' : props.region,
-            ip: props.ip === 'undefined' ? '0.0.0.0' : props.ip,
+            user_id: user_id !== '' ? user_id : null,
+            country: props.country,
+            city: props.city,
+            region: props.region,
+            ip: props.ip,
             created_at: Timestamp.fromDate(new Date()),
           });
         }
@@ -59,12 +62,14 @@ export default function TrackCheckout(props: {
     await batch.commit();
   }
   React.useEffect(() => {
-    if (analytics !== null) {
-      logEvent(analytics, 'page_view', {
-        title: `Checkout - SubPort Creator Platform`,
-      });
+    if (user_loaded) {
+      if (analytics !== null) {
+        logEvent(analytics, 'page_view', {
+          title: `Checkout - SubPort Creator Platform`,
+        });
+      }
+      getAndSetAnalytics();
     }
-    getAndSetAnalytics();
-  }, []);
+  }, [user_loaded]);
   return <></>;
 }

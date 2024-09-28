@@ -17,6 +17,8 @@ export type _UserStore = {
     user_country: string;
     user_currency: string;
     user_store: string;
+    user_loaded: boolean;
     setUser: (props: _SetUserProps) => void;
     clearUser: () => void;
+    setUserLoaded: (loaded: boolean) => void;
 }

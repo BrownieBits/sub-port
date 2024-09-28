@@ -19,10 +19,11 @@ import {
 } from '@/components/ui/select';
 import { analytics, db } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
+import cartStore from '@/stores/cartStore';
+import userStore from '@/stores/userStore';
 import { faFlag, faShare, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getCookie } from 'cookies-next';
 import { logEvent } from 'firebase/analytics';
 import {
   CollectionReference,
@@ -40,6 +41,7 @@ import { toast } from 'sonner';
 import { z } from 'zod';
 import ProductComments from './productComments';
 import ProductImages from './productImages';
+import ProductLoading from './productLoading';
 import RelatedProducts from './relatedProducts';
 import { ShowDetails } from './showDetails';
 import { options, variants } from './typedef';
@@ -92,6 +94,10 @@ type Props = {
 };
 
 export default function ProductDetailPage(props: Props) {
+  const user_loaded = userStore((state) => state.user_loaded);
+  const user_id = userStore((state) => state.user_id);
+  const cart_loaded = cartStore((state) => state.cart_loaded);
+  const cart_id = cartStore((state) => state.cart_id);
   const [thinking, setThinking] = React.useState<boolean>(false);
   const [maxQuantity, setMaxQuantity] = React.useState<number>();
   const [selectedOptions, setSelectedOptions] = React.useState<string[]>([]);
@@ -104,8 +110,6 @@ export default function ProductDetailPage(props: Props) {
   async function onSubmit() {
     setThinking(true);
     try {
-      const userID = getCookie('user_id');
-      const cartID = getCookie('cart_id');
       const quantity = form.getValues('quantity') as number;
       let docID = props.product_id;
       if (props.options.length > 0) {
@@ -113,7 +117,7 @@ export default function ProductDetailPage(props: Props) {
       }
       const cartItemRef: DocumentReference = doc(
         db,
-        `carts/${cartID}/items`,
+        `carts/${cart_id}/items`,
         docID
       );
       await runTransaction(db, async (transaction) => {
@@ -131,7 +135,7 @@ export default function ProductDetailPage(props: Props) {
         }
       });
 
-      const cartRef: DocumentReference = doc(db, `carts`, cartID!);
+      const cartRef: DocumentReference = doc(db, `carts`, cart_id);
 
       await runTransaction(db, async (transaction) => {
         const cartItemDoc = await transaction.get(cartRef);
@@ -161,11 +165,11 @@ export default function ProductDetailPage(props: Props) {
         quantity: quantity,
         options: selectedOptions,
         store_id: props.store_id,
-        user_id: userID !== undefined ? userID : null,
-        country: props.country === 'undefined' ? 'SW' : props.country,
-        city: props.city === 'undefined' ? 'Mos Eisley' : props.city,
-        region: props.region === 'undefined' ? 'TAT' : props.region,
-        ip: props.ip === 'undefined' ? '0.0.0.0' : props.ip,
+        user_id: user_id !== '' ? user_id : null,
+        country: props.country,
+        city: props.city,
+        region: props.region,
+        ip: props.ip,
         created_at: Timestamp.fromDate(new Date()),
       });
       toast.success(`${props.product_name} Added to Cart!`, {
@@ -238,6 +242,9 @@ export default function ProductDetailPage(props: Props) {
     setSelectedOptions(newOptionList);
   }, []);
 
+  if (!user_loaded || !cart_loaded) {
+    return <ProductLoading />;
+  }
   return (
     <section className="mx-auto flex max-w-[1754px] flex-col gap-8 p-4">
       <section key="productInfo" className="flex flex-col gap-8 md:flex-row">

@@ -1,7 +1,7 @@
 'use client';
 
 import { analytics, db } from '@/lib/firebase';
-import { getCookie } from 'cookies-next';
+import userStore from '@/stores/userStore';
 import { subHours } from 'date-fns';
 import { logEvent } from 'firebase/analytics';
 import {
@@ -26,7 +26,8 @@ export default function TrackStoreViews(props: {
   region: string;
   ip: string;
 }) {
-  const user_id = getCookie('user_id');
+  const user_loaded = userStore((state) => state.user_loaded);
+  const user_id = userStore((state) => state.user_id);
 
   async function getAndSetAnalytics() {
     const analyticsColRef: CollectionReference = collection(
@@ -46,11 +47,11 @@ export default function TrackStoreViews(props: {
       await addDoc(analyticsColRef, {
         type: 'store_view',
         store_id: props.store_id,
-        user_id: user_id !== undefined ? user_id : null,
-        country: props.country === 'undefined' ? 'SW' : props.country,
-        city: props.city === 'undefined' ? 'Mos Eisley' : props.city,
-        region: props.region === 'undefined' ? 'TAT' : props.region,
-        ip: props.ip === 'undefined' ? '0.0.0.0' : props.ip,
+        user_id: user_id !== '' ? user_id : null,
+        country: props.country,
+        city: props.city,
+        region: props.region,
+        ip: props.ip,
         created_at: Timestamp.fromDate(new Date()),
       });
 
@@ -65,15 +66,17 @@ export default function TrackStoreViews(props: {
     }
   }
   React.useEffect(() => {
-    if (analytics !== null) {
-      logEvent(analytics, 'store_viewed', {
-        store_id: props.store_id,
-      });
-      logEvent(analytics, 'page_view', {
-        title: `${props.store_name} Store`,
-      });
+    if (user_loaded) {
+      if (analytics !== null) {
+        logEvent(analytics, 'store_viewed', {
+          store_id: props.store_id,
+        });
+        logEvent(analytics, 'page_view', {
+          title: `${props.store_name} Store`,
+        });
+      }
+      getAndSetAnalytics();
     }
-    getAndSetAnalytics();
-  }, []);
+  }, [user_loaded]);
   return <></>;
 }

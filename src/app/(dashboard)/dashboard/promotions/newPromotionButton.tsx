@@ -43,6 +43,7 @@ import {
 } from '@/components/ui/select';
 import { db } from '@/lib/firebase';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import userStore from '@/stores/userStore';
 import {
   faCalendar,
   faClose,
@@ -50,7 +51,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getCookie } from 'cookies-next';
 import { format } from 'date-fns';
 import {
   DocumentReference,
@@ -101,10 +101,11 @@ export const NewPromotionButton = (props: {
   size?: 'default' | 'icon' | 'lg' | 'sm' | null | undefined;
   className?: string | '';
 }) => {
+  const user_loaded = userStore((state) => state.user_loaded);
+  const user_id = userStore((state) => state.user_id);
+  const store_id = userStore((state) => state.user_store);
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery('(min-width: 768px)');
-  const store_id = getCookie('default_store');
-  const user_id = getCookie('user_id');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -156,6 +157,10 @@ export const NewPromotionButton = (props: {
     form.reset();
     revalidate();
     setOpen(false);
+  }
+
+  if (!user_loaded) {
+    return <></>;
   }
 
   if (isDesktop) {
