@@ -2,7 +2,7 @@
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default async function StoreLoading() {
+export default function StoreLoading() {
   return (
     <>
       <section className="mx-auto w-full max-w-[2428px]">
