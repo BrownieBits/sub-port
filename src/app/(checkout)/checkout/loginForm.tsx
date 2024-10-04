@@ -25,6 +25,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { auth, db } from '@/lib/firebase';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import userStore from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   CollectionReference,
@@ -54,7 +55,6 @@ const formSchema = z.object({
 });
 
 type Props = {
-  user_id?: string;
   country: string;
   city: string;
   region: string;
@@ -63,6 +63,8 @@ type Props = {
 };
 
 export default function LoginForm(props: Props) {
+  const user_loaded = userStore((state) => state.user_loaded);
+  const user_id = userStore((state) => state.user_id);
   const [open, setOpen] = React.useState(false);
   const [signInWithEmailAndPassword, user, loading, error] =
     useSignInWithEmailAndPassword(auth);
@@ -106,26 +108,91 @@ export default function LoginForm(props: Props) {
   }
 
   React.useEffect(() => {
-    if (
-      props.user_id === null ||
-      props.user_id === undefined ||
-      props.user_id === ''
-    ) {
-      setOpen(true);
-    } else {
-      setOpen(false);
+    if (user_loaded) {
+      if (user_id === '') {
+        setOpen(true);
+      }
     }
-  }, [props.user_id]);
-
+  }, [user_loaded]);
+  if (!user_loaded) {
+    return <></>;
+  }
+  if (user_loaded && user_id !== '') {
+    return <></>;
+  }
   if (isDesktop) {
     return (
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              <h3>Login</h3>
-            </AlertDialogTitle>
-            <AlertDialogDescription className="flex flex-col items-center justify-center gap-4 pt-4">
+            <AlertDialogTitle>Login</AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <section className="flex flex-col items-center justify-center gap-4 pt-4">
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="flex w-full flex-col items-center justify-center gap-8"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormControl>
+                            <Input placeholder="Email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormControl>
+                            <Input
+                              placeholder="Password"
+                              type="password"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    {error ? (
+                      <p className="text-destructive">{error.code}</p>
+                    ) : (
+                      <></>
+                    )}
+                    <Button type="submit" className="w-full">
+                      Submit
+                    </Button>
+                  </form>
+                </Form>
+                <span>or</span>
+                <Button
+                  variant="outline"
+                  onClick={() => setGuest(false)}
+                  className="w-full text-foreground"
+                >
+                  Continue as Guest
+                </Button>
+              </section>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+        </AlertDialogContent>
+      </AlertDialog>
+    );
+  }
+  return (
+    <Drawer open={open} onOpenChange={setGuest}>
+      <DrawerContent>
+        <DrawerHeader className="mx-auto w-full max-w-[2428px]">
+          <DrawerTitle className="flex justify-between pb-2">Login</DrawerTitle>
+          <DrawerDescription asChild>
+            <section className="flex w-full flex-col items-center gap-4 text-left">
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
@@ -169,7 +236,7 @@ export default function LoginForm(props: Props) {
                   </Button>
                 </form>
               </Form>
-              <p>or</p>
+              <span>or</span>
               <Button
                 variant="outline"
                 onClick={() => setGuest(false)}
@@ -177,71 +244,7 @@ export default function LoginForm(props: Props) {
               >
                 Continue as Guest
               </Button>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-        </AlertDialogContent>
-      </AlertDialog>
-    );
-  }
-  return (
-    <Drawer open={open} onOpenChange={setGuest}>
-      <DrawerContent>
-        <DrawerHeader className="mx-auto w-full max-w-[2428px]">
-          <DrawerTitle className="flex justify-between">
-            <h3>Login</h3>
-          </DrawerTitle>
-          <DrawerDescription className="flex w-full flex-col items-center gap-4 text-left">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="flex w-full flex-col items-center justify-center gap-8"
-              >
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormControl>
-                        <Input placeholder="Email" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormControl>
-                        <Input
-                          placeholder="Password"
-                          type="password"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {error ? (
-                  <p className="text-destructive">{error.code}</p>
-                ) : (
-                  <></>
-                )}
-                <Button type="submit" className="w-full">
-                  Submit
-                </Button>
-              </form>
-            </Form>
-            <p>or</p>
-            <Button
-              variant="outline"
-              onClick={() => setGuest(false)}
-              className="w-full text-foreground"
-            >
-              Continue as Guest
-            </Button>
+            </section>
           </DrawerDescription>
         </DrawerHeader>
       </DrawerContent>

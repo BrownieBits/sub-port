@@ -48,6 +48,7 @@ export default function AuthState() {
         };
         setUser(data);
         SetCookies(data);
+        setUserLoaded(true);
       }
     });
   }
@@ -60,8 +61,8 @@ export default function AuthState() {
       deleteCookie('user_id');
       deleteCookie('default_store');
       deleteCookie('user_email');
+      setUserLoaded(true);
     }
-    setUserLoaded(true);
   });
 
   return <></>;

@@ -19,7 +19,9 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
-import { Address } from '@/lib/types';
+import cartStore from '@/stores/cartStore';
+import { _Address } from '@/stores/cartStore.types';
+import userStore from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   CollectionReference,
@@ -29,6 +31,8 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
+  setDoc,
   updateDoc,
 } from 'firebase/firestore';
 import React from 'react';
@@ -43,20 +47,20 @@ const formSchema = z.object({
   address: z.string(),
 });
 type Props = {
-  user_id: string;
-  addresses: Address[];
+  addresses: _Address[];
   default_address: string;
-  selectAddress: (address: Address) => void;
 };
 
 export default function UserAddressSelect(props: Props) {
-  const [matchedAddress, setMatchedAddress] = React.useState<Address | null>(
+  const user_id = userStore((state) => state.user_id);
+  const cart_id = cartStore((state) => state.cart_id);
+  const [matchedAddress, setMatchedAddress] = React.useState<_Address | null>(
     null
   );
-  const [originalAddress, setOriginalAddress] = React.useState<Address | null>(
+  const [originalAddress, setOriginalAddress] = React.useState<_Address | null>(
     null
   );
-  const [addressesData, setAddressesData] = React.useState<Address[]>([]);
+  const [addressesData, setAddressesData] = React.useState<_Address[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -65,29 +69,31 @@ export default function UserAddressSelect(props: Props) {
     },
   });
 
-  function setValidated(matched: Address, original: Address) {
+  function setValidated(matched: _Address, original: _Address) {
     setMatchedAddress(matched);
     setOriginalAddress(original);
   }
 
-  async function addValidatedAddress(address: Address) {
+  async function addValidatedAddress(address: _Address) {
     setMatchedAddress(null);
     setOriginalAddress(null);
-    const docRef: DocumentReference = doc(db, 'users', props.user_id);
+    const docRef: DocumentReference = doc(db, 'users', user_id);
     const addressesRef: CollectionReference = collection(db, 'addresses');
-    address.owner_id = props.user_id;
-    address.created_at = Timestamp.fromDate(new Date());
+    address.owner_id = user_id;
     const newDoc: DocumentReference<DocumentData, DocumentData> = await addDoc(
       addressesRef,
-      address
+      {
+        ...address,
+        created_at: Timestamp.fromDate(new Date()),
+      }
     );
     let default_address = props.default_address;
-    const addresses = props.addresses.map((addressDoc) => addressDoc.id);
+    const addresses = props.addresses.map((addressDoc) => addressDoc.doc_id);
     if (props.default_address === '') {
       default_address = newDoc.id;
     }
     addresses.push(newDoc.id);
-    address.id = newDoc.id;
+    address.doc_id = newDoc.id;
     const newAddresses = addressesData.splice(0);
     newAddresses.push(address);
     await updateDoc(docRef, {
@@ -116,28 +122,35 @@ export default function UserAddressSelect(props: Props) {
       form.setError('address', { message: 'You must select an address.' });
     } else {
       const address = addressesData.filter(
-        (doc) => doc.id === form.getValues('address')
+        (doc) => doc.doc_id === form.getValues('address')
       );
       if (address.length > 0) {
-        props.selectAddress({
-          address_line1: address[0].address_line1,
-          address_line2: address[0].address_line2,
-          address_line3: address[0].address_line3,
-          address_residential_indicator:
-            address[0].address_residential_indicator,
-          city_locality: address[0].city_locality,
-          company_name: address[0].company_name,
-          country_code: address[0].country_code,
-          email: address[0].email,
-          name: address[0].name,
-          phone: address[0].phone,
-          postal_code: address[0].postal_code,
-          state_province: address[0].state_province,
-        });
+        const cartDocRef: DocumentReference = doc(db, `carts`, cart_id);
+        const cartDoc = await getDoc(cartDocRef);
+        if (cartDoc.exists()) {
+          await updateDoc(cartDocRef, {
+            email: address[0].email,
+            address: address[0],
+            billing_address: address[0],
+            updated_at: Timestamp.fromDate(new Date()),
+          });
+        } else {
+          await setDoc(cartDocRef, {
+            email: address[0].email,
+            address: address[0],
+            billing_address: address[0],
+            created_at: Timestamp.fromDate(new Date()),
+            updated_at: Timestamp.fromDate(new Date()),
+          });
+        }
       } else {
-        console.log('coudnt fint', form.getValues('address'));
+        console.error('coudnt find', form.getValues('address'));
       }
     }
+  }
+
+  if (cart_id === '' || user_id === '') {
+    return <></>;
   }
 
   return (
@@ -166,16 +179,16 @@ export default function UserAddressSelect(props: Props) {
                             return (
                               <FormItem
                                 className="flex items-center gap-2"
-                                key={`address-${doc.id!}`}
+                                key={`address-${doc.doc_id!}`}
                               >
                                 <FormControl>
                                   <RadioGroupItem
-                                    value={doc.id!}
-                                    id={doc.id!}
+                                    value={doc.doc_id!}
+                                    id={doc.doc_id!}
                                     defaultChecked={
-                                      doc.id === props.default_address
+                                      doc.doc_id === props.default_address
                                     }
-                                    checked={doc.id === field.value}
+                                    checked={doc.doc_id === field.value}
                                   />
                                 </FormControl>
                                 <FormLabel>
@@ -219,7 +232,7 @@ export default function UserAddressSelect(props: Props) {
       <SelectVerifiedAddress
         matchedAddress={matchedAddress}
         originalAddress={originalAddress}
-        selectAddress={addValidatedAddress}
+        selectVerified={addValidatedAddress}
       />
     </>
   );

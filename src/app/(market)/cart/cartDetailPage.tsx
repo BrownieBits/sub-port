@@ -1,43 +1,17 @@
 'use client';
 
-import ProductCard from '@/components/sp-ui/ProductCard';
 import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { analytics, db } from '@/lib/firebase';
-import { GridProduct, Item, Promotion, RemovedProduct } from '@/lib/types';
+import { analytics } from '@/lib/firebase';
 import cartStore from '@/stores/cartStore';
 import { logEvent } from 'firebase/analytics';
-import {
-  CollectionReference,
-  DocumentData,
-  QuerySnapshot,
-  collection,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  where,
-} from 'firebase/firestore';
-import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
+import RelatedItems from './relatedItems';
+import RemovedItemsDialogue from './removedItemsDialogue';
 import StoreItems from './storeItems';
 import Summary from './summary';
-
-type Items = {
-  [key: string]: Item[];
-};
-type Promotions = {
-  [key: string]: Promotion;
-};
 
 type Props = {
   country: string;
@@ -50,10 +24,6 @@ export default function CartDetailPage(props: Props) {
   const cart_id = cartStore((state) => state.cart_id);
   const cart_items = cartStore((state) => state.store_item_breakdown);
   const promotions = cartStore((state) => state.promotions);
-  const [related, setRelated] = React.useState<GridProduct[]>([]);
-  const [removedItems, setRemovedItems] = React.useState<RemovedProduct[]>([]);
-  const [removedDialogueOpen, setRemovedDialogueOpen] =
-    React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (analytics !== null) {
@@ -61,50 +31,7 @@ export default function CartDetailPage(props: Props) {
         title: 'Cart',
       });
     }
-    const getItems = async () => {
-      const cartItems: Items = {};
-      const removed_items: RemovedProduct[] = [];
-      const store_ids = Object.keys(cartItems);
-
-      if (store_ids.length > 0) {
-        const relatedRef: CollectionReference = collection(db, 'products');
-        const relatedQuery = query(
-          relatedRef,
-          where('store_id', 'in', store_ids),
-          where('revenue', '>=', 0),
-          where('status', '==', 'Public'),
-          orderBy('revenue'),
-          limit(8)
-        );
-        const relatedData: QuerySnapshot<DocumentData, DocumentData> =
-          await getDocs(relatedQuery);
-
-        const products: GridProduct[] = relatedData.docs.map((product) => {
-          return {
-            name: product.data().name,
-            images: product.data().images,
-            product_type: product.data().product_type,
-            price: product.data().price,
-            compare_at: product.data().compare_at,
-            currency: product.data().currency,
-            like_count: product.data().like_count,
-            store_id: product.data().store_id,
-            created_at: product.data().created_at,
-            id: product.id,
-          };
-        });
-        setRelated(products);
-      } else {
-        setRelated([]);
-      }
-    };
-    getItems();
   }, []);
-  React.useEffect(() => {
-    if (removedItems.length > 0) {
-      setRemovedDialogueOpen(true);
-    }
-  }, [removedItems]);
 
   if (cart_items === null || cart_items === undefined) {
     return (
@@ -228,52 +155,11 @@ export default function CartDetailPage(props: Props) {
             </Button>
           </section>
         </section>
-        {related.length > 0 && (
-          <section className="flex w-full flex-col gap-4">
-            <h3>You might like</h3>
-            <section className="grid grid-cols-1 gap-8 md:grid-cols-3 xl:grid-cols-6">
-              {related?.map((doc) => (
-                <ProductCard product={doc} show_creator={true} key={doc.id} />
-              ))}
-            </section>
-          </section>
-        )}
+        <RelatedItems />
 
         <section></section>
       </section>
-      <Dialog open={removedDialogueOpen} onOpenChange={setRemovedDialogueOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>We adjusted your cart...</DialogTitle>
-            <DialogDescription>
-              <section className="flex w-full flex-col gap-4 pt-4">
-                {removedItems.map((item) => {
-                  return (
-                    <section
-                      className="flex w-full items-center gap-4"
-                      key={`removed-item-${item.name}`}
-                    >
-                      <Image
-                        src={item.image_url}
-                        alt={`Removed Item-${item.name}`}
-                        width={50}
-                        height={50}
-                        className="w-[50px]"
-                      />
-                      <section className="w-full flex-1">
-                        <p className="text-foreground">{item.name}</p>
-                        <p className="text-xs text-destructive">
-                          {item.reason}
-                        </p>
-                      </section>
-                    </section>
-                  );
-                })}
-              </section>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+      <RemovedItemsDialogue />
     </>
   );
 }

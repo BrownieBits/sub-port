@@ -1,7 +1,8 @@
 'use client';
 
 import { db } from '@/lib/firebase';
-import { Address } from '@/lib/types';
+import cartStore from '@/stores/cartStore';
+import { _Address } from '@/stores/cartStore.types';
 import {
   CollectionReference,
   DocumentData,
@@ -21,10 +22,10 @@ import UserAddressSelect from './userAddressSelect';
 
 type Props = {
   user_id: string;
-  selectAddress: (address: Address) => void;
 };
 export default function AddressForm(props: Props) {
-  const [addressData, setAddressData] = React.useState<Address[]>([]);
+  const cart_address = cartStore((state) => state.address);
+  const [addressData, setAddressData] = React.useState<_Address[]>([]);
   const [defaultAddress, setDefaultAddress] = React.useState<string>('');
 
   React.useEffect(() => {
@@ -42,9 +43,9 @@ export default function AddressForm(props: Props) {
           const addressesData: QuerySnapshot<DocumentData, DocumentData> =
             await getDocs(q);
 
-          const addresses = addressesData.docs.map((item) => {
+          const addresses: _Address[] = addressesData.docs.map((item) => {
             return {
-              id: item.id,
+              doc_id: item.id,
               address_line1: item.data().address_line1,
               address_line2: item.data().address_line2,
               address_line3: item.data().address_line3,
@@ -58,6 +59,7 @@ export default function AddressForm(props: Props) {
               phone: item.data().phone,
               postal_code: item.data().postal_code,
               state_province: item.data().state_province,
+              owner_id: item.data().owner_id,
             };
           });
 
@@ -69,15 +71,16 @@ export default function AddressForm(props: Props) {
     }
   }, [props.user_id]);
 
+  if (cart_address !== undefined) {
+    return <></>;
+  }
   if (props.user_id === 'guest') {
-    return <GuestAddress selectAddress={props.selectAddress} />;
+    return <GuestAddress />;
   }
   return (
     <UserAddressSelect
-      user_id={props.user_id}
       addresses={addressData}
       default_address={defaultAddress}
-      selectAddress={props.selectAddress}
     />
   );
 }

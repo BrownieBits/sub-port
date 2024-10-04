@@ -43,7 +43,6 @@ export default function StripeIntegration(props: Props) {
         stripe_payouts_enabled: account.payouts_enabled,
         updated_at: Timestamp.fromDate(new Date()),
       });
-      console.log(account);
     };
     if (user_loaded) {
       getData();

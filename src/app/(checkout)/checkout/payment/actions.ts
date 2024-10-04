@@ -1,6 +1,6 @@
 'use server';
 
-import { Address } from "@/lib/types";
+import { _Address } from "@/stores/cartStore.types";
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY!);
 
@@ -31,8 +31,7 @@ export async function UpdatePaymentIntent(intentID: string, cart_total: number) 
     return paymentIntent;
 }
 
-
-export async function CreateCustomer(shipping_address: Address, billing_address: Address) {
+export async function CreateCustomer(shipping_address: _Address, billing_address: _Address) {
 
     const customers = await stripe.customers.list({
         email: shipping_address.email,

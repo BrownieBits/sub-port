@@ -7,43 +7,161 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
-import { Item } from '@/lib/types';
+import cartStore from '@/stores/cartStore';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Timestamp } from 'firebase/firestore';
 import React from 'react';
 import ItemDetails from './itemDetails';
 
-type Items = {
-  [key: string]: {
-    store_name: string;
-    store_avatar: string;
-    items: Item[];
-  };
-};
-type Props = {
-  items: Items;
-  items_total: number;
-  service_total: number;
-  discount_total: number;
-  shipping_total: number | null;
-  taxes_total: number | null;
-  cart_total: number;
-};
+export default function CheckoutSummary() {
+  const cart_loaded = cartStore((state) => state.cart_loaded);
+  const cart_items = cartStore((state) => state.store_item_breakdown);
+  const cart_promotions = cartStore((state) => state.promotions);
+  const cart_shipments = cartStore((state) => state.shipments);
 
-export default function CheckoutSummary(props: Props) {
   const [open, setOpen] = React.useState('');
+  const [itemsTotal, setItemsTotal] = React.useState<number>(0);
+  const [serviceTotal, setServiceTotal] = React.useState<number>(0);
+  const [discountsTotal, setDiscountsTotal] = React.useState<number>(0);
+  const [shippingTotal, setShippingTotal] = React.useState<number | null>(null);
+  const [taxesTotal, setTaxesTotal] = React.useState<number | null>(null);
+  const [cartTotal, setCartTotal] = React.useState<number>(0);
   const isDesktop = useMediaQuery('(min-width: 768px)');
+
+  React.useEffect(() => {
+    if (cart_items !== null && cart_items !== undefined) {
+      let item_total = 0;
+      let service_total = 0;
+      let discounts_total = 0;
+      Object.keys(cart_items).map((store: string) => {
+        let store_total = 0;
+        cart_items[store].map((item) => {
+          if (item.compare_at > 0 && item.compare_at < item.price) {
+            store_total +=
+              parseFloat(item.compare_at.toString()) * item.quantity;
+            item_total +=
+              parseFloat(item.compare_at.toString()) * item.quantity;
+            service_total +=
+              parseFloat(item.compare_at.toString()) *
+              item.quantity *
+              parseFloat(item.service_percent.toString());
+          } else {
+            store_total += parseFloat(item.price.toString()) * item.quantity;
+            item_total += parseFloat(item.price.toString()) * item.quantity;
+            service_total +=
+              parseFloat(item.price.toString()) *
+              item.quantity *
+              parseFloat(item.service_percent.toString());
+          }
+        });
+
+        if (cart_promotions.hasOwnProperty(store)) {
+          const expiration = cart_promotions[store]
+            .expiration_date as Timestamp;
+          let expiration_good = true;
+          if (expiration !== null) {
+            const expiration_date = new Date(expiration.seconds * 1000);
+            const today = new Date();
+            if (today.getTime() > expiration_date.getTime()) {
+              expiration_good = false;
+            }
+          }
+          let minimum_good = true;
+          if (
+            cart_promotions[store].minimum_order_value > 0 &&
+            cart_promotions[store].minimum_order_value > store_total
+          ) {
+            minimum_good = false;
+          }
+          if (minimum_good && expiration_good) {
+            if (cart_promotions[store].type === 'Flat Amount') {
+              discounts_total += cart_promotions[store].amount;
+            } else if (cart_promotions[store].type === 'Percentage') {
+              const discount_amount =
+                store_total * (cart_promotions[store].amount / 100);
+              discounts_total += discount_amount;
+            }
+          }
+        }
+      });
+      setItemsTotal(item_total);
+      setServiceTotal(service_total);
+      setDiscountsTotal(discounts_total);
+    }
+  }, [cart_items, cart_promotions]);
+
+  React.useEffect(() => {
+    if (cart_shipments !== undefined) {
+      let hasNulls = false;
+      let total = 0;
+      Object.keys(cart_shipments).map((shipment) => {
+        if (cart_shipments[shipment].rate === undefined) {
+          hasNulls = true;
+        } else {
+          total += cart_shipments[shipment].rate?.rate! as number;
+        }
+      });
+      if (!hasNulls) {
+        setShippingTotal(total);
+      } else {
+        setShippingTotal(null);
+      }
+    }
+  }, [cart_shipments]);
+
+  React.useEffect(() => {
+    let total = itemsTotal + serviceTotal - discountsTotal;
+    if (shippingTotal !== null) {
+      total += shippingTotal;
+    }
+    if (taxesTotal !== null) {
+      total += taxesTotal;
+    }
+    setCartTotal(total);
+  }, [itemsTotal, serviceTotal, discountsTotal, shippingTotal, taxesTotal]);
+
+  if (!cart_loaded || cart_items === null || cart_items === undefined) {
+    return (
+      <aside className="flex w-full flex-col gap-4 md:w-[350px] xl:w-[400px]">
+        <Skeleton className="h-[200px] w-full rounded bg-layer-two" />
+        <section className="flex w-full flex-col gap-2">
+          <section className="flex w-full justify-between">
+            <Skeleton className="h-[24px] w-[150px] rounded bg-layer-two" />
+            <Skeleton className="h-[24px] w-[75px] rounded bg-layer-two" />
+          </section>
+          <section className="flex w-full justify-between">
+            <Skeleton className="h-[24px] w-[150px] rounded bg-layer-two" />
+            <Skeleton className="h-[24px] w-[75px] rounded bg-layer-two" />
+          </section>
+          <section className="flex w-full justify-between">
+            <Skeleton className="h-[24px] w-[150px] rounded bg-layer-two" />
+            <Skeleton className="h-[24px] w-[75px] rounded bg-layer-two" />
+          </section>
+          <section className="flex w-full justify-between">
+            <Skeleton className="h-[24px] w-[150px] rounded bg-layer-two" />
+            <Skeleton className="h-[24px] w-[75px] rounded bg-layer-two" />
+          </section>
+          <Separator />
+          <section className="flex w-full justify-between pt-4">
+            <Skeleton className="h-[24px] w-[150px] rounded bg-layer-two" />
+            <Skeleton className="h-[24px] w-[75px] rounded bg-layer-two" />
+          </section>
+        </section>
+      </aside>
+    );
+  }
 
   if (isDesktop) {
     return (
       <aside className="flex w-full flex-col gap-4 md:w-[350px] xl:w-[400px]">
-        {Object.keys(props.items).map((store) => {
+        {Object.keys(cart_items).map((store) => {
           return (
             <ItemDetails
-              items={props.items[store].items}
-              store_name={props.items[store].store_name}
-              avatar_url={props.items[store].store_avatar}
+              items={cart_items[store]}
+              store_id={store}
               key={`item-breakdown-${store}`}
             />
           );
@@ -55,7 +173,7 @@ export default function CheckoutSummary(props: Props) {
               {new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
-              }).format(props.items_total)}
+              }).format(itemsTotal)}
             </p>
           </section>
           <section className="flex w-full justify-between">
@@ -64,10 +182,10 @@ export default function CheckoutSummary(props: Props) {
               {new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
-              }).format(props.service_total)}
+              }).format(serviceTotal)}
             </p>
           </section>
-          {props.discount_total > 0 && (
+          {discountsTotal > 0 && (
             <section className="flex w-full justify-between">
               <p>Discounts:</p>
               <p>
@@ -75,22 +193,22 @@ export default function CheckoutSummary(props: Props) {
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: 'USD',
-                }).format(props.discount_total)}
+                }).format(discountsTotal)}
               </p>
             </section>
           )}
           <section className="flex w-full justify-between">
             <p>Shipping:</p>
-            {props.shipping_total === null ? (
+            {shippingTotal === null ? (
               <p>-.--</p>
             ) : (
               <>
-                {props.shipping_total > 0 ? (
+                {shippingTotal > 0 ? (
                   <p>
                     {new Intl.NumberFormat('en-US', {
                       style: 'currency',
                       currency: 'USD',
-                    }).format(props.shipping_total)}
+                    }).format(shippingTotal)}
                   </p>
                 ) : (
                   <p>Free</p>
@@ -100,14 +218,14 @@ export default function CheckoutSummary(props: Props) {
           </section>
           <section className="flex w-full justify-between">
             <p>Taxes:</p>
-            {props.taxes_total === null ? (
+            {taxesTotal === null ? (
               <p>-.--</p>
             ) : (
               <p>
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: 'USD',
-                }).format(props.taxes_total)}
+                }).format(taxesTotal)}
               </p>
             )}
           </section>
@@ -120,7 +238,7 @@ export default function CheckoutSummary(props: Props) {
               {new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
-              }).format(props.cart_total)}
+              }).format(cartTotal)}
             </p>
           </section>
         </section>
@@ -151,17 +269,16 @@ export default function CheckoutSummary(props: Props) {
             {new Intl.NumberFormat('en-US', {
               style: 'currency',
               currency: 'USD',
-            }).format(props.cart_total)}
+            }).format(cartTotal)}
           </span>
         </AccordionTrigger>
         <AccordionContent>
           <aside className="flex w-full flex-col gap-4 md:w-[350px] xl:w-[400px]">
-            {Object.keys(props.items).map((store) => {
+            {Object.keys(cart_items).map((store) => {
               return (
                 <ItemDetails
-                  items={props.items[store].items}
-                  store_name={props.items[store].store_name}
-                  avatar_url={props.items[store].store_avatar}
+                  items={cart_items[store]}
+                  store_id={store}
                   key={`item-breakdown-${store}`}
                 />
               );
@@ -173,7 +290,7 @@ export default function CheckoutSummary(props: Props) {
                   {new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
-                  }).format(props.items_total)}
+                  }).format(itemsTotal)}
                 </p>
               </section>
               <section className="flex w-full justify-between">
@@ -182,10 +299,10 @@ export default function CheckoutSummary(props: Props) {
                   {new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
-                  }).format(props.service_total)}
+                  }).format(serviceTotal)}
                 </p>
               </section>
-              {props.discount_total > 0 && (
+              {discountsTotal > 0 && (
                 <section className="flex w-full justify-between">
                   <p>Discounts:</p>
                   <p>
@@ -193,23 +310,23 @@ export default function CheckoutSummary(props: Props) {
                     {new Intl.NumberFormat('en-US', {
                       style: 'currency',
                       currency: 'USD',
-                    }).format(props.discount_total)}
+                    }).format(discountsTotal)}
                   </p>
                 </section>
               )}
 
               <section className="flex w-full justify-between">
                 <p>Shipping:</p>
-                {props.shipping_total === null ? (
+                {shippingTotal === null ? (
                   <p>-.--</p>
                 ) : (
                   <>
-                    {props.shipping_total > 0 ? (
+                    {shippingTotal > 0 ? (
                       <p>
                         {new Intl.NumberFormat('en-US', {
                           style: 'currency',
                           currency: 'USD',
-                        }).format(props.shipping_total)}
+                        }).format(shippingTotal)}
                       </p>
                     ) : (
                       <p>Free</p>
@@ -219,14 +336,14 @@ export default function CheckoutSummary(props: Props) {
               </section>
               <section className="flex w-full justify-between">
                 <p>Taxes:</p>
-                {props.taxes_total === null ? (
+                {taxesTotal === null ? (
                   <p>-.--</p>
                 ) : (
                   <p>
                     {new Intl.NumberFormat('en-US', {
                       style: 'currency',
                       currency: 'USD',
-                    }).format(props.taxes_total)}
+                    }).format(taxesTotal)}
                   </p>
                 )}
               </section>
@@ -239,7 +356,7 @@ export default function CheckoutSummary(props: Props) {
                   {new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
-                  }).format(props.cart_total)}
+                  }).format(cartTotal)}
                 </p>
               </section>
             </section>

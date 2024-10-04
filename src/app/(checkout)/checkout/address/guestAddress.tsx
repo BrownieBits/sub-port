@@ -26,10 +26,20 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { country_list } from '@/lib/countryList';
-import { Address } from '@/lib/types';
+import { db } from '@/lib/firebase';
+import cartStore from '@/stores/cartStore';
+import { _Address } from '@/stores/cartStore.types';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  doc,
+  DocumentReference,
+  getDoc,
+  setDoc,
+  Timestamp,
+  updateDoc,
+} from 'firebase/firestore';
 import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -64,16 +74,14 @@ const formSchema = z.object({
     .transform((value) => parsePhoneNumber(value).number.toString())
     .or(z.literal('')),
 });
-type Props = {
-  selectAddress: (address: Address) => void;
-};
 
-export default function GuestAddress(props: Props) {
+export default function GuestAddress() {
+  const cart_id = cartStore((state) => state.cart_id);
   const [disabled, setDisabled] = React.useState<boolean>(false);
-  const [matchedAddress, setMatchedAddress] = React.useState<Address | null>(
+  const [matchedAddress, setMatchedAddress] = React.useState<_Address | null>(
     null
   );
-  const [originalAddress, setOriginalAddress] = React.useState<Address | null>(
+  const [originalAddress, setOriginalAddress] = React.useState<_Address | null>(
     null
   );
 
@@ -113,6 +121,26 @@ export default function GuestAddress(props: Props) {
       toast.error('Update Error', {
         description:
           'Something went wrong while updating your user info. Please try again',
+      });
+    }
+  }
+  async function selectAddress(newAddress: _Address) {
+    const cartDocRef: DocumentReference = doc(db, `carts`, cart_id);
+    const cartDoc = await getDoc(cartDocRef);
+    if (cartDoc.exists()) {
+      await updateDoc(cartDocRef, {
+        email: newAddress.email,
+        address: newAddress,
+        billing_address: newAddress,
+        updated_at: Timestamp.fromDate(new Date()),
+      });
+    } else {
+      await setDoc(cartDocRef, {
+        email: newAddress.email,
+        address: newAddress,
+        billing_address: newAddress,
+        created_at: Timestamp.fromDate(new Date()),
+        updated_at: Timestamp.fromDate(new Date()),
       });
     }
   }
@@ -360,7 +388,7 @@ export default function GuestAddress(props: Props) {
       <SelectVerifiedAddress
         matchedAddress={matchedAddress}
         originalAddress={originalAddress}
-        selectAddress={props.selectAddress}
+        selectVerified={selectAddress}
       />
     </>
   );

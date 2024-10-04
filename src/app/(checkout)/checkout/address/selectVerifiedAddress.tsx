@@ -25,7 +25,8 @@ import {
 } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
-import { Address } from '@/lib/types';
+import cartStore from '@/stores/cartStore';
+import { _Address } from '@/stores/cartStore.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -38,31 +39,33 @@ const formSchema = z.object({
 });
 
 type Props = {
-  matchedAddress: Address | null;
-  originalAddress: Address | null;
-  selectAddress: (address: Address) => void;
+  matchedAddress: _Address | null;
+  originalAddress: _Address | null;
+  selectVerified: (newAddress: _Address) => void;
 };
-const tempAddress = {
+const tempAddress: _Address = {
   address_line1: '',
   address_line2: '',
-  address_line3: null,
+  address_line3: '',
   address_residential_indicator: '',
   city_locality: '',
-  company_name: null,
+  company_name: '',
   country_code: '',
-  email: null,
+  email: '',
   name: '',
-  phone: null,
+  phone: '',
   postal_code: '',
   state_province: '',
+  owner_id: '',
 };
 
 export default function SelectVerifiedAddress(props: Props) {
+  const cart_id = cartStore((state) => state.cart_id);
   const [open, setOpen] = React.useState(false);
-  const [matchedAddress, setMatchedAddress] = React.useState<Address | null>(
+  const [matchedAddress, setMatchedAddress] = React.useState<_Address | null>(
     tempAddress
   );
-  const [originalAddress, setOriginalAddress] = React.useState<Address | null>(
+  const [originalAddress, setOriginalAddress] = React.useState<_Address | null>(
     tempAddress
   );
   const isDesktop = useMediaQuery('(min-width: 768px)');
@@ -82,9 +85,9 @@ export default function SelectVerifiedAddress(props: Props) {
 
   async function onSubmit() {
     if (form.getValues('type') === 'matched') {
-      props.selectAddress(matchedAddress!);
+      props.selectVerified(matchedAddress!);
     } else {
-      props.selectAddress(originalAddress!);
+      props.selectVerified(originalAddress!);
     }
     setOpen(false);
   }

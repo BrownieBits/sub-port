@@ -1,6 +1,7 @@
 import { Timestamp } from "firebase/firestore";
 
-type _Address = {
+export type _Address = {
+    doc_id?: string;
     address_line1: string;
     address_line2: string;
     address_line3: string;
@@ -22,7 +23,7 @@ export type _Item = {
     cart_item_id: string;
     id: string;
 }
-type Rate = {
+export type _Rate = {
     carrier_id: string;
     carrier_name: string;
     delivery_days: number;
@@ -30,6 +31,7 @@ type Rate = {
     rate: number;
     service_code: string;
     service_type: string;
+    package_type: string | null;
 }
 export type _CartFullItem = {
     cart_item_id: string;
@@ -76,6 +78,19 @@ export type _Promotion = {
     status: string;
     type: string;
 };
+export type _Shipment = {
+    error?: string;
+    items: _Item[];
+    full_items?: _CartFullItem[];
+    rate?: _Rate;
+    name?: string;
+    ship_from?: _Address;
+    ship_to?: _Address | string;
+    store_id: string;
+}
+export type _Shipments = {
+    [key: string]: _Shipment;
+}
 export type _Promotions = { [key: string]: _Promotion };
 export type _Cart = {
     cart_id: string;
@@ -90,18 +105,9 @@ export type _Cart = {
     store_item_breakdown?: _StoreItemBreakdown;
     removed_items: _RemovedItem[];
     promotions: _Promotions,
-    shipments?: {
-        [key: string]: {
-            error?: string;
-            items: _Item[];
-            rate: Rate;
-            ship_from?: _Address;
-            ship_to?: _Address | string;
-            store_avatar: string;
-            store_name: string
-        }
-    };
+    shipments?: _Shipments;
     cart_loaded: boolean;
+    shipments_ready: boolean;
 }
 export type _SetCartProps = {
     cart_id: string;
@@ -111,17 +117,8 @@ export type _SetCartProps = {
     owner_email?: string;
     owner_id?: string;
     payment_intent?: string;
-    shipments?: {
-        [key: string]: {
-            error?: string;
-            items: _Item[];
-            rate: Rate;
-            ship_from?: _Address;
-            ship_to?: _Address | string;
-            store_avatar: string;
-            store_name: string
-        }
-    };
+    shipments?: _Shipments;
+    shipments_ready: boolean;
 }
 export type _SetItemsProps = {
     items: _Item[];
@@ -136,5 +133,7 @@ export type _Actions = {
     clearCart: () => void;
     setRemovedItems: (props: _RemovedItem[]) => void;
     setPromotions: (props: _Promotions) => void;
+    updateShipments: (shipments: _Shipments) => void;
+    setShipmentsReady: (ready: boolean) => void;
 }
 

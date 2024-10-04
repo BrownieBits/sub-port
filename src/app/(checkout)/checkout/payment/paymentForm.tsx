@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
-import { Address } from '@/lib/types';
+import cartStore from '@/stores/cartStore';
 import { Elements } from '@stripe/react-stripe-js';
 import { StripeElementsOptions, loadStripe } from '@stripe/stripe-js';
 import {
@@ -23,77 +23,147 @@ import {
 } from 'firebase/firestore';
 import { useTheme } from 'next-themes';
 import React from 'react';
-import CreditCardForm from './creditCardForm';
 import {
   CreateCustomer,
   CreatePaymentIntent,
   RetrievePaymentIntent,
   UpdatePaymentIntent,
 } from './actions';
+import CreditCardForm from './creditCardForm';
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 type Props = {
-  cart_id: string;
   user_id: string;
-  shipping_address: Address;
-  billing_address: Address;
-  cart_total: number;
-  payment_intent: string | undefined;
 };
 export default function PaymentForm(props: Props) {
+  const cart_loaded = cartStore((state) => state.cart_loaded);
+  const cart_id = cartStore((state) => state.cart_id);
+  const cart_address = cartStore((state) => state.address);
+  const billing_address = cartStore((state) => state.billing_address);
+  const cart_items = cartStore((state) => state.store_item_breakdown);
+  const cart_promotions = cartStore((state) => state.promotions);
+  const cart_shipments = cartStore((state) => state.shipments);
+  const shipments_ready = cartStore((state) => state.shipments_ready);
+  const payment_intent = cartStore((state) => state.payment_intent);
+
   const { theme, setTheme } = useTheme();
   const [paymentIntent, setPaymentIntent] = React.useState<string | null>(null);
   const [clientSecret, setClientSecret] = React.useState<string | null>(null);
   const [dpmCheckerLink, setDpmCheckerLink] = React.useState('');
   const [confirmed, setConfirmed] = React.useState(false);
-  React.useEffect(() => {
-    const getData = async () => {
-      const result = await UpdatePaymentIntent(
-        paymentIntent!,
-        props.cart_total
-      );
+  const [paymentReady, setPaymentReady] = React.useState(false);
 
+  async function createPaymentIntent(cart_total: number) {
+    const customer = await CreateCustomer(cart_address!, billing_address!);
+    if (payment_intent !== undefined) {
+      const result = await RetrievePaymentIntent(payment_intent);
+      const newResult = await UpdatePaymentIntent(result.id, cart_total);
+      setClientSecret(newResult.client_secret);
+      setDpmCheckerLink(
+        `https://dashboard.stripe.com/settings/payment_methods/review?transaction_id=${newResult.id}`
+      );
+    } else {
+      const result = await CreatePaymentIntent(customer.id, cart_total);
+      const cartDocRef: DocumentReference = doc(db, `carts`, cart_id);
+      await updateDoc(cartDocRef, {
+        payment_intent: result.id,
+        updated_at: Timestamp.fromDate(new Date()),
+      });
       setClientSecret(result.client_secret);
       setDpmCheckerLink(
         `https://dashboard.stripe.com/settings/payment_methods/review?transaction_id=${result.id}`
       );
-    };
-    if (paymentIntent !== null) {
-      getData();
     }
-  }, [paymentIntent, props.cart_total]);
-  React.useEffect(() => {
-    const getData = async () => {
-      const customer = await CreateCustomer(
-        props.shipping_address,
-        props.billing_address
-      );
-      if (props.payment_intent !== undefined) {
-        setPaymentIntent(props.payment_intent!);
-        const result = await RetrievePaymentIntent(props.payment_intent!);
+  }
 
-        setClientSecret(result.client_secret);
-        setDpmCheckerLink(
-          `https://dashboard.stripe.com/settings/payment_methods/review?transaction_id=${result.id}`
-        );
-      } else {
-        const result = await CreatePaymentIntent(customer.id, props.cart_total);
-        const cartDocRef: DocumentReference = doc(db, `carts`, props.cart_id);
-        await updateDoc(cartDocRef, {
-          payment_intent: result.id,
-          updated_at: Timestamp.fromDate(new Date()),
+  React.useEffect(() => {
+    setPaymentReady(false);
+    setDpmCheckerLink('');
+    setClientSecret(null);
+    if (
+      cart_loaded &&
+      cart_id !== '' &&
+      cart_address !== undefined &&
+      billing_address !== undefined &&
+      shipments_ready &&
+      cart_shipments !== undefined &&
+      cart_items !== undefined
+    ) {
+      let item_total = 0;
+      let service_total = 0;
+      let discounts_total = 0;
+      let shipping_total = 0;
+      Object.keys(cart_items!).map((store: string) => {
+        let store_total = 0;
+        cart_items![store].map((item) => {
+          if (item.compare_at > 0 && item.compare_at < item.price) {
+            store_total +=
+              parseFloat(item.compare_at.toString()) * item.quantity;
+            item_total +=
+              parseFloat(item.compare_at.toString()) * item.quantity;
+            service_total +=
+              parseFloat(item.compare_at.toString()) *
+              item.quantity *
+              parseFloat(item.service_percent.toString());
+          } else {
+            store_total += parseFloat(item.price.toString()) * item.quantity;
+            item_total += parseFloat(item.price.toString()) * item.quantity;
+            service_total +=
+              parseFloat(item.price.toString()) *
+              item.quantity *
+              parseFloat(item.service_percent.toString());
+          }
         });
-        setPaymentIntent(result.id);
-        setClientSecret(result.client_secret);
-        setDpmCheckerLink(
-          `https://dashboard.stripe.com/settings/payment_methods/review?transaction_id=${result.id}`
-        );
-      }
-    };
-    getData();
-  }, []);
+
+        if (cart_promotions.hasOwnProperty(store)) {
+          const expiration = cart_promotions[store]
+            .expiration_date as Timestamp;
+          let expiration_good = true;
+          if (expiration !== null) {
+            const expiration_date = new Date(expiration.seconds * 1000);
+            const today = new Date();
+            if (today.getTime() > expiration_date.getTime()) {
+              expiration_good = false;
+            }
+          }
+          let minimum_good = true;
+          if (
+            cart_promotions[store].minimum_order_value > 0 &&
+            cart_promotions[store].minimum_order_value > store_total
+          ) {
+            minimum_good = false;
+          }
+          if (minimum_good && expiration_good) {
+            if (cart_promotions[store].type === 'Flat Amount') {
+              discounts_total += cart_promotions[store].amount;
+            } else if (cart_promotions[store].type === 'Percentage') {
+              const discount_amount =
+                store_total * (cart_promotions[store].amount / 100);
+              discounts_total += discount_amount;
+            }
+          }
+        }
+      });
+
+      Object.keys(cart_shipments).map((shipment) => {
+        shipping_total += cart_shipments[shipment].rate?.rate! as number;
+      });
+      const total =
+        item_total + service_total + shipping_total - discounts_total;
+      createPaymentIntent(total);
+      setPaymentReady(true);
+    }
+  }, [
+    cart_loaded,
+    cart_id,
+    cart_address,
+    billing_address,
+    shipments_ready,
+    cart_shipments,
+    cart_items,
+  ]);
 
   React.useEffect(() => {
     if (props.user_id !== 'guest') {
@@ -224,7 +294,7 @@ export default function PaymentForm(props: Props) {
       },
     },
   };
-  if (clientSecret === null) {
+  if (!paymentReady || clientSecret === null) {
     return <></>;
   }
   return (

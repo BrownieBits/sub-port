@@ -6,7 +6,6 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY!);
 export async function RetrieveStripeAccount(account_id: string) {
     'use server';
     const account = await stripe.accounts.retrieve(account_id);
-    console.log(account)
     return account;
 }
 export async function CreateStripeLinkURL(account_id: string) {

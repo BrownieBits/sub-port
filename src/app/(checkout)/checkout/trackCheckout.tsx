@@ -1,6 +1,7 @@
 'use client';
 
 import { analytics, db } from '@/lib/firebase';
+import cartStore from '@/stores/cartStore';
 import userStore from '@/stores/userStore';
 import { subHours } from 'date-fns';
 import { logEvent } from 'firebase/analytics';
@@ -18,7 +19,6 @@ import {
 import React from 'react';
 
 export default function TrackCheckout(props: {
-  store_ids: string[];
   country: string;
   city: string;
   region: string;
@@ -26,11 +26,13 @@ export default function TrackCheckout(props: {
 }) {
   const user_loaded = userStore((state) => state.user_loaded);
   const user_id = userStore((state) => state.user_id);
+  const store_item_breakdown = cartStore((state) => state.store_item_breakdown);
 
   async function getAndSetAnalytics() {
     const batch = writeBatch(db);
+    const store_ids = Object.keys(store_item_breakdown!);
     await Promise.all(
-      props.store_ids.map(async (store) => {
+      store_ids.map(async (store) => {
         const analyticsColRef: CollectionReference = collection(
           db,
           `stores/${store}/analytics`
@@ -68,8 +70,15 @@ export default function TrackCheckout(props: {
           title: `Checkout - SubPort Creator Platform`,
         });
       }
+    }
+    if (store_item_breakdown !== undefined) {
       getAndSetAnalytics();
     }
   }, [user_loaded]);
+  React.useEffect(() => {
+    if (store_item_breakdown !== undefined) {
+      getAndSetAnalytics();
+    }
+  }, [store_item_breakdown]);
   return <></>;
 }

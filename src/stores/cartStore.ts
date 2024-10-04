@@ -1,7 +1,7 @@
 
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 import { create } from 'zustand';
-import { _Actions, _Cart, _Promotions, _RemovedItem, _SetCartProps, _SetItemsProps, _StoreItemBreakdown } from './cartStore.types';
+import { _Actions, _Cart, _Promotions, _RemovedItem, _SetCartProps, _SetItemsProps, _Shipments, _StoreItemBreakdown } from './cartStore.types';
 
 const cartStore = create<_Cart & _Actions>(set => ({
     cart_id: '',
@@ -18,6 +18,7 @@ const cartStore = create<_Cart & _Actions>(set => ({
     cart_loaded: false,
     removed_items: [],
     promotions: {},
+    shipments_ready: false,
     setCart: (props: _SetCartProps) => set((state) => ({
         ...state,
         cart_id: props.cart_id,
@@ -28,6 +29,7 @@ const cartStore = create<_Cart & _Actions>(set => ({
         owner_id: props.owner_id ? props.owner_id : undefined,
         payment_intent: props.payment_intent ? props.payment_intent : undefined,
         shipments: props.shipments ? props.shipments : undefined,
+        shipments_ready: props.shipments_ready
     })),
     setItems: (props: _SetItemsProps) => set((state) => ({
         ...state,
@@ -39,7 +41,6 @@ const cartStore = create<_Cart & _Actions>(set => ({
         store_item_breakdown: props
     })),
     clearCart: () => {
-        console.log("CLEARING CART")
         set(() => ({
             cart_id: '',
             address: undefined,
@@ -67,6 +68,12 @@ const cartStore = create<_Cart & _Actions>(set => ({
     })),
     setPromotions: (props: _Promotions) => set(() => ({
         promotions: props
+    })),
+    updateShipments: (shipments: _Shipments) => set(() => ({
+        shipments: shipments
+    })),
+    setShipmentsReady: (ready: boolean) => set(() => ({
+        shipments_ready: ready
     }))
 }))
 

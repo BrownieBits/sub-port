@@ -125,7 +125,7 @@ export default function StoreItems(props: Props) {
       });
       revalidate();
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 

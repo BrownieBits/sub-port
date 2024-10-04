@@ -38,7 +38,7 @@ import {
 } from '@/components/ui/select';
 import { country_list } from '@/lib/countryList';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
-import { Address } from '@/lib/types';
+import { _Address } from '@/stores/cartStore.types';
 import { faSpinner, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -86,7 +86,7 @@ const formSchema = z.object({
 });
 
 type Props = {
-  setValidated: (matched: Address, original: Address) => void;
+  setValidated: (matched: _Address, original: _Address) => void;
 };
 
 export default function AddAddress(props: Props) {

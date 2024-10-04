@@ -10,183 +10,163 @@ import {
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
-import { Address, Item, Rate, Shipments, ShippingCarrier } from '@/lib/types';
+import { ShippingCarrier } from '@/lib/types';
+import cartStore from '@/stores/cartStore';
+import { _Shipments } from '@/stores/cartStore.types';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   DocumentData,
   DocumentReference,
+  Timestamp,
   doc,
   getDoc,
+  updateDoc,
 } from 'firebase/firestore';
 import React from 'react';
-import DigitalShipment from './digitalShipments';
-import PrintfulShipment from './printfulShipments';
-import SelfShipment from './selfShipments';
 import { getCarriers } from './actions';
+import DigitalShipment from './digitalShipments';
+import SelfShipment from './selfShipments';
 
-type Items = {
-  [key: string]: {
-    store_name: string;
-    store_avatar: string;
-    items: Item[];
-  };
-};
-
-type Props = {
-  ship_to: Address;
-  items: Items;
-  setShippingTotal: (newTotal: number) => void;
-  setShips: (newShips: Shipments) => void;
-};
-
-export default function ShippingSelect(props: Props) {
+export default function ShippingSelect() {
+  const cart_loaded = cartStore((state) => state.cart_loaded);
+  const cart_id = cartStore((state) => state.cart_id);
+  const cart_items = cartStore((state) => state.store_item_breakdown);
+  const shipments = cartStore((state) => state.shipments);
+  const shipments_ready = cartStore((state) => state.shipments_ready);
+  const updateShipments = cartStore((state) => state.updateShipments);
+  const setShipmentsReady = cartStore((state) => state.setShipmentsReady);
+  const ship_to = cartStore((state) => state.address);
   const [disabled, setDisabled] = React.useState<boolean>(false);
-  const [shipments, setShipments] = React.useState<Shipments | null>(null);
   const [carriers, setCarriers] = React.useState<ShippingCarrier[]>([]);
 
   async function submitShipments() {
     setDisabled(true);
-    const newShipments = shipments!;
+    const newShipments = { ...shipments };
     let ready = true;
     Object.keys(newShipments).map((shipment) => {
-      if (newShipments[shipment].rate === null) {
+      if (newShipments[shipment].rate === undefined) {
         ready = false;
         newShipments[shipment].error = 'Please select a shipping rate.';
       }
     });
     if (ready) {
-      props.setShips(shipments!);
+      const cartDocRef: DocumentReference = doc(db, `carts`, cart_id);
+
+      await updateDoc(cartDocRef, {
+        shipments: newShipments,
+        shipments_ready: true,
+        updated_at: Timestamp.fromDate(new Date()),
+      });
+
+      setShipmentsReady(true);
     } else {
-      setShipments({ ...newShipments });
+      updateShipments(newShipments);
     }
     setDisabled(false);
   }
 
   async function createShipments() {
-    const ships: Shipments = {};
-
-    Object.keys(props.items).map(async (item) => {
-      props.items[item].items.map(async (product) => {
-        if (product.vendor === 'digital') {
-          if (ships.hasOwnProperty('digital')) {
-            ships['digital'].items.push(product);
-          } else {
-            ships['digital'] = {
-              items: [product],
-              ship_from: null,
-              ship_to: props.ship_to.email!,
-              store_avatar: props.items[item].store_avatar,
-              store_name: props.items[item].store_name,
-              rate: {
-                carrier_name: 'Email',
-                carrier_id: 'email',
-                delivery_days: 0,
-                estimated_delivery_date: new Date(),
-                rate: 0.0,
-                service_code: 'email',
-                service_type: 'email',
-              },
-              error: null,
-            };
+    const ships: _Shipments = {};
+    if (!shipments_ready) {
+      Object.keys(cart_items!).map(async (store) => {
+        cart_items![store].map(async (product) => {
+          if (product.vendor === 'digital') {
+            if (ships.hasOwnProperty('digital')) {
+              ships['digital'].full_items!.push(product);
+            } else {
+              ships['digital'] = {
+                items: [],
+                full_items: [product],
+                ship_to: ship_to!.email!,
+                store_id: store,
+                rate: {
+                  carrier_name: 'Email',
+                  carrier_id: 'email',
+                  delivery_days: 0,
+                  estimated_delivery_date: Timestamp.fromDate(new Date()),
+                  rate: 0.0,
+                  service_code: 'email',
+                  service_type: 'email',
+                  package_type: null,
+                },
+              };
+            }
+          } else if (product.vendor === 'self') {
+            if (ships.hasOwnProperty(product.ship_from!)) {
+              ships[product.ship_from!].items.push(product);
+            } else {
+              ships[product.ship_from!] = {
+                items: [],
+                full_items: [product],
+                ship_from: undefined,
+                ship_to: ship_to,
+                store_id: store,
+                rate: undefined,
+              };
+            }
           }
-        } else if (product.vendor === 'self') {
-          if (ships.hasOwnProperty(product.ship_from!)) {
-            ships[product.ship_from!].items.push(product);
-          } else {
-            ships[product.ship_from!] = {
-              items: [product],
-              ship_from: null,
-              ship_to: props.ship_to,
-              store_avatar: props.items[item].store_avatar,
-              store_name: props.items[item].store_name,
-              rate: null,
-              error: null,
-            };
-          }
-        }
+        });
       });
-    });
 
-    let needCarriers: boolean = false;
-    await Promise.all(
-      Object.keys(ships).map(async (item) => {
-        if (item !== 'digital' && item !== 'printful') {
-          const addressRef: DocumentReference = doc(db, 'addresses', item);
-          const addressDoc: DocumentData = await getDoc(addressRef);
-          ships[item].ship_from = {
-            id: addressDoc.id,
-            address_line1: addressDoc.data().address_line1,
-            address_line2: addressDoc.data().address_line2,
-            address_line3: addressDoc.data().address_line3,
-            address_residential_indicator:
-              addressDoc.data().address_residential_indicator,
-            city_locality: addressDoc.data().city_locality,
-            company_name: addressDoc.data().company_name,
-            country_code: addressDoc.data().country_code,
-            email: addressDoc.data().email,
-            name: addressDoc.data().name,
-            phone: addressDoc.data().phone,
-            postal_code: addressDoc.data().postal_code,
-            state_province: addressDoc.data().state_province,
-          };
-          needCarriers = true;
-        }
-      })
-    );
-
-    if (needCarriers) {
-      const response = await getCarriers();
-      const carriers: ShippingCarrier[] = response.carriers.map(
-        (carrier: any) => {
-          return {
-            name: carrier.nickname,
-            carrier_id: carrier.carrier_id,
-          };
-        }
+      let needCarriers: boolean = false;
+      await Promise.all(
+        Object.keys(ships).map(async (item) => {
+          if (item !== 'digital' && item !== 'printful') {
+            const addressRef: DocumentReference = doc(db, 'addresses', item);
+            const addressDoc: DocumentData = await getDoc(addressRef);
+            ships[item].ship_from = {
+              doc_id: addressDoc.id,
+              address_line1: addressDoc.data().address_line1,
+              address_line2: addressDoc.data().address_line2,
+              address_line3: addressDoc.data().address_line3,
+              address_residential_indicator:
+                addressDoc.data().address_residential_indicator,
+              city_locality: addressDoc.data().city_locality,
+              company_name: addressDoc.data().company_name,
+              country_code: addressDoc.data().country_code,
+              email: addressDoc.data().email,
+              name: addressDoc.data().name,
+              phone: addressDoc.data().phone,
+              postal_code: addressDoc.data().postal_code,
+              state_province: addressDoc.data().state_province,
+              owner_id: addressDoc.data().owner_id,
+            };
+            needCarriers = true;
+          }
+        })
       );
-      setCarriers(carriers);
-    }
-    setShipments(ships);
-  }
 
-  async function updateRate(shipmentID: string, rate: Rate) {
-    if (shipments !== null) {
-      console.log('UPDATE RATE');
-      const newShipments = shipments!;
-      newShipments[shipmentID].rate = rate;
-      setShipments({ ...newShipments });
+      if (needCarriers) {
+        const response = await getCarriers();
+        const carriers: ShippingCarrier[] = response.carriers.map(
+          (carrier: any) => {
+            return {
+              name: carrier.nickname,
+              carrier_id: carrier.carrier_id,
+            };
+          }
+        );
+        setCarriers(carriers);
+      }
+      updateShipments(ships);
     }
   }
 
   React.useEffect(() => {
     if (
-      props.items !== null &&
-      Object.keys(props.items).length > 0 &&
-      props.ship_to !== null
+      cart_items !== undefined &&
+      Object.keys(cart_items).length > 0 &&
+      ship_to !== undefined
     ) {
       createShipments();
     }
-  }, [props.items, props.ship_to]);
+  }, [cart_items, ship_to, shipments_ready]);
 
-  React.useEffect(() => {
-    if (shipments !== null) {
-      let hasNulls = false;
-      let total = 0;
-      Object.keys(shipments).map((shipment) => {
-        if (shipments[shipment].rate === null) {
-          hasNulls = true;
-        } else {
-          total += shipments[shipment].rate?.rate! as number;
-        }
-      });
-      if (!hasNulls) {
-        props.setShippingTotal(total);
-      }
-    }
-  }, [shipments]);
-
-  if (shipments === null) {
+  if (!cart_loaded || ship_to === undefined) {
+    return <></>;
+  }
+  if (shipments === undefined) {
     return (
       <Card>
         <CardHeader>
@@ -202,6 +182,9 @@ export default function ShippingSelect(props: Props) {
       </Card>
     );
   }
+  if (shipments_ready) {
+    return <></>;
+  }
 
   return (
     <Card>
@@ -216,19 +199,16 @@ export default function ShippingSelect(props: Props) {
           </>
         )}
         {shipments.hasOwnProperty('printful') && (
-          <>
-            <PrintfulShipment items={shipments['printful']} />
-          </>
+          <>{/* <PrintfulShipment items={shipments['printful']} /> */}</>
         )}
         {Object.keys(shipments).map((shipment) => {
           if (shipment !== 'digital' && shipment !== 'printful') {
             return (
               <SelfShipment
-                id={shipment}
+                shipment_id={shipment}
                 items={shipments[shipment]}
                 key={`shipment-${shipment}`}
                 carriers={carriers}
-                setRate={updateRate}
               />
             );
           }

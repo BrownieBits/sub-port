@@ -2,18 +2,15 @@
 
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Shipment } from '@/lib/types';
+import { _Shipment } from '@/stores/cartStore.types';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
 
 type Props = {
-  items: Shipment;
+  items: _Shipment;
 };
 
 export default function DigitalShipment(props: Props) {
-  React.useEffect(() => {}, [props.items]);
-
   return (
     <section className="flex w-full flex-col gap-4">
       <section className="flex flex-col gap-1">
@@ -21,15 +18,15 @@ export default function DigitalShipment(props: Props) {
           <b>Digital Delivery</b>
         </p>
         <section className="flex flex-col gap-1">
-          {props.items.items.map((item) => {
+          {props.items.full_items!.map((item) => {
             return (
               <section
                 className="flex w-full items-center"
-                key={`shipping-item-${item.name}${item.options.join('')}`}
+                key={`shipping-item-${item.name!}${item.options.join('')}`}
               >
                 <section className="flex w-full flex-1 flex-col">
                   <p className="text-sm text-muted-foreground">
-                    <b>{item.name} - </b>
+                    <b>{item.name!} - </b>
                     {item.options.join(', ')} x {item.quantity}
                   </p>
                 </section>

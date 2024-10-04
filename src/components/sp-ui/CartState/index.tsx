@@ -9,7 +9,6 @@ import {
   _SetCartProps,
   _StoreItemBreakdown,
 } from '@/stores/cartStore.types';
-import userStore from '@/stores/userStore';
 import { getCookie, setCookie } from 'cookies-next';
 import { User } from 'firebase/auth';
 import {
@@ -47,7 +46,6 @@ export default function CartState() {
   const setCartLoaded = cartStore((state) => state.setCartLoaded);
   const clearCart = cartStore((state) => state.clearCart);
   const setPromotions = cartStore((state) => state.setPromotions);
-  const user_id = userStore((state) => state.user_id);
 
   function setCartCookie(newCartID: string) {
     const today = new Date();
@@ -66,6 +64,7 @@ export default function CartState() {
         owner_id: user_id,
         owner_email: email,
         items: 0,
+        shipments_ready: false,
         created_at: Timestamp.fromDate(new Date()),
       });
     }
@@ -160,6 +159,15 @@ export default function CartState() {
     }
   }
 
+  async function createCart(cartRef: DocumentReference) {
+    await setDoc(cartRef, {
+      item_count: 0,
+      shipments_ready: false,
+      created_at: Timestamp.fromDate(new Date()),
+      updated_at: Timestamp.fromDate(new Date()),
+    });
+  }
+
   React.useEffect(() => {
     auth.onAuthStateChanged(async function handleAuth(user) {
       if (user) {
@@ -205,10 +213,11 @@ export default function CartState() {
             owner_id: snapshot.data()?.owner_id,
             payment_intent: snapshot.data()?.payment_intent,
             shipments: snapshot.data()?.shipments,
+            shipments_ready: snapshot.data()?.shipments_ready,
           };
           setCart(cart);
         } else {
-          clearCart();
+          createCart(cartRef);
         }
       });
       const itemsUnsubscribe = await onSnapshot(itemsRef, (snapshot) => {
@@ -399,6 +408,7 @@ export default function CartState() {
                       item.track_inventory = document.data().track_inventory;
                       item.product_type = document.data().product_type;
                       item.name = document.data().name;
+                      item.ship_from = document.data().ship_from_address;
                       (item.vendor = document.data().vendor),
                         (item.service_percent =
                           document.data().service_percent);
@@ -437,7 +447,9 @@ export default function CartState() {
             })
           );
           setStoreItemBreakdown(cartItems);
-          setRemovedItems(removedItems);
+          if (removedItems.length > 0) {
+            setRemovedItems(removedItems);
+          }
           await batch.commit();
         } else {
           setStoreItemBreakdown({});

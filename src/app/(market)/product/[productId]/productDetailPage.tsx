@@ -106,7 +106,6 @@ export default function ProductDetailPage(props: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
-
   async function onSubmit() {
     setThinking(true);
     try {
@@ -176,7 +175,7 @@ export default function ProductDetailPage(props: Props) {
         description: `You have added ${quantity}${selectedOptions.length > 0 ? ' ' : ''}${selectedOptions.join(' ')} ${props.product_name}${quantity > 1 ? 's' : ''} to your cart!`,
       });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error(`We had an issue adding to your cart.`, {
         description: `Please try again later.`,
       });

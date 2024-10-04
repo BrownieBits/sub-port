@@ -1,11 +1,13 @@
 'use server';
 
-import { Address, Item, Rate, ShippingCarrier } from '@/lib/types';
+import { ShippingCarrier } from '@/lib/types';
+import { _Address, _CartFullItem, _Rate } from '@/stores/cartStore.types';
+import { Timestamp } from 'firebase/firestore';
 
 export async function getSelfShipping(
-  items: Item[],
-  ship_to: Address,
-  ship_from: Address,
+  items: _CartFullItem[],
+  ship_to: _Address,
+  ship_from: _Address,
   carriers: ShippingCarrier[]
 ) {
   'use server';
@@ -66,24 +68,13 @@ export async function getSelfShipping(
     method: 'POST',
   });
   const resultJSON = await result.json();
-
-  // 'ups_ground',
-  // 'ups_2nd_day_air',
-  // 'ups_next_day_air',
-  // 'usps_first_class_mail',
-  // 'usps_priority_mail_express',
-  // 'usps_priority_mail',
-  // 'usps_ground_advantage',
-
-  // console.log(resultJSON);
-  // console.log(items[0].dimensions, items[0].weight, resultJSON.length)
-  const rates: Rate[] = resultJSON.map((rate: any) => {
+  const rates: _Rate[] = resultJSON.map((rate: any) => {
     if (rate.shipping_amount !== null) {
       return {
         carrier_name: rate.carrier_friendly_name,
         carrier_id: rate.carrier_id,
         delivery_days: rate.delivery_days,
-        estimated_delivery_date: new Date(rate.estimated_delivery_date),
+        estimated_delivery_date: Timestamp.fromDate(new Date(rate.estimated_delivery_date)),
         rate:
           parseFloat(rate.confirmation_amount.amount) +
           parseFloat(rate.insurance_amount.amount) +
@@ -91,6 +82,7 @@ export async function getSelfShipping(
           parseFloat(rate.shipping_amount.amount),
         service_code: rate.service_code,
         service_type: rate.service_type,
+        package_type: rate.package_type,
       };
     }
   });
@@ -106,6 +98,5 @@ export async function getCarriers() {
     },
   });
   const resultJSON = await result.json();
-  // console.log(resultJSON)
   return resultJSON;
 }

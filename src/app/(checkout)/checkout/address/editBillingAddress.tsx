@@ -35,17 +35,26 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { country_list } from '@/lib/countryList';
+import { db } from '@/lib/firebase';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
-import { Address } from '@/lib/types';
+import cartStore from '@/stores/cartStore';
+import { _Address } from '@/stores/cartStore.types';
 import { faClose, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  doc,
+  DocumentReference,
+  Timestamp,
+  updateDoc,
+} from 'firebase/firestore';
 import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
 import { validateAddress } from '../actions';
+import SelectVerifiedAddress from './selectVerifiedAddress';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
@@ -72,11 +81,17 @@ const formSchema = z.object({
     .or(z.literal('')),
 });
 type Props = {
-  address: Address;
-  setValidationAddresses: (matched: Address, original: Address) => void;
+  address: _Address;
 };
 
 export default function EditBillingAddress(props: Props) {
+  const cart_id = cartStore((state) => state.cart_id);
+  const [matchedAddress, setMatchedAddress] = React.useState<_Address | null>(
+    null
+  );
+  const [originalAddress, setOriginalAddress] = React.useState<_Address | null>(
+    null
+  );
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery('(min-width: 768px)');
   const [disabled, setDisabled] = React.useState<boolean>(false);
@@ -110,7 +125,6 @@ export default function EditBillingAddress(props: Props) {
         country_code: form.getValues('country'),
       };
       const result = await validateAddress(address);
-      console.log(result);
       if (result[0].status === 'error') {
         toast.error('Address Verify Error', {
           description: result[0].messages[0].message,
@@ -119,10 +133,8 @@ export default function EditBillingAddress(props: Props) {
       } else {
         result[0].matched_address.email = form.getValues('email');
         result[0].original_address.email = form.getValues('email');
-        props.setValidationAddresses(
-          result[0].matched_address,
-          result[0].original_address
-        );
+        setMatchedAddress(result[0].matched_address);
+        setOriginalAddress(result[0].original_address);
         setDisabled(false);
         setOpen(false);
       }
@@ -136,20 +148,271 @@ export default function EditBillingAddress(props: Props) {
     }
   }
 
+  async function selectVerified(newAddress: _Address) {
+    const cartDocRef: DocumentReference = doc(db, `carts`, cart_id);
+    await updateDoc(cartDocRef, {
+      billing_address: newAddress,
+      updated_at: Timestamp.fromDate(new Date()),
+    });
+  }
+
   if (isDesktop) {
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
+      <>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button variant="link" size="sm" className="py-0">
+              Edit
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>
+                <h3>Edit Address</h3>
+              </DialogTitle>
+              <DialogDescription className="flex flex-col">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)}>
+                    <section className="flex flex-col gap-4">
+                      <FormField
+                        control={form.control}
+                        name="country"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Country</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select a country" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {country_list.map((item: any, i: number) => {
+                                  return (
+                                    <SelectItem
+                                      value={item.value}
+                                      key={`country-${item.value}`}
+                                    >
+                                      {item.name}
+                                    </SelectItem>
+                                  );
+                                })}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="email"
+                        render={({ field }) => (
+                          <FormItem className="hidden">
+                            <FormLabel>Email</FormLabel>
+                            <FormControl>
+                              <Input
+                                onChangeCapture={field.onChange}
+                                id="email"
+                                disabled
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel>Name</FormLabel>
+                            <FormControl>
+                              <Input
+                                onChangeCapture={field.onChange}
+                                id="Name"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="addressLine1"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel>Address Line 1</FormLabel>
+                            <FormControl>
+                              <Input
+                                onChangeCapture={field.onChange}
+                                id="addressLine1"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="addressLine2"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel>
+                              Apt / Suite / Other{' '}
+                              <span className="text-xs text-muted-foreground">
+                                (optional)
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                onChangeCapture={field.onChange}
+                                id="addressLine2"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <section className="flex gap-4">
+                        <FormField
+                          control={form.control}
+                          name="city"
+                          render={({ field }) => (
+                            <FormItem className="w-full">
+                              <FormLabel>City</FormLabel>
+                              <FormControl>
+                                <Input
+                                  onChangeCapture={field.onChange}
+                                  id="city"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="province"
+                          render={({ field }) => (
+                            <FormItem className="w-full">
+                              <FormLabel>State / Province</FormLabel>
+                              <FormControl>
+                                <Input
+                                  onChangeCapture={field.onChange}
+                                  id="province"
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </section>
+                      <FormField
+                        control={form.control}
+                        name="postal"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel>Zip / Postal Code</FormLabel>
+                            <FormControl>
+                              <Input
+                                onChangeCapture={field.onChange}
+                                id="postal"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel>
+                              Phone{' '}
+                              <span className="text-xs text-muted-foreground">
+                                (optional)
+                              </span>
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                onChangeCapture={field.onChange}
+                                id="phone"
+                                type="phone"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </section>
+                  </form>
+                </Form>
+                <section className="mt-4">
+                  {disabled ? (
+                    <Button variant="outline">
+                      <FontAwesomeIcon
+                        className="icon mr-2 h-4 w-4"
+                        icon={faSpinner}
+                        spin
+                      />
+                      Validating
+                    </Button>
+                  ) : (
+                    <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+                      Next
+                    </Button>
+                  )}
+                </section>
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+        <SelectVerifiedAddress
+          matchedAddress={matchedAddress}
+          originalAddress={originalAddress}
+          selectVerified={selectVerified}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerTrigger asChild>
           <Button variant="link" size="sm" className="py-0">
             Edit
           </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader className="mx-auto w-full max-w-[2428px]">
+            <DrawerTitle className="flex items-center justify-between">
               <h3>Edit Address</h3>
-            </DialogTitle>
-            <DialogDescription className="flex flex-col">
+              <DrawerClose>
+                <Button variant="outline" size="sm">
+                  <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
+                </Button>
+              </DrawerClose>
+            </DrawerTitle>
+            <DrawerDescription className="flex w-full flex-col items-start text-left">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
                   <section className="flex flex-col gap-4">
@@ -209,11 +472,11 @@ export default function EditBillingAddress(props: Props) {
                       name="name"
                       render={({ field }) => (
                         <FormItem className="w-full">
-                          <FormLabel>Name</FormLabel>
+                          <FormLabel>First Name</FormLabel>
                           <FormControl>
                             <Input
                               onChangeCapture={field.onChange}
-                              id="Name"
+                              id="firstName"
                               {...field}
                             />
                           </FormControl>
@@ -360,244 +623,15 @@ export default function EditBillingAddress(props: Props) {
                   </Button>
                 )}
               </section>
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-
-  return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
-        <Button variant="link" size="sm" className="py-0">
-          Edit
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <DrawerHeader className="mx-auto w-full max-w-[2428px]">
-          <DrawerTitle className="flex items-center justify-between">
-            <h3>Edit Address</h3>
-            <DrawerClose>
-              <Button variant="outline" size="sm">
-                <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
-              </Button>
-            </DrawerClose>
-          </DrawerTitle>
-          <DrawerDescription className="flex w-full flex-col items-start text-left">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)}>
-                <section className="flex flex-col gap-4">
-                  <FormField
-                    control={form.control}
-                    name="country"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Country</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a country" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {country_list.map((item: any, i: number) => {
-                              return (
-                                <SelectItem
-                                  value={item.value}
-                                  key={`country-${item.value}`}
-                                >
-                                  {item.name}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem className="hidden">
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="email"
-                            disabled
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>First Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="firstName"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="addressLine1"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>Address Line 1</FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="addressLine1"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="addressLine2"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>
-                          Apt / Suite / Other{' '}
-                          <span className="text-xs text-muted-foreground">
-                            (optional)
-                          </span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="addressLine2"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <section className="flex gap-4">
-                    <FormField
-                      control={form.control}
-                      name="city"
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormLabel>City</FormLabel>
-                          <FormControl>
-                            <Input
-                              onChangeCapture={field.onChange}
-                              id="city"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="province"
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormLabel>State / Province</FormLabel>
-                          <FormControl>
-                            <Input
-                              onChangeCapture={field.onChange}
-                              id="province"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </section>
-                  <FormField
-                    control={form.control}
-                    name="postal"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>Zip / Postal Code</FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="postal"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>
-                          Phone{' '}
-                          <span className="text-xs text-muted-foreground">
-                            (optional)
-                          </span>
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="phone"
-                            type="phone"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </section>
-              </form>
-            </Form>
-            <section className="mt-4">
-              {disabled ? (
-                <Button variant="outline">
-                  <FontAwesomeIcon
-                    className="icon mr-2 h-4 w-4"
-                    icon={faSpinner}
-                    spin
-                  />
-                  Validating
-                </Button>
-              ) : (
-                <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
-                  Next
-                </Button>
-              )}
-            </section>
-          </DrawerDescription>
-        </DrawerHeader>
-      </DrawerContent>
-    </Drawer>
+            </DrawerDescription>
+          </DrawerHeader>
+        </DrawerContent>
+      </Drawer>
+      <SelectVerifiedAddress
+        matchedAddress={matchedAddress}
+        originalAddress={originalAddress}
+        selectVerified={selectVerified}
+      />
+    </>
   );
 }
