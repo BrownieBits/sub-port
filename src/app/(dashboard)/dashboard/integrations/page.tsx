@@ -34,6 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function Integrations() {
   const cookieStore = cookies();
   const user_id = cookieStore.get('user_id');
+  // TODO: remove cookie lookup
   return (
     <section>
       <section className="mx-auto w-full max-w-[2428px]">

@@ -10,7 +10,6 @@ export async function middleware(request: NextRequest) {
   const city = geo.city === undefined ? 'Mos Eisley' : geo.city;
   const country = geo.country === undefined ? 'SW' : geo.country;
   const region = geo.countryRegion === undefined ? 'TAT' : geo.countryRegion;
-  console.log(country, city, region, ip)
   requestHeaders.set('x-geo-country', country!);
   requestHeaders.set('x-geo-city', city!);
   requestHeaders.set('x-geo-region', region!);

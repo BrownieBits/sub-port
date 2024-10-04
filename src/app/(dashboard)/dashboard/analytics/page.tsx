@@ -32,7 +32,7 @@ export default function Analytics() {
   const cookieStore = cookies();
   const user_id = cookieStore.get('user_id');
   const default_store = cookieStore.get('default_store');
-
+  // TODO: remove cookie lookup
   return (
     <AnalyticsPage
       user_id={user_id?.value!}
