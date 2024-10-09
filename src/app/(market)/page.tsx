@@ -36,7 +36,6 @@ async function getData() {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: `SubPort Creator Platform`,
     description:
       'Enjoy the products you love, and share it all with friends, family, and the world on SubPort.',
     openGraph: {

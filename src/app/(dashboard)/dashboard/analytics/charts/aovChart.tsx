@@ -44,13 +44,13 @@ export const AOVChart = (props: { data: Analytic[]; from: Date; to: Date }) => {
 
     let dataType = 'hourly';
     if (diffInMonths <= 1) {
-      orderJSON = buildDaily(diffInDays, props.from);
+      orderJSON = buildDaily(diffInDays + 1, props.from);
       dataType = 'daily';
     } else if (diffInMonths <= 12) {
-      orderJSON = buildMonthly(diffInMonths, props.from);
+      orderJSON = buildMonthly(diffInMonths + 1, props.from);
       dataType = 'monthly';
     } else if (diffInMonths > 12) {
-      orderJSON = buildYearly(diffInYears, props.from);
+      orderJSON = buildYearly(diffInYears + 1, props.from);
       dataType = 'yearly';
     }
 
@@ -70,6 +70,7 @@ export const AOVChart = (props: { data: Analytic[]; from: Date; to: Date }) => {
       const revenue = doc.revenue;
 
       if (city !== 'undefined' && type === 'order') {
+        console.log(formattedDate, typeof orderJSON, orderJSON, revenue);
         orderJSON[formattedDate].push(revenue!);
       }
     });
@@ -105,7 +106,7 @@ export const AOVChart = (props: { data: Analytic[]; from: Date; to: Date }) => {
         </CardHeader>
         <Separator />
         <CardContent className="flex flex-col gap-4">
-          <Skeleton className="bg-layer-one min-h-[258px] flex-1 rounded border" />
+          <Skeleton className="min-h-[258px] flex-1 rounded border bg-layer-one" />
         </CardContent>
       </Card>
     );

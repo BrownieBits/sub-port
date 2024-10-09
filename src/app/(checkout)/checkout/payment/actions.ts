@@ -4,35 +4,43 @@ import { _Address } from "@/stores/cartStore.types";
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY!);
 
-export async function CreatePaymentIntent(customerID: string, cart_total: number) {
+export async function CreatePaymentIntent(customerID: string, cart_total: number, cart_id: string) {
     'use server';
     const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(cart_total * 100),
         currency: "USD",
-        customer: customerID
+        customer: customerID,
+        metadata: {
+            order_id: cart_id,
+        },
     });
     return paymentIntent;
 }
 
 export async function RetrievePaymentIntent(intentID: string) {
+    'use server';
     const paymentIntent = await stripe.paymentIntents.retrieve(
         intentID
     );
     return paymentIntent;
 }
 
-export async function UpdatePaymentIntent(intentID: string, cart_total: number) {
+export async function UpdatePaymentIntent(intentID: string, cart_total: number, cart_id: string) {
+    'use server';
     const paymentIntent = await stripe.paymentIntents.update(
         intentID,
         {
             amount: Math.round(cart_total * 100),
+            metadata: {
+                order_id: cart_id,
+            },
         }
     );
     return paymentIntent;
 }
 
 export async function CreateCustomer(shipping_address: _Address, billing_address: _Address) {
-
+    'use server';
     const customers = await stripe.customers.list({
         email: shipping_address.email,
         limit: 1,

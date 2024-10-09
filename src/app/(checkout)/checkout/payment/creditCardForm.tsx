@@ -31,7 +31,7 @@ export default function CreditCardForm({
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `http://${process.env.NEXT_PUBLIC_BASE_URL}/thank_you`,
+        return_url: `http://${process.env.NEXT_PUBLIC_BASE_URL}/thank-you`,
       },
     });
 

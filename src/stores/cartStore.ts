@@ -19,6 +19,7 @@ const cartStore = create<_Cart & _Actions>(set => ({
     removed_items: [],
     promotions: {},
     shipments_ready: false,
+    order_complete: false,
     setCart: (props: _SetCartProps) => set((state) => ({
         ...state,
         cart_id: props.cart_id,
@@ -74,6 +75,9 @@ const cartStore = create<_Cart & _Actions>(set => ({
     })),
     setShipmentsReady: (ready: boolean) => set(() => ({
         shipments_ready: ready
+    })),
+    setOrderComplete: (complete: boolean) => set(() => ({
+        order_complete: complete
     }))
 }))
 

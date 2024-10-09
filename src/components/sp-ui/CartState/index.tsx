@@ -9,7 +9,8 @@ import {
   _SetCartProps,
   _StoreItemBreakdown,
 } from '@/stores/cartStore.types';
-import { getCookie, setCookie } from 'cookies-next';
+import userStore from '@/stores/userStore';
+import { deleteCookie, getCookie, setCookie } from 'cookies-next';
 import { User } from 'firebase/auth';
 import {
   collection,
@@ -33,9 +34,11 @@ import {
 import React from 'react';
 
 export default function CartState() {
+  const user_id = userStore((state) => state.user_id);
   const cart_cookie = getCookie('cart_id');
   const cart_id = cartStore((state) => state.cart_id);
   const cart_items = cartStore((state) => state.items);
+  const order_complete = cartStore((state) => state.order_complete);
   const setCart = cartStore((state) => state.setCart);
   const setItems = cartStore((state) => state.setItems);
   const setStoreItemBreakdown = cartStore(
@@ -46,6 +49,7 @@ export default function CartState() {
   const setCartLoaded = cartStore((state) => state.setCartLoaded);
   const clearCart = cartStore((state) => state.clearCart);
   const setPromotions = cartStore((state) => state.setPromotions);
+  const setOrderComplete = cartStore((state) => state.setOrderComplete);
 
   function setCartCookie(newCartID: string) {
     const today = new Date();
@@ -160,6 +164,7 @@ export default function CartState() {
   }
 
   async function createCart(cartRef: DocumentReference) {
+    console.log('CREATING CART', cartRef);
     await setDoc(cartRef, {
       item_count: 0,
       shipments_ready: false,
@@ -204,6 +209,7 @@ export default function CartState() {
       );
       const unsubscribe = await onSnapshot(cartRef, (snapshot) => {
         if (snapshot.exists()) {
+          console.log('SNAP ID', snapshot.id);
           const cart: _SetCartProps = {
             cart_id: snapshot.id,
             address: snapshot.data()?.address,
@@ -217,7 +223,9 @@ export default function CartState() {
           };
           setCart(cart);
         } else {
-          createCart(cartRef);
+          if (!order_complete) {
+            // createCart(cartRef);
+          }
         }
       });
       const itemsUnsubscribe = await onSnapshot(itemsRef, (snapshot) => {
@@ -462,6 +470,47 @@ export default function CartState() {
       getLatest();
     }
   }, [cart_items]);
+
+  React.useEffect(() => {
+    const getLatest = async () => {
+      const user = await auth.currentUser;
+      deleteCookie('cart_id');
+      const cartID = cart_id;
+      const batch = writeBatch(db);
+      const deleteRef: DocumentReference = doc(db, 'carts', cartID);
+      batch.delete(deleteRef);
+      const delItemsRef: CollectionReference = collection(
+        db,
+        `carts/${cartID}/items`
+      );
+      const delPromosRef: CollectionReference = collection(
+        db,
+        `carts/${cartID}/promotions`
+      );
+      const delItemsDocs: QuerySnapshot<DocumentData, DocumentData> =
+        await getDocs(delItemsRef);
+      const delPromosDocs: QuerySnapshot<DocumentData, DocumentData> =
+        await getDocs(delPromosRef);
+      delItemsDocs.docs.map((doc) => {
+        batch.delete(doc.ref);
+      });
+      delPromosDocs.docs.map((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      clearCart();
+      if (user) {
+        createNewCart(user.email!, user.uid);
+      } else {
+        createNewCart();
+      }
+      console.log('cleared cart Data');
+      setOrderComplete(false);
+    };
+    if (order_complete) {
+      getLatest();
+    }
+  }, [order_complete]);
 
   return <></>;
 }

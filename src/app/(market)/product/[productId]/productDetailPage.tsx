@@ -98,6 +98,7 @@ export default function ProductDetailPage(props: Props) {
   const user_id = userStore((state) => state.user_id);
   const cart_loaded = cartStore((state) => state.cart_loaded);
   const cart_id = cartStore((state) => state.cart_id);
+  const setShipmentsReady = cartStore((state) => state.setShipmentsReady);
   const [thinking, setThinking] = React.useState<boolean>(false);
   const [maxQuantity, setMaxQuantity] = React.useState<number>();
   const [selectedOptions, setSelectedOptions] = React.useState<string[]>([]);
@@ -171,6 +172,7 @@ export default function ProductDetailPage(props: Props) {
         ip: props.ip,
         created_at: Timestamp.fromDate(new Date()),
       });
+      setShipmentsReady(false);
       toast.success(`${props.product_name} Added to Cart!`, {
         description: `You have added ${quantity}${selectedOptions.length > 0 ? ' ' : ''}${selectedOptions.join(' ')} ${props.product_name}${quantity > 1 ? 's' : ''} to your cart!`,
       });

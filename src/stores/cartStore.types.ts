@@ -37,6 +37,7 @@ export type _CartFullItem = {
     cart_item_id: string;
     id: string;
     options: string[];
+    order_options?: string[];
     quantity: number;
     store_id: string;
     compare_at: number;
@@ -108,6 +109,7 @@ export type _Cart = {
     shipments?: _Shipments;
     cart_loaded: boolean;
     shipments_ready: boolean;
+    order_complete: boolean;
 }
 export type _SetCartProps = {
     cart_id: string;
@@ -135,5 +137,6 @@ export type _Actions = {
     setPromotions: (props: _Promotions) => void;
     updateShipments: (shipments: _Shipments) => void;
     setShipmentsReady: (ready: boolean) => void;
+    setOrderComplete: (complete: boolean) => void;
 }
 

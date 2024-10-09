@@ -42,6 +42,7 @@ export default function PaymentForm(props: Props) {
   const cart_id = cartStore((state) => state.cart_id);
   const cart_address = cartStore((state) => state.address);
   const billing_address = cartStore((state) => state.billing_address);
+  const items_info = cartStore((state) => state.items);
   const cart_items = cartStore((state) => state.store_item_breakdown);
   const cart_promotions = cartStore((state) => state.promotions);
   const cart_shipments = cartStore((state) => state.shipments);
@@ -57,18 +58,42 @@ export default function PaymentForm(props: Props) {
 
   async function createPaymentIntent(cart_total: number) {
     const customer = await CreateCustomer(cart_address!, billing_address!);
+    const items = cart_items;
+    items_info.map((item) => {
+      items![item.store_id].map((full_item) => {
+        if (full_item.cart_item_id === item.cart_item_id) {
+          full_item.quantity = item.quantity;
+          full_item.order_options = item.options;
+        }
+      });
+    });
     if (payment_intent !== undefined) {
       const result = await RetrievePaymentIntent(payment_intent);
-      const newResult = await UpdatePaymentIntent(result.id, cart_total);
+      const newResult = await UpdatePaymentIntent(
+        result.id,
+        cart_total,
+        cart_id
+      );
+      const cartDocRef: DocumentReference = doc(db, `carts`, cart_id);
+      await updateDoc(cartDocRef, {
+        promotions: cart_promotions,
+        items: items,
+      });
       setClientSecret(newResult.client_secret);
       setDpmCheckerLink(
         `https://dashboard.stripe.com/settings/payment_methods/review?transaction_id=${newResult.id}`
       );
     } else {
-      const result = await CreatePaymentIntent(customer.id, cart_total);
+      const result = await CreatePaymentIntent(
+        customer.id,
+        cart_total,
+        cart_id
+      );
       const cartDocRef: DocumentReference = doc(db, `carts`, cart_id);
       await updateDoc(cartDocRef, {
         payment_intent: result.id,
+        promotions: cart_promotions,
+        items: items,
         updated_at: Timestamp.fromDate(new Date()),
       });
       setClientSecret(result.client_secret);
