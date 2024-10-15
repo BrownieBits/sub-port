@@ -89,8 +89,8 @@ const formSchema = z.object({
   name: z
     .string()
     .min(6, { message: 'Product name must be 6 or more characters long' })
-    .max(32, {
-      message: 'Product name must be no more than 32 characters long',
+    .max(256, {
+      message: 'Product name must be no more than 256 characters long',
     }),
   description: z.string().optional(),
   product_images: z
@@ -324,6 +324,10 @@ export default function DigitalEditForm(props: Props) {
       const compare_at = parseFloat(
         form.getValues('prices.compare_at') as string
       );
+      const tags = form.getValues('tags')?.split(',') || [];
+      tags.map((tag) => {
+        tag = tag.trim();
+      });
       if (props.docID !== undefined) {
         await updateDoc(docRef, {
           name: form.getValues('name'),
@@ -332,7 +336,7 @@ export default function DigitalEditForm(props: Props) {
           price: price.toFixed(2) as unknown as number,
           compare_at: compare_at.toFixed(2) as unknown as number,
           currency: form.getValues('currency'),
-          tags: form.getValues('tags')?.replace(/ /g, '').split(',') || [],
+          tags: tags,
           digital_file: digitalFileUrl,
           digital_file_name: digitalFileName,
           is_featured: form.getValues('is_featured'),

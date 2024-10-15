@@ -84,8 +84,8 @@ const formSchema = z.object({
   name: z
     .string()
     .min(6, { message: 'Product name must be 6 or more characters long' })
-    .max(32, {
-      message: 'Product name must be no more than 32 characters long',
+    .max(256, {
+      message: 'Product name must be no more than 256 characters long',
     }),
   description: z.string().optional(),
   product_type: z
@@ -516,6 +516,10 @@ export default function SelfEditForm(props: Props) {
       }
       const imageFileUrls: string[] = await uploadImages(docRef.id);
       const batch = writeBatch(db);
+      const tags = form.getValues('tags')?.split(',') || [];
+      tags.map((tag) => {
+        tag = tag.trim();
+      });
       if (props.docID !== undefined) {
         batch.update(docRef, {
           name: form.getValues('name'),
@@ -527,7 +531,7 @@ export default function SelfEditForm(props: Props) {
             2
           ) as unknown as number,
           currency: form.getValues('currency'),
-          tags: form.getValues('tags')?.replace(/ /g, '').split(',') || [],
+          tags: tags,
           inventory: form.getValues('inventory') as number,
           track_inventory: trackInventory,
           is_featured: form.getValues('is_featured'),

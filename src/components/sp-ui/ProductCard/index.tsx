@@ -7,11 +7,9 @@ import Link from 'next/link';
 
 export default function ProductCard({
   product,
-  avatar,
   show_creator,
 }: {
   product: GridProduct;
-  avatar?: string;
   show_creator: boolean;
 }) {
   const today = Timestamp.fromDate(new Date());
@@ -43,7 +41,7 @@ export default function ProductCard({
     <section className="flex w-full flex-col">
       <Link
         href={`/product/${product.id}`}
-        className="bg-layer-one group flex aspect-square items-center justify-center overflow-hidden rounded border"
+        className="group flex aspect-square items-center justify-center overflow-hidden rounded border bg-layer-one"
       >
         {product.images.length > 1 ? (
           <>

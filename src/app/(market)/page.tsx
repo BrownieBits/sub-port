@@ -1,4 +1,3 @@
-import ProductCard from '@/components/sp-ui/ProductCard';
 import { analytics, db } from '@/lib/firebase';
 import { GridProduct } from '@/lib/types';
 import {
@@ -13,6 +12,7 @@ import {
   where,
 } from 'firebase/firestore';
 import { Metadata } from 'next';
+import { ProductFeed } from './productFeed';
 
 type Data = {
   products: QuerySnapshot<DocumentData, DocumentData>;
@@ -80,11 +80,7 @@ export default async function Home() {
   return (
     <main>
       <section className="mx-auto w-full max-w-[2428px]">
-        <section className="grid grid-cols-1 gap-8 p-4 md:grid-cols-3 xl:grid-cols-6">
-          {products?.map((doc) => (
-            <ProductCard product={doc} show_creator={true} key={doc.id} />
-          ))}
-        </section>
+        <ProductFeed />
       </section>
     </main>
   );

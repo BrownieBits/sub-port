@@ -43,7 +43,7 @@ import { revalidate } from './actions';
 const formSchema = z.object({
   storeSlug: z
     .string()
-    .min(6, { message: 'Store Slug must be 6 or more characters long' })
+    .min(4, { message: 'Store Slug must be 4 or more characters long' })
     .max(18, {
       message: 'Store Slug must be no more than 18 characters long',
     })

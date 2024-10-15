@@ -209,7 +209,6 @@ export default function CartState() {
       );
       const unsubscribe = await onSnapshot(cartRef, (snapshot) => {
         if (snapshot.exists()) {
-          console.log('SNAP ID', snapshot.id);
           const cart: _SetCartProps = {
             cart_id: snapshot.id,
             address: snapshot.data()?.address,

@@ -1,30 +1,6 @@
-import StoreCard from '@/components/sp-ui/StoreCard';
 import { Separator } from '@/components/ui/separator';
-import { db } from '@/lib/firebase';
-import {
-  DocumentData,
-  QuerySnapshot,
-  collection,
-  getDocs,
-} from 'firebase/firestore';
 import { Metadata } from 'next';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import { NoSubscriptions } from './noSubscriptions';
-
-type Props = {
-  params: {};
-};
-
-async function getData(id: { [key: string]: string } | undefined) {
-  if (id === undefined) {
-    redirect(`/sign-in?redirect=/subscriptions`);
-  }
-  const userSubsRef = collection(db, 'users', id.value, 'subscribes');
-  const data: QuerySnapshot<DocumentData, DocumentData> =
-    await getDocs(userSubsRef);
-  return data;
-}
+import { StoreSubscriptions } from './subscriptionsPage';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -53,9 +29,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Subscriptions() {
-  const cookieStore = cookies();
-  const user_id = cookieStore.get('user_id');
-  const data = await getData(user_id);
   return (
     <section>
       <section className="mx-auto w-full max-w-[2428px]">
@@ -64,17 +37,7 @@ export default async function Subscriptions() {
         </section>
       </section>
       <Separator />
-      <section className="mx-auto w-full max-w-[2428px]">
-        {data.docs.length === 0 ? (
-          <NoSubscriptions />
-        ) : (
-          <section className="grid grid-cols-2 gap-x-8 gap-y-[60px] px-4 py-8 md:grid-cols-4 xl:grid-cols-6">
-            {data.docs.map((doc) => {
-              return <StoreCard id={doc.id} key={doc.id} />;
-            })}
-          </section>
-        )}
-      </section>
+      <StoreSubscriptions />
     </section>
   );
 }
