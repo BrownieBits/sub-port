@@ -7,9 +7,11 @@ import Link from 'next/link';
 
 export default function ProductCard({
   product,
+  avatar,
   show_creator,
 }: {
   product: GridProduct;
+  avatar?: string;
   show_creator: boolean;
 }) {
   const today = Timestamp.fromDate(new Date());
