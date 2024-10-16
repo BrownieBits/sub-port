@@ -1,5 +1,5 @@
-import { Separator } from '@/components/ui/separator';
 import { Metadata } from 'next';
+import Image from 'next/image';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -31,11 +31,38 @@ export default function About() {
   return (
     <section>
       <section className="mx-auto w-full max-w-[2428px]">
-        <section className="flex w-full items-center justify-between gap-4 px-4 py-4">
-          <h1>About</h1>
+        <Image
+          src="https://firebasestorage.googleapis.com/v0/b/creator-base-6c959.appspot.com/o/marketing%2FAboutUs.jpg?alt=media&token=17f1a4a6-f17f-4b04-a3a3-1a85ecf0b406"
+          alt="About SubPort"
+          width={3000}
+          height={1373}
+        />
+        <section className="flex w-full flex-col gap-16 px-4 py-16">
+          <h1 className="text-6xl">About SubPort</h1>
+          <p className="text-5xl">
+            Our mission is to empower artist, entreprenuers, & creators to
+            monetize their passions by providing a seamless and supportive
+            platform for fan-powered commerce.
+          </p>
+          <p className="text-5xl font-thin">
+            We believe that anyone with a passion should have the opportunity to
+            share their creations with the world and connect directly with their
+            fans through a simple, accessible, and supportive platform.
+          </p>
         </section>
       </section>
-      <Separator />
+      {/* <Separator />
+      <p>Fan-Powered Commerce</p>
+      <p>
+        To empower artist, entreprenuers, & creators to monetize their passions
+        by providing a seamless and supportive platform for fan-powered
+        commerce.
+      </p>
+      <p>
+        We believe that anyone with a passion should have the opportunity to
+        share their creations with the world and connect directly with their
+        fans through a simple, accessible, and supportive platform.
+      </p> */}
     </section>
   );
 }

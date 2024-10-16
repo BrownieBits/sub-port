@@ -86,11 +86,9 @@ TODO:
         - [ ] Create Whats New Blog
   - [ ] Switch Store
     - [ ] Figure out plan level to allow multiple stores
-- [_] Login
-  - [ ] Add Social Logins
+- [x] Login
 - [ ] Market
-  - [ ] About
-    - [ ] Create about page and information
+  - [x] About
   - [ ] Blog
     - [ ] Create system for creating and showing blog posts
   - [x] Cart
