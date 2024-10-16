@@ -22,6 +22,7 @@ import {
   subDays,
 } from 'date-fns';
 
+import userStore from '@/stores/userStore';
 import { logEvent } from 'firebase/analytics';
 import {
   CollectionReference,
@@ -37,9 +38,8 @@ import { useSearchParams } from 'next/navigation';
 import React from 'react';
 import { DateRange } from 'react-day-picker';
 import { AnalyticsLoading } from './analyticsLoading';
-import { DatePicker } from './datePicker';
-import { AOVChart } from './charts/aovChart';
 import { AbandonedCartsChart } from './charts/abandonedCartChart';
+import { AOVChart } from './charts/aovChart';
 import { CitiesReachedChart } from './charts/citiesReachedChart';
 import { ConversionRateChart } from './charts/conversionRateChart';
 import { ProductLikesChart } from './charts/productLikesChart';
@@ -48,14 +48,12 @@ import { StoreSubscriptionChart } from './charts/storeSubscriptionsChart';
 import { StoreViewsChart } from './charts/storeViewsChart';
 import { TotalOrdersChart } from './charts/totalOrdersChart';
 import { TotalRevenueChart } from './charts/totalRevenueChart';
+import { DatePicker } from './datePicker';
 import { Analytic } from './types';
 
-type Props = {
-  user_id: string;
-  default_store: string;
-};
-
-export default function AnalyticsPage(props: Props) {
+export default function AnalyticsPage() {
+  const user_loaded = userStore((state) => state.user_loaded);
+  const user_store = userStore((state) => state.user_store);
   const [selected, setSelected] = React.useState<string>('');
   const start_date = useSearchParams().get('start');
   const end_date = useSearchParams().get('end');
@@ -182,7 +180,7 @@ export default function AnalyticsPage(props: Props) {
       const itemsRef: CollectionReference = collection(
         db,
         'stores',
-        props.default_store,
+        user_store,
         'analytics'
       );
       const itemsQuery = query(
@@ -212,12 +210,12 @@ export default function AnalyticsPage(props: Props) {
       analyticsData.slice(0);
       setData(analyticsData);
     };
-    if (date?.from != undefined && date?.to !== undefined) {
+    if (date?.from != undefined && date?.to !== undefined && user_loaded) {
       getItems();
     }
-  }, [date]);
+  }, [date, user_loaded]);
 
-  if (selected === '' || date === undefined) {
+  if (selected === '' || date === undefined || !user_loaded) {
     return (
       <>
         <section className="mx-auto w-full max-w-[2428px]">

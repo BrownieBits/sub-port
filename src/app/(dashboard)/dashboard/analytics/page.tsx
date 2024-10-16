@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { cookies } from 'next/headers';
 import AnalyticsPage from './analyticsPage';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,14 +28,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default function Analytics() {
-  const cookieStore = cookies();
-  const user_id = cookieStore.get('user_id');
-  const default_store = cookieStore.get('default_store');
-  // TODO: remove cookie lookup
-  return (
-    <AnalyticsPage
-      user_id={user_id?.value!}
-      default_store={default_store?.value!}
-    />
-  );
+  return <AnalyticsPage />;
 }

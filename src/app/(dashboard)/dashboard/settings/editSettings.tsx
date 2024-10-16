@@ -29,8 +29,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import EditAddresses from './editAddresses';
 import { revalidate } from './actions';
+import EditAddresses from './editAddresses';
 import { UserSettings } from './types';
 
 const formSchema = z.object({
@@ -134,7 +134,7 @@ export default function EditSettings(props: {
                     more that we will use in various locations on the site.
                   </p>
                 </aside>
-                <aside className="bg-layer-one flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
+                <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
                   <FormField
                     control={form.control}
                     name="name"
@@ -232,7 +232,7 @@ export default function EditSettings(props: {
             userID={props.userID}
           />
 
-          <section className="flex flex-col gap-8 md:flex-row">
+          {/* <section className="flex flex-col gap-8 md:flex-row">
             <aside className="w-full md:w-[200px] lg:w-[300px] xl:w-[600px]">
               <p className="pb-4">
                 <b>Saved Credit Cards</b>
@@ -245,7 +245,7 @@ export default function EditSettings(props: {
             <aside className="bg-layer-one flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
               <p>TODO: Fill in once connected to stripe</p>
             </aside>
-          </section>
+          </section> */}
         </section>
       </section>
     </section>

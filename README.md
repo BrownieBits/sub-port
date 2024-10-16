@@ -34,3 +34,82 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+TODO:
+
+- [ ] Checkout
+  - [ ] Checkout
+    - [ ] Swith to live
+  - [ ] Thank You
+    - [ ] Add in branding imagery
+- [ ] Dashboard
+  - [ ] Dashboard
+    - [x] Analytics
+    - [ ] Commissions
+      - [ ] Build table to show payouts
+      - [ ] Build page to show individual payout information
+    - [ ] Integrations
+      - [ ] Printful
+      - [ ] Stripe - should this be in settings
+      - [ ] Youtube
+      - [ ] Twitch
+      - [ ] FB/Instagram
+    - [ ] Orders
+      - [ ] My Orders
+        - [ ] Build table for showing orders
+        - [ ] Create page for seeing individual order information
+      - [ ] Store Orders
+        - [ ] Build table for showing orders
+        - [ ] Create page for seeing individual order information
+    - [ ] Preferences
+      - [ ] Store cant go live unless getting started guide is complete
+    - [ ] Products
+      - [ ] Products
+        - [ ] Add in Edit form for POD products
+      - [x] Collections
+    - [x] Promotions
+    - [x] Settings
+    - [ ] Dashboard
+      - [x] Latest Product Performance
+      - [ ] Store Analytics
+        - [ ] Top Products
+      - [ ] News
+        - [ ] Pull from latest Blog post
+      - [ ] Getting Started Guide
+        - [ ] Create Getting Started Guid
+          - [ ] Update Store Name
+          - [ ] Add Avatar
+          - [ ] Integrate with Stripe for payouts
+          - [ ] Add Product
+          - [ ] Put store Live
+      - [ ] Whats New
+        - [ ] Create Whats New Blog
+  - [ ] Switch Store
+    - [ ] Figure out plan level to allow multiple stores
+- [_] Login
+  - [ ] Add Social Logins
+- [ ] Market
+  - [ ] About
+    - [ ] Create about page and information
+  - [ ] Blog
+    - [ ] Create system for creating and showing blog posts
+  - [x] Cart
+  - [ ] Help
+    - [ ] Create system for posting help articles and organizing them
+  - [x] Market
+  - [x] My Likes
+  - [ ] Press
+    - [ ] Create system to post press articles
+  - [ ] Privacy Policy
+    - [ ] Need to get a privacy policy and lay it out
+  - [ ] Product
+    - [ ] Create form to submit a comment
+    - [ ] Show a list of comments
+  - [ ] Send Feedback
+    - [ ] Create form to submit feedback
+  - [x] Store
+  - [x] Subscriptions
+  - [ ] Terms of Services
+    - [ ] Need to get a terms of service and lay it out
+  - [ ] Home Page
+    - [ ] More Modules

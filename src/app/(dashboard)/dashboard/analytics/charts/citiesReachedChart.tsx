@@ -43,10 +43,12 @@ export const CitiesReachedChart = (props: { data: Analytic[] }) => {
 
       if (city !== 'undefined') {
         if (!citiesReached.hasOwnProperty(`${city}, ${country}`)) {
-          citiesReached[`${city}, ${country}`] = [ip];
+          citiesReached[`${city.replaceAll('%20', ' ')}, ${country}`] = [ip];
         } else {
           if (!citiesReached[`${city}, ${country}`].includes(ip)) {
-            citiesReached[`${city}, ${country}`].push(ip);
+            citiesReached[`${city.replaceAll('%20', ' ')}, ${country}`].push(
+              ip
+            );
           }
         }
       }
@@ -70,7 +72,7 @@ export const CitiesReachedChart = (props: { data: Analytic[] }) => {
         </CardHeader>
         <Separator />
         <CardContent className="flex flex-col gap-4">
-          <Skeleton className="bg-layer-one min-h-[258px] flex-1 rounded border" />
+          <Skeleton className="min-h-[258px] flex-1 rounded border bg-layer-one" />
         </CardContent>
       </Card>
     );
