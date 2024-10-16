@@ -38,13 +38,13 @@ export default function About() {
           height={1373}
         />
         <section className="flex w-full flex-col gap-16 px-4 py-16">
-          <h1 className="text-6xl">About SubPort</h1>
-          <p className="text-5xl">
+          <h1 className="text-4xl md:text-6xl">About SubPort</h1>
+          <p className="text-3xl font-thin md:text-5xl">
             Our mission is to empower artist, entreprenuers, & creators to
             monetize their passions by providing a seamless and supportive
             platform for fan-powered commerce.
           </p>
-          <p className="text-5xl font-thin">
+          <p className="text-3xl font-thin md:text-5xl">
             We believe that anyone with a passion should have the opportunity to
             share their creations with the world and connect directly with their
             fans through a simple, accessible, and supportive platform.
