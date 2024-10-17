@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function NewDigitalProduct() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const default_store = cookieStore.get('default_store');
   const user_id = cookieStore.get('user_id');
   return (

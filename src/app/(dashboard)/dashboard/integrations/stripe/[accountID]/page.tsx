@@ -1,9 +1,8 @@
 import { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import StripeIntegration from './stripeIntegration';
-type Props = {
-  params: { acountID: string };
-};
+
+type Params = Promise<{ accountID: string }>;
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -31,8 +30,13 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function StripeConnectReturn({ params }: Props) {
-  const cookieStore = cookies();
+export default async function StripeConnectReturn({
+  params,
+}: {
+  params: Params;
+}) {
+  const { accountID } = await params;
+  const cookieStore = await cookies();
   const user_id = cookieStore.get('user_id');
-  return <StripeIntegration accountID={params.acountID} />;
+  return <StripeIntegration accountID={accountID} />;
 }

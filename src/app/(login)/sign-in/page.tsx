@@ -30,15 +30,16 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function SignIn({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  const country = headers().get('x-geo-country') as string;
-  const city = headers().get('x-geo-city') as string;
-  const region = headers().get('x-geo-region') as string;
-  const ip = headers().get('x-ip') as string;
+export default async function SignIn(
+  props: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  }
+) {
+  const searchParams = await props.searchParams;
+  const country = (await headers()).get('x-geo-country') as string;
+  const city = (await headers()).get('x-geo-city') as string;
+  const region = (await headers()).get('x-geo-region') as string;
+  const ip = (await headers()).get('x-ip') as string;
   let redirectLink = '';
   if (searchParams && Object.keys(searchParams).length > 0) {
     redirectLink = '?';

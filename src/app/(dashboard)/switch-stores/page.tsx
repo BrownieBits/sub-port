@@ -99,7 +99,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function SwitchStores() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const user_id = cookieStore.get('user_id');
   const default_store = cookieStore.get('default_store');
   const data: ReturnData = await getData(user_id);

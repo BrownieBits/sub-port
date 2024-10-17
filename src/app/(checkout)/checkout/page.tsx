@@ -2,7 +2,6 @@ import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import CheckoutPage from './checkoutPage';
 import TrackCheckout from './trackCheckout';
-const stripe = require('stripe')(process.env.STRIPE_SECRET);
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -31,10 +30,11 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Checkout() {
-  const country = headers().get('x-geo-country') as string;
-  const city = headers().get('x-geo-city') as string;
-  const region = headers().get('x-geo-region') as string;
-  const ip = headers().get('x-ip') as string;
+  // const stripe = require('stripe')(process.env.STRIPE_SECRET);
+  const country = (await headers()).get('x-geo-country') as string;
+  const city = (await headers()).get('x-geo-city') as string;
+  const region = (await headers()).get('x-geo-region') as string;
+  const ip = (await headers()).get('x-ip') as string;
 
   return (
     <section className="w-full">

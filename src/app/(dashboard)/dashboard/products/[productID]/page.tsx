@@ -18,9 +18,8 @@ import {
 import { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-type Props = {
-  params: { productID: string };
-};
+
+type Params = Promise<{ productID: string }>;
 
 async function getData(productID: string) {
   const docRef: DocumentReference = doc(db, `products`, productID);
@@ -57,12 +56,17 @@ async function getData(productID: string) {
   return { product: data, variants: varaintData, options: optionsData };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { productID } = await params;
   const data: {
     product: DocumentData;
     variants: QuerySnapshot<DocumentData, DocumentData>;
     options: QuerySnapshot<DocumentData, DocumentData>;
-  } = await getData(params.productID);
+  } = await getData(productID);
   return {
     title: `${data.product.data().name}`,
     description:
@@ -88,15 +92,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function NewDigitalProduct({ params }: Props) {
-  const cookieStore = cookies();
+export default async function DashboardProduct({ params }: { params: Params }) {
+  const { productID } = await params;
+  const cookieStore = await cookies();
   const default_store = cookieStore.get('default_store');
   const user_id = cookieStore.get('user_id');
   const data: {
     product: DocumentData;
     variants: QuerySnapshot<DocumentData, DocumentData>;
     options: QuerySnapshot<DocumentData, DocumentData>;
-  } = await getData(params.productID);
+  } = await getData(productID);
   const images: ProductImage[] = data.product
     .data()
     .images.map((image: string, index: number) => {

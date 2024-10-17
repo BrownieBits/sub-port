@@ -28,7 +28,6 @@ import {
   faThumbsUp,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Timestamp } from 'firebase/firestore';
 import React from 'react';
 
 export const ShowDetails = (props: {
@@ -37,12 +36,13 @@ export const ShowDetails = (props: {
   store_name: string;
   product_id: string;
   // location: string;
-  created_at: Timestamp;
+  created_at_seconds: number;
+  created_at_nanoseconds: number;
   view_count: number;
   like_count: number;
 }) => {
   const timestamp = new Date(
-    props.created_at.seconds * 1000 + props.created_at.nanoseconds / 1000000
+    props.created_at_seconds * 1000 + props.created_at_nanoseconds / 1000000
   );
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery('(min-width: 768px)');

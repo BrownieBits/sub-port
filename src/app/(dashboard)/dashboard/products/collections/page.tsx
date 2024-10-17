@@ -73,7 +73,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Collections() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const default_store = cookieStore.get('default_store');
   const data = await getData(default_store);
   return (

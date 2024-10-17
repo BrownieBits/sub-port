@@ -83,7 +83,8 @@ type Props = {
   like_count: number;
   options: options[];
   variants: variants[];
-  created_at: Timestamp;
+  created_at_seconds: number;
+  created_at_nanoseconds: number;
   view_count: number;
   track_inventory: boolean;
   inventory: number;
@@ -444,7 +445,8 @@ export default function ProductDetailPage(props: Props) {
             store_name={props.store_id}
             product_id={props.product_id}
             //add ships from
-            created_at={props.created_at}
+            created_at_seconds={props.created_at_seconds}
+            created_at_nanoseconds={props.created_at_nanoseconds}
             view_count={props.view_count}
             like_count={props.like_count}
           />

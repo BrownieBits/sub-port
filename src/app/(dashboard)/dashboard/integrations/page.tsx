@@ -31,8 +31,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function Integrations() {
-  const cookieStore = cookies();
+export default async function Integrations() {
+  const cookieStore = await cookies();
   const user_id = cookieStore.get('user_id');
   // TODO: remove cookie lookup
   return (

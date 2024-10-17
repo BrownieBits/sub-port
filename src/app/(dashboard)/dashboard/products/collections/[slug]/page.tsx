@@ -10,9 +10,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import Edit from './editCollection';
 
-type Props = {
-  params: { slug: string };
-};
+type Params = Promise<{ slug: string }>;
 
 async function getData(slug: string, default_store: string) {
   const docRef: DocumentReference = doc(
@@ -27,17 +25,22 @@ async function getData(slug: string, default_store: string) {
   return data;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const cookieStore = cookies();
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const cookieStore = await cookies();
   const default_store = cookieStore.get('default_store');
-  const data: DocumentData = await getData(params.slug, default_store?.value!);
+  const data: DocumentData = await getData(slug, default_store?.value!);
   return {
     title: `${data.data().name} Collection`,
     description:
       'Enjoy the products you love, and share it all with friends, family, and the world on SubPort.',
     openGraph: {
       type: 'website',
-      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/products/collections/${params.slug}/`,
+      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/products/collections/${slug}/`,
       title: `${data.data().name} Collection`,
       siteName: 'SubPort Creator Platform',
       description:
@@ -56,10 +59,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function EditCollection({ params }: Props) {
-  const cookieStore = cookies();
+export default async function EditCollection({ params }: { params: Params }) {
+  const { slug } = await params;
+  const cookieStore = await cookies();
   const default_store = cookieStore.get('default_store');
-  const data: DocumentData = await getData(params.slug, default_store?.value!);
+  const data: DocumentData = await getData(slug, default_store?.value!);
   return (
     <Edit
       name={data.data().name}
@@ -68,7 +72,7 @@ export default async function EditCollection({ params }: Props) {
       tags={data.data().tags}
       products={data.data().products}
       status={data.data().status}
-      id={params.slug}
+      id={slug}
       store_id={default_store?.value!}
     />
   );

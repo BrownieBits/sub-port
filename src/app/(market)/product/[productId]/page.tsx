@@ -20,9 +20,7 @@ import ProductLoading from './productLoading';
 import TrackProductViews from './trackProductView';
 import { options, variants } from './typedef';
 
-type Props = {
-  params: { productId: string };
-};
+type Params = Promise<{ productId: string }>;
 type Data = {
   store?: DocumentData;
   product?: DocumentData;
@@ -83,8 +81,13 @@ async function getData(productId: string) {
   };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const data: Data = await getData(params.productId);
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { productId } = await params;
+  const data: Data = await getData(productId);
   if (data.error === 'No Product') {
     return {
       title: 'No Store',
@@ -104,7 +107,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: description,
     openGraph: {
       type: 'website',
-      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/product/${params.productId}`,
+      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/product/${productId}`,
       title: `${data.product?.data().name} - ${data.store?.data().name}`,
       siteName: 'SubPort Creator Platform',
       description: description,
@@ -121,12 +124,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ProductPage({ params }: Props) {
-  const data: Data = await getData(params.productId);
-  const country = headers().get('x-geo-country') as string;
-  const city = headers().get('x-geo-city') as string;
-  const region = headers().get('x-geo-region') as string;
-  const ip = headers().get('x-ip') as string;
+export default async function ProductPage({ params }: { params: Params }) {
+  const { productId } = await params;
+  const data: Data = await getData(productId);
+  const country = (await headers()).get('x-geo-country') as string;
+  const city = (await headers()).get('x-geo-city') as string;
+  const region = (await headers()).get('x-geo-region') as string;
+  const ip = (await headers()).get('x-ip') as string;
 
   let options: options[] = [];
   let variants: variants[] = [];
@@ -158,7 +162,6 @@ export default async function ProductPage({ params }: Props) {
       };
     });
   }
-
   return (
     <Suspense fallback={<ProductLoading />}>
       <ProductDetailPage
@@ -176,7 +179,8 @@ export default async function ProductPage({ params }: Props) {
         product_description={data.product?.data().description}
         like_count={data.product?.data().like_count}
         tags={data.product?.data().tags}
-        created_at={data.product?.data().created_at}
+        created_at_seconds={data.product?.data().created_at.seconds}
+        created_at_nanoseconds={data.product?.data().created_at.nanoseconds}
         options={options}
         variants={variants}
         view_count={data.product?.data().view_count}
@@ -192,7 +196,7 @@ export default async function ProductPage({ params }: Props) {
         city={city}
         region={region}
         ip={ip}
-        product_id={params.productId}
+        product_id={productId}
         product_name={data.product?.data().name}
         store_name={data.store?.data().name}
         store_id={data.store?.id}

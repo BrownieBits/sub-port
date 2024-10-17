@@ -12,9 +12,7 @@ import { Timestamp } from 'firebase/firestore';
 // import { client } from '@/lib/contentful';
 import { Metadata } from 'next';
 
-type Props = {
-  params: { slug: string };
-};
+type Params = Promise<{ slug: string }>;
 type Data = {
   title: string;
   banner: any;
@@ -47,8 +45,13 @@ async function getData(slug: string) {
   };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const data: Data = await getData(params.slug);
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const data: Data = await getData(slug);
   const strings = data.body.content.map((item: any) => {
     if (item.nodeType === 'embedded-asset-block') {
       return;
@@ -64,7 +67,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: strings.join(' '),
     openGraph: {
       type: 'website',
-      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/store/${params.slug}`,
+      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/store/${slug}`,
       title: `${data.title} - Blog`,
       siteName: 'SubPort Creator Platform',
       description: strings.join(' '),
@@ -81,8 +84,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function BlogPost({ params }: Props) {
-  const data: Data = await getData(params.slug);
+export default async function BlogPost({ params }: { params: Params }) {
+  const { slug } = await params;
+  const data: Data = await getData(slug);
 
   return (
     <section>

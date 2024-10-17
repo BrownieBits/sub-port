@@ -30,10 +30,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Cart() {
-  const country = headers().get('x-geo-country') as string;
-  const city = headers().get('x-geo-city') as string;
-  const region = headers().get('x-geo-region') as string;
-  const ip = headers().get('x-ip') as string;
+  const country = (await headers()).get('x-geo-country') as string;
+  const city = (await headers()).get('x-geo-city') as string;
+  const region = (await headers()).get('x-geo-region') as string;
+  const ip = (await headers()).get('x-ip') as string;
 
   return (
     <Suspense fallback={<></>}>

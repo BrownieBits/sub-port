@@ -29,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Settings() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const user_id = cookieStore.get('user_id');
 
   return <GetSettings userID={user_id?.value!} />;

@@ -5,10 +5,8 @@ type Params = {
   id: string;
 };
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { store: string } }
-) {
+export async function GET(request: NextRequest, props: { params: Promise<{ store: string }> }) {
+  const params = await props.params;
   const {
     nextUrl: { search },
   } = request;

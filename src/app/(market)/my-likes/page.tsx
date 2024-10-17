@@ -77,7 +77,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function LikedItems() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const user_id = cookieStore.get('user_id');
   const data: Data = await getData(user_id);
   if (data.error === 'No Likes') {

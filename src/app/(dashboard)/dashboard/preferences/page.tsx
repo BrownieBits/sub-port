@@ -23,7 +23,7 @@ async function getData(slug: { [key: string]: string } | undefined) {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const default_store = cookieStore.get('default_store');
   const data: DocumentData = await getData(default_store);
   return {
@@ -52,7 +52,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Preferences() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const user_id = cookieStore.get('user_id');
   const default_store = cookieStore.get('default_store');
   const data: DocumentData = await getData(default_store);

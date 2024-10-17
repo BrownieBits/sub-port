@@ -15,7 +15,7 @@ import { createSwapy } from 'swapy';
 
 type Props = {
   product_images: ProductImage[];
-  uploadRef: React.RefObject<HTMLInputElement>;
+  uploadRef: React.RefObject<HTMLInputElement | null>;
   removeImage: (index: number) => void;
   reOrderImages: (images: ProductImage[]) => void;
 };

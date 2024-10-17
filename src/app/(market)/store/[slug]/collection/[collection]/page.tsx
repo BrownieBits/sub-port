@@ -29,9 +29,7 @@ import { ShowMoreText } from '../../showMoreText';
 import StoreLoading from '../../storeLoading';
 import TrackStoreViews from '../../trackStoreViews';
 
-type Props = {
-  params: { slug: string; collection: string };
-};
+type Params = Promise<{ slug: string; collection: string }>;
 type Data = {
   store: DocumentData;
   collection: DocumentData;
@@ -84,8 +82,13 @@ async function getData(store: string, collectionId: string) {
   };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const data: Data | 'No Store' = await getData(params.slug, params.collection);
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { slug, collection } = await params;
+  const data: Data | 'No Store' = await getData(slug, collection);
   if (data === 'No Store') {
     return {
       title: 'No Store',
@@ -101,7 +104,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const url = encodeURIComponent(data.store.data().avatar_url);
     const storeName = encodeURIComponent(data.store.data().name);
     openGraphImages.push(
-      `https://${process.env.NEXT_PUBLIC_BASE_URL}/api/og_image/${params.slug}?shop=${storeName}&image=${url}`
+      `https://${process.env.NEXT_PUBLIC_BASE_URL}/api/og_image/${slug}?shop=${storeName}&image=${url}`
     );
   } else {
     openGraphImages.push(
@@ -113,7 +116,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: description,
     openGraph: {
       type: 'website',
-      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/store/${params.slug}/${params.collection}`,
+      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/store/${slug}/${collection}`,
       title: `${data.store.data().name} Store`,
       siteName: 'SubPort Creator Platform',
       description: description,
@@ -130,18 +133,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function StoreCollection({ params }: Props) {
-  const cookieStore = cookies();
-  const store_pw = cookieStore.get(`${params.slug}-pw`);
-  const data: Data | 'No Store' = await getData(params.slug, params.collection);
-  const country = headers().get('x-geo-country') as string;
-  const city = headers().get('x-geo-city') as string;
-  const region = headers().get('x-geo-region') as string;
-  const ip = headers().get('x-ip') as string;
+export default async function StoreCollection({ params }: { params: Params }) {
+  const { slug, collection } = await params;
+  const cookieStore = await cookies();
+  const store_pw = cookieStore.get(`${slug}-pw`);
+  const data: Data | 'No Store' = await getData(slug, collection);
+  const country = (await headers()).get('x-geo-country') as string;
+  const city = (await headers()).get('x-geo-city') as string;
+  const region = (await headers()).get('x-geo-region') as string;
+  const ip = (await headers()).get('x-ip') as string;
 
   async function revalidate() {
     'use server';
-    revalidatePath(`/store/${params.slug}`);
+    revalidatePath(`/store/${slug}`);
   }
 
   if (data === 'No Store') {
@@ -168,7 +172,7 @@ export default async function StoreCollection({ params }: Props) {
             <StorePasswordForm
               revalidate={revalidate}
               pw={data.store.data().password}
-              cookieSlug={`${params.slug}-pw`}
+              cookieSlug={`${slug}-pw`}
             />
           </section>
         </section>
@@ -207,14 +211,14 @@ export default async function StoreCollection({ params }: Props) {
           )}
           <section className="flex w-full flex-col items-start justify-between gap-4 px-4 py-4 md:flex-row md:items-center">
             <section className="flex items-center gap-4">
-              <Link href={`/store/${params.slug}`} className="">
+              <Link href={`/store/${slug}`} className="">
                 <ShowAvatar store_id={data.store.id} size="lg" />
               </Link>
               <div className="flex flex-col gap-1">
                 <h1 className="text-xl">{data.store.data().name}</h1>
                 <section className="flex w-full flex-wrap gap-1 md:w-auto">
                   <p className="w-auto text-sm text-muted-foreground">
-                    @{params.slug}
+                    @{slug}
                   </p>
                   <span className="text-sm text-muted-foreground">&bull;</span>
                   <p className="w-auto text-sm text-muted-foreground">
@@ -231,7 +235,7 @@ export default async function StoreCollection({ params }: Props) {
                   <ShowMoreText
                     text={data.store.data().description}
                     howManyToShow={50}
-                    store_name={params.slug}
+                    store_name={slug}
                     location={data.store.data().country}
                     created_at={data.store.data().created_at}
                     view_count={data.store.data().view_count}
@@ -245,7 +249,7 @@ export default async function StoreCollection({ params }: Props) {
               <ShowMoreText
                 text={data.store.data().description}
                 howManyToShow={50}
-                store_name={params.slug}
+                store_name={slug}
                 location={data.store.data().country}
                 created_at={data.store.data().created_at}
                 view_count={data.store.data().view_count}
@@ -255,7 +259,7 @@ export default async function StoreCollection({ params }: Props) {
             </section>
             <section className="flex w-full md:w-auto">
               <SubsciberButton
-                store_id={params.slug}
+                store_id={slug}
                 full_width={true}
                 country={country}
                 city={city}
@@ -274,10 +278,7 @@ export default async function StoreCollection({ params }: Props) {
                 variant="link"
                 className="text-md rounded-none border-b-[2px] border-transparent px-0 text-foreground hover:no-underline"
               >
-                <Link
-                  href={`/store/${params.slug}`}
-                  aria-label={`${params.slug} Store`}
-                >
+                <Link href={`/store/${slug}`} aria-label={`${slug} Store`}>
                   Home
                 </Link>
               </Button>
@@ -287,12 +288,12 @@ export default async function StoreCollection({ params }: Props) {
                   variant="link"
                   className={cn(
                     'text-md rounded-none border-b-[2px] px-0 text-foreground hover:no-underline',
-                    { 'border-transparent': params.collection !== doc.id }
+                    { 'border-transparent': collection !== doc.id }
                   )}
                   key={doc.id}
                 >
                   <Link
-                    href={`/store/${params.slug}/collection/${doc.id}`}
+                    href={`/store/${slug}/collection/${doc.id}`}
                     aria-label="Products"
                   >
                     {doc.data().name}
@@ -324,7 +325,7 @@ export default async function StoreCollection({ params }: Props) {
           city={city}
           region={region}
           ip={ip}
-          store_id={params.slug}
+          store_id={slug}
           store_name={data.store.data().name}
         />
       </>

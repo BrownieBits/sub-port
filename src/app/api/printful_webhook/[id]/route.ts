@@ -4,7 +4,7 @@ type Params = {
   id: string;
 };
 
-export async function POST(request: NextRequest, context: { params: Params }) {
+export async function POST(request: NextRequest, context: { params: Promise<Params> }) {
   const data = await request.json();
   console.log('REQUEST', data.data.sync_product.id);
   if (data.type === 'product_updated') {

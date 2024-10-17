@@ -23,9 +23,7 @@ import {
 import { Metadata } from 'next';
 import { NoProducts } from './noProducts';
 
-type Props = {
-  params: { group: string };
-};
+type Params = Promise<{ group: string }>;
 type Data = {
   error?: string;
   title?: string;
@@ -109,8 +107,13 @@ async function getData(group: string) {
   }
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const data: Data = await getData(params.group);
+export async function generateMetadata({
+  params,
+}: {
+  params: Params;
+}): Promise<Metadata> {
+  const { group } = await params;
+  const data: Data = await getData(group);
   if (data.error === 'No Page') {
     return {
       title: 'Marketplace',
@@ -121,13 +124,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (data.products?.docs.length! > 1) {
     description += `Find everything from ${data.products?.docs[0].data().name} to ${data.products?.docs[1].data().name} and more. `;
   }
-  description += `Compare prices, read reviews, and enjoy safe and secure shopping. Explore our diverse range of ${params.group} products today!`;
+  description += `Compare prices, read reviews, and enjoy safe and secure shopping. Explore our diverse range of ${group} products today!`;
   return {
     title: `${data.title} Marketplace`,
     description: description,
     openGraph: {
       type: 'website',
-      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/market/${params.group}`,
+      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/market/${group}`,
       title: `${data.title} Marketplace`,
       siteName: 'SubPort Creator Platform',
       description: description,
@@ -144,8 +147,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function MarketplacePage({ params }: Props) {
-  const data: Data = await getData(params.group);
+export default async function MarketplacePage({ params }: { params: Params }) {
+  const { group } = await params;
+  const data: Data = await getData(group);
 
   if (data.error === 'No Page') {
     return <>No Marketplace Page</>;
