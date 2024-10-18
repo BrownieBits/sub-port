@@ -39,7 +39,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
-import ProductComments from './productComments';
+import ProductComments from './comments/productComments';
 import ProductImages from './productImages';
 import ProductLoading from './productLoading';
 import RelatedProducts from './relatedProducts';
@@ -249,10 +249,16 @@ export default function ProductDetailPage(props: Props) {
   }
   return (
     <section className="mx-auto flex max-w-[1754px] flex-col gap-8 p-4">
-      <section key="productInfo" className="flex flex-col gap-8 md:flex-row">
-        <section className="flex w-full flex-1 flex-col gap-4">
+      <section
+        key="productInfo"
+        className="flex flex-col gap-4 md:flex-row md:gap-8"
+      >
+        <section className="flex w-full flex-1 flex-col justify-start gap-4">
           <ProductImages images={props.images} />
-          <ProductComments />
+          <ProductComments
+            product_id={props.product_id}
+            store_id={props.store_id}
+          />
         </section>
         <section className="flex w-full flex-col md:w-[350px] xl:w-[400px]">
           <section className="flex justify-between">

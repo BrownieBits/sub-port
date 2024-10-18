@@ -5,12 +5,21 @@ import userStore from '@/stores/userStore';
 import { _SetUserProps } from '@/stores/userStore.types';
 import { deleteCookie, setCookie } from 'cookies-next';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { doc, DocumentReference, onSnapshot } from 'firebase/firestore';
+import {
+  collection,
+  CollectionReference,
+  doc,
+  DocumentReference,
+  onSnapshot,
+} from 'firebase/firestore';
 
 export default function AuthState() {
   const setUser = userStore((state) => state.setUser);
   const clearUser = userStore((state) => state.clearUser);
   const setUserLoaded = userStore((state) => state.setUserLoaded);
+  const setProductLikes = userStore((state) => state.setProductLikes);
+  const setStoreSubscribes = userStore((state) => state.setStoreSubscribes);
+  const setCommentLikes = userStore((state) => state.setCommentLikes);
 
   async function SetCookies(user_info: _SetUserProps) {
     const today = new Date();
@@ -34,6 +43,18 @@ export default function AuthState() {
     setUser: (props: _SetUserProps) => void
   ) {
     const userDataRef: DocumentReference = doc(db, 'users', user.uid);
+    const productLikesRef: CollectionReference = collection(
+      db,
+      `users/${user.uid}/likes`
+    );
+    const storeSubscribesRef: CollectionReference = collection(
+      db,
+      `users/${user.uid}/subscribes`
+    );
+    const commentLikesRef: CollectionReference = collection(
+      db,
+      `users/${user.uid}/comment_likes`
+    );
     await onSnapshot(userDataRef, (doc) => {
       if (doc.exists()) {
         const data: _SetUserProps = {
@@ -49,6 +70,39 @@ export default function AuthState() {
         setUser(data);
         SetCookies(data);
         setUserLoaded(true);
+      }
+    });
+    await onSnapshot(productLikesRef, (data) => {
+      if (!data.empty) {
+        const likeIDs: string[] = [];
+        data.forEach((doc) => {
+          likeIDs.push(doc.id);
+        });
+        setProductLikes(likeIDs);
+      } else {
+        setProductLikes([]);
+      }
+    });
+    await onSnapshot(storeSubscribesRef, (data) => {
+      if (!data.empty) {
+        const subscribeIDs: string[] = [];
+        data.forEach((doc) => {
+          subscribeIDs.push(doc.id);
+        });
+        setStoreSubscribes(subscribeIDs);
+      } else {
+        setStoreSubscribes([]);
+      }
+    });
+    await onSnapshot(commentLikesRef, (data) => {
+      if (!data.empty) {
+        const likeIDs: string[] = [];
+        data.forEach((doc) => {
+          likeIDs.push(doc.id);
+        });
+        setCommentLikes(likeIDs);
+      } else {
+        setCommentLikes([]);
       }
     });
   }

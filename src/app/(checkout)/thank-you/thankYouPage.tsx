@@ -212,7 +212,6 @@ export default function ThankYouPage(props: Props) {
       });
       setOrderComplete(true);
     } else {
-      console.log(payment_intent, paymentIntent);
       const ordersRef: CollectionReference = collection(db, 'orders');
       const q = query(ordersRef, where('payment_intent', '==', payment_intent));
       const ordersDocs = await getDocs(q);

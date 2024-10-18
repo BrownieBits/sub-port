@@ -1,6 +1,6 @@
 'use client';
 import { Skeleton } from '@/components/ui/skeleton';
-import ProductComments from './productComments';
+import ProductComments from './comments/productComments';
 
 export default function ProductLoading() {
   return (

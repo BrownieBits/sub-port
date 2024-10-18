@@ -70,7 +70,6 @@ export const AOVChart = (props: { data: Analytic[]; from: Date; to: Date }) => {
       const revenue = doc.revenue;
 
       if (city !== 'undefined' && type === 'order') {
-        console.log(formattedDate, typeof orderJSON, orderJSON, revenue);
         orderJSON[formattedDate].push(revenue!);
       }
     });

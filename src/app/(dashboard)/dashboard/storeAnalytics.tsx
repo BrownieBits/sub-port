@@ -37,7 +37,7 @@ type Analytics = {
 };
 
 export const StoreAnalytics = (props: {}) => {
-  const default_store = getCookie('default_store');
+  const default_store = getCookie('default_store'); // TODO remove and use userStore
   const [analytics, setAnalytics] = React.useState<Analytics | null>(null);
   React.useEffect(() => {
     const getAnalytics: Unsubscribe = async () => {
@@ -97,37 +97,37 @@ export const StoreAnalytics = (props: {}) => {
         <Separator />
         <CardContent className="flex flex-col gap-4">
           <section className="flex w-full flex-col gap-2">
-            <Skeleton className="bg-layer-two h-5 w-[125px]" />
-            <Skeleton className="bg-layer-two h-10 w-[50px]" />
+            <Skeleton className="h-5 w-[125px] bg-layer-two" />
+            <Skeleton className="h-10 w-[50px] bg-layer-two" />
           </section>
           <section className="flex w-full flex-col gap-2">
-            <Skeleton className="bg-layer-two h-5 w-[100px]" />
-            <Skeleton className="bg-layer-two h-3 w-[100px]" />
+            <Skeleton className="h-5 w-[100px] bg-layer-two" />
+            <Skeleton className="h-3 w-[100px] bg-layer-two" />
             <section className="flex w-full justify-between gap-4">
-              <Skeleton className="bg-layer-two h-5 w-[125px]" />
-              <Skeleton className="bg-layer-two h-5 w-[50px]" />
+              <Skeleton className="h-5 w-[125px] bg-layer-two" />
+              <Skeleton className="h-5 w-[50px] bg-layer-two" />
             </section>
             <section className="flex w-full justify-between gap-4">
-              <Skeleton className="bg-layer-two h-5 w-[125px]" />
-              <Skeleton className="bg-layer-two h-5 w-[50px]" />
+              <Skeleton className="h-5 w-[125px] bg-layer-two" />
+              <Skeleton className="h-5 w-[50px] bg-layer-two" />
             </section>
           </section>
 
           <section className="flex w-full flex-col gap-2">
-            <Skeleton className="bg-layer-two h-5 w-[100px]" />
-            <Skeleton className="bg-layer-two h-3 w-[100px]" />
+            <Skeleton className="h-5 w-[100px] bg-layer-two" />
+            <Skeleton className="h-3 w-[100px] bg-layer-two" />
             <section className="flex w-full items-center gap-4">
-              <Skeleton className="bg-layer-two aspect-square w-[50px]" />
-              <Skeleton className="bg-layer-two h-5 w-[125px]" />
+              <Skeleton className="aspect-square w-[50px] bg-layer-two" />
+              <Skeleton className="h-5 w-[125px] bg-layer-two" />
               <div className="flex-1" />
-              <Skeleton className="bg-layer-two h-5 w-[50px]" />
+              <Skeleton className="h-5 w-[50px] bg-layer-two" />
             </section>
           </section>
         </CardContent>
         <Separator />
         <CardFooter>
           <section className="flex w-full gap-4">
-            <Skeleton className="bg-layer-two h-[40px] w-[100px]" />
+            <Skeleton className="h-[40px] w-[100px] bg-layer-two" />
           </section>
         </CardFooter>
       </Card>
@@ -184,7 +184,7 @@ export const StoreAnalytics = (props: {}) => {
                       className="flex w-full items-center gap-4"
                       key={product.name}
                     >
-                      <section className="bg-layer-one flex aspect-square items-center justify-center overflow-hidden rounded border">
+                      <section className="flex aspect-square items-center justify-center overflow-hidden rounded border bg-layer-one">
                         <Image
                           src={product.image_url}
                           width="300"
@@ -193,7 +193,7 @@ export const StoreAnalytics = (props: {}) => {
                           className="flex w-full"
                         />
                       </section>
-                      <Skeleton className="bg-layer-two aspect-square w-[50px]" />
+                      <Skeleton className="aspect-square w-[50px] bg-layer-two" />
                       <p className="flex-1">{product.name}</p>
                       <p>
                         {new Intl.NumberFormat('en-US', {

@@ -193,7 +193,6 @@ export default function AnalyticsPage() {
       );
       const itemsData: QuerySnapshot<DocumentData, DocumentData> =
         await getDocs(itemsQuery);
-      console.log(date?.from!, date?.to!, itemsData.docs.length);
       const analyticsData: Analytic[] = itemsData.docs.map((doc) => {
         return {
           city: doc.data().city,

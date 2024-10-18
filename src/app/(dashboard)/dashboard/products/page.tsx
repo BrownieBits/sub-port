@@ -89,7 +89,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Products() {
   const cookieStore = await cookies();
-  const default_store = cookieStore.get('default_store');
+  const default_store = cookieStore.get('default_store'); // TODO remove and switch to userStore
   const data = await getData(default_store);
   return (
     <section>

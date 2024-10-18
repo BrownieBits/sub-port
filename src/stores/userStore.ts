@@ -13,6 +13,9 @@ const userStore = create<_UserStore>(set => ({
     user_currency: '',
     user_store: '',
     user_loaded: false,
+    product_likes: [],
+    store_subscribes: [],
+    comment_likes: [],
     setUser: (props: _SetUserProps) => set(() => ({
         user_id: props.user_id,
         user_email: props.user_email,
@@ -37,6 +40,15 @@ const userStore = create<_UserStore>(set => ({
     })),
     setUserLoaded: (loaded: boolean) => set(() => ({
         user_loaded: true,
+    })),
+    setProductLikes: (likes: string[]) => set(() => ({
+        product_likes: likes,
+    })),
+    setStoreSubscribes: (subscribes: string[]) => set(() => ({
+        store_subscribes: subscribes,
+    })),
+    setCommentLikes: (likes: string[]) => set(() => ({
+        comment_likes: likes,
     }))
 }))
 

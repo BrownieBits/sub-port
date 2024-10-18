@@ -164,7 +164,6 @@ export default function CartState() {
   }
 
   async function createCart(cartRef: DocumentReference) {
-    console.log('CREATING CART', cartRef);
     await setDoc(cartRef, {
       item_count: 0,
       shipments_ready: false,
@@ -503,7 +502,6 @@ export default function CartState() {
       } else {
         createNewCart();
       }
-      console.log('cleared cart Data');
       setOrderComplete(false);
     };
     if (order_complete) {

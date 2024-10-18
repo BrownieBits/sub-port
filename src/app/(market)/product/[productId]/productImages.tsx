@@ -38,7 +38,7 @@ export default function ProductImages(props: { images: string[] }) {
     return <></>;
   }
   return (
-    <section className="flex w-full flex-1 items-start gap-4">
+    <section className="flex w-full items-start gap-4">
       {props.images.length > 1 && (
         <div className="hidden flex-col items-center justify-center gap-4 md:flex">
           {props.images.map((image, index) => (

@@ -1,4 +1,3 @@
-import { Separator } from '@/components/ui/separator';
 import { Metadata } from 'next';
 import { StoreSubscriptions } from './subscriptionsPage';
 
@@ -29,15 +28,5 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Subscriptions() {
-  return (
-    <section>
-      <section className="mx-auto w-full max-w-[2428px]">
-        <section className="flex w-full items-center justify-between gap-4 px-4 py-4">
-          <h1>My Subscriptions</h1>
-        </section>
-      </section>
-      <Separator />
-      <StoreSubscriptions />
-    </section>
-  );
+  return <StoreSubscriptions />;
 }
