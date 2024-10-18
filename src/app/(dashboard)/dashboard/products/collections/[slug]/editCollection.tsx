@@ -92,7 +92,7 @@ export default function Edit(props: {
 }) {
   const blogsRef = collection(db, 'products');
   const q = query(blogsRef, where('store_id', '==', props.store_id));
-  const [blogSnapShots, loading1] = useCollection(q);
+  const [blogSnapShots, loading1] = useCollection(q); // TODO Remove
   const { push } = useRouter();
   const [open, setOpen] = React.useState(false);
   const [disabled, setDisabled] = React.useState<boolean>(true);
@@ -354,7 +354,7 @@ export default function Edit(props: {
                     collection shows up on search engines.
                   </p>
                 </aside>
-                <aside className="bg-layer-one flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
+                <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
                   <FormField
                     control={form.control}
                     name="name"
@@ -439,7 +439,7 @@ export default function Edit(props: {
                       of products for you.
                     </p>
                   </aside>
-                  <aside className="bg-layer-one flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
+                  <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
                     <FormField
                       control={form.control}
                       name="tags"
@@ -496,7 +496,7 @@ export default function Edit(props: {
                 </AlertDialogContent>
               </AlertDialog>
             </aside>
-            <aside className="bg-layer-one flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
+            <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
               {loading1 ? (
                 <div>Loading</div>
               ) : (
@@ -512,7 +512,7 @@ export default function Edit(props: {
                             className="flex items-center gap-4"
                             key={doc.id}
                           >
-                            <div className="bg-layer-one flex aspect-square w-[50px] items-center justify-center overflow-hidden border">
+                            <div className="flex aspect-square w-[50px] items-center justify-center overflow-hidden border bg-layer-one">
                               <Image
                                 alt={doc.data().name}
                                 src={doc.data().images[0]}
@@ -525,7 +525,7 @@ export default function Edit(props: {
                               {doc.data().product_type}
                             </span>
                             {doc.data().status === 'Public' ? (
-                              <span className="bg-success text-success-foreground mr-2 rounded px-2.5 py-0.5 text-xs font-medium">
+                              <span className="mr-2 rounded bg-success px-2.5 py-0.5 text-xs font-medium text-success-foreground">
                                 {doc.data().status}
                               </span>
                             ) : (

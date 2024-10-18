@@ -17,6 +17,7 @@ import {
   format,
   isValid,
   parse,
+  setHours,
   startOfMonth,
   startOfYear,
   subDays,
@@ -177,6 +178,8 @@ export default function AnalyticsPage() {
   }, []);
   React.useEffect(() => {
     const getItems = async () => {
+      const from = setHours(date?.from!, 0);
+      const to = setHours(date?.to!, 24);
       const itemsRef: CollectionReference = collection(
         db,
         'stores',
@@ -185,12 +188,12 @@ export default function AnalyticsPage() {
       );
       const itemsQuery = query(
         itemsRef,
-        where('created_at', '>=', Timestamp.fromDate(date?.from!)),
-        where('created_at', '<', Timestamp.fromDate(date?.to!))
+        where('created_at', '>=', Timestamp.fromDate(from)),
+        where('created_at', '<=', Timestamp.fromDate(to))
       );
       const itemsData: QuerySnapshot<DocumentData, DocumentData> =
         await getDocs(itemsQuery);
-
+      console.log(date?.from!, date?.to!, itemsData.docs.length);
       const analyticsData: Analytic[] = itemsData.docs.map((doc) => {
         return {
           city: doc.data().city,

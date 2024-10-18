@@ -8,12 +8,22 @@ import {
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { Separator } from '@/components/ui/separator';
-import { Timestamp } from 'firebase/firestore';
-// import { client } from '@/lib/contentful';
+import { db } from '@/lib/firebase';
+import {
+  doc,
+  DocumentData,
+  DocumentReference,
+  getDoc,
+  Timestamp,
+} from 'firebase/firestore';
+
 import { Metadata } from 'next';
+import { remark } from 'remark';
+import html from 'remark-html';
 
 type Params = Promise<{ slug: string }>;
 type Data = {
+  error?: string;
   title: string;
   banner: any;
   body: any;
@@ -21,6 +31,30 @@ type Data = {
 };
 
 async function getData(slug: string) {
+  const articleRef: DocumentReference = doc(db, 'blog', slug);
+  const articleData: DocumentData = await getDoc(articleRef);
+
+  if (articleData.exists() && articleData.data().status === 'Public') {
+    const processedContent = await remark()
+      .use(html)
+      .process(articleData.data().body);
+    const contentHtml = processedContent.toString();
+
+    return {
+      title: articleData.data().name,
+      banner: articleData.data().banner_url,
+      body: contentHtml,
+      created_at: Timestamp.fromDate(new Date()),
+    };
+  } else if (articleData.exists() && articleData.data().status === 'Private') {
+    return {
+      error: 'This article is no longer available',
+      title: '',
+      banner: '',
+      body: '',
+      created_at: Timestamp.fromDate(new Date()),
+    };
+  }
   // const currentClient = client;
 
   // fetch data
@@ -52,25 +86,25 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const data: Data = await getData(slug);
-  const strings = data.body.content.map((item: any) => {
-    if (item.nodeType === 'embedded-asset-block') {
-      return;
-    }
-    return item.content[0].value;
-  });
+  // const strings = data.body.content.map((item: any) => {
+  //   if (item.nodeType === 'embedded-asset-block') {
+  //     return;
+  //   }
+  //   return item.content[0].value;
+  // });
   const openGraphImages: string[] = [];
-  if (data.banner !== undefined) {
-    openGraphImages.push(`https:${data.banner.fields.file.url}`);
-  }
+  // if (data.banner !== undefined) {
+  //   openGraphImages.push(`https:${data.banner.fields.file.url}`);
+  // }
   return {
     title: `${data.title} - Blog`,
-    description: strings.join(' '),
+    description: "strings.join(' ')", // TODO FIX THIS TO DISPLAY Caption of article
     openGraph: {
       type: 'website',
       url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/store/${slug}`,
       title: `${data.title} - Blog`,
       siteName: 'SubPort Creator Platform',
-      description: strings.join(' '),
+      description: "strings.join(' ')", // TODO FIX THIS TO DISPLAY Caption of article
       images: openGraphImages,
     },
     twitter: {
@@ -78,7 +112,7 @@ export async function generateMetadata({
       creator: data.title,
       images: openGraphImages,
       title: `${data.title} - Blog`,
-      description: strings.join(' '),
+      description: "strings.join(' ')", // TODO FIX THIS TO DISPLAY Caption of article
       site: 'SubPort Creator Platform',
     },
   };
@@ -112,6 +146,7 @@ export default async function BlogPost({ params }: { params: Params }) {
       <section className="mx-auto w-full max-w-[2428px]">
         <section className="flex flex-col gap-2 px-4 py-8">
           {/* <RichText content={data.body} /> */}
+          <div dangerouslySetInnerHTML={{ __html: data.body }} />
         </section>
       </section>
     </section>

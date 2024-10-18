@@ -21,28 +21,6 @@ import { cn } from '@/lib/utils';
 import { collection, query, where } from 'firebase/firestore';
 import { useCollection } from 'react-firebase-hooks/firestore';
 
-const frameworks = [
-  {
-    value: 'next.js',
-    label: 'Next.js',
-  },
-  {
-    value: 'sveltekit',
-    label: 'SvelteKit',
-  },
-  {
-    value: 'nuxt.js',
-    label: 'Nuxt.js',
-  },
-  {
-    value: 'remix',
-    label: 'Remix',
-  },
-  {
-    value: 'astro',
-    label: 'Astro',
-  },
-];
 type Props = {
   userID: string;
   address?: string;
@@ -53,7 +31,7 @@ type Props = {
 export function ShipFromSelect(props: Props) {
   const blogsRef = collection(db, 'addresses');
   const q = query(blogsRef, where('owner_id', '==', props.userID));
-  const [addressSnapShots, loading] = useCollection(q);
+  const [addressSnapShots, loading] = useCollection(q); // TODO Remove
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState('');
 

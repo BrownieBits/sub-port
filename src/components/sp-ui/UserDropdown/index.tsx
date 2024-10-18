@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { auth, db } from '@/lib/firebase';
 import userStore from '@/stores/userStore';
 import {
@@ -12,14 +13,19 @@ import {
   faShirt,
   faSignOut,
   faStore,
+  faToolbox,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getCookie } from 'cookies-next';
-import { doc } from 'firebase/firestore';
+import {
+  doc,
+  DocumentData,
+  DocumentReference,
+  getDoc,
+} from 'firebase/firestore';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useDocument } from 'react-firebase-hooks/firestore';
+import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';
 import {
   DropdownMenu,
@@ -34,13 +40,17 @@ import {
   DropdownMenuTrigger,
 } from '../../ui/dropdown-menu';
 
+type StoreInfo = {
+  avatar_url: string;
+  store_name: string;
+};
 export const UserDropdown = () => {
+  const user_loaded = userStore((state) => state.user_loaded);
   const user_name = userStore((state) => state.user_name);
   const user_store = userStore((state) => state.user_store);
   const user_plan = userStore((state) => state.user_plan);
-  const default_store = getCookie('default_store') || 'f';
-  const docRef = doc(db, 'stores', default_store!);
-  const [value, loadingDoc, docError] = useDocument(docRef);
+  const user_role = userStore((state) => state.user_role);
+  const [storeInfo, setStoreInfo] = React.useState<StoreInfo | null>(null);
   const { push } = useRouter();
   const { setTheme } = useTheme();
 
@@ -49,8 +59,26 @@ export const UserDropdown = () => {
     push('/sign-in');
   }
 
-  if (user_store === '') {
-    return <></>;
+  async function getStore() {
+    const storeRef: DocumentReference = doc(db, 'stores', user_store);
+    const storeDoc: DocumentData = await getDoc(storeRef);
+
+    if (storeDoc.exists()) {
+      setStoreInfo({
+        avatar_url: storeDoc.data().avatar_url,
+        store_name: storeDoc.data().name,
+      });
+    }
+  }
+
+  React.useEffect(() => {
+    if (user_loaded) {
+      getStore();
+    }
+  }, [user_loaded]);
+
+  if (!user_loaded || storeInfo === null) {
+    return <Skeleton className="h-[29px] w-[29px] rounded-full" />;
   }
   return (
     <DropdownMenu>
@@ -58,11 +86,11 @@ export const UserDropdown = () => {
         <Button variant="ghost" className="bg-layer-one p-0 hover:bg-layer-one">
           <Avatar className="h-[29px] w-[29px] bg-secondary text-foreground">
             <AvatarImage
-              src={value?.data()?.avatar_url}
-              alt={value?.data()?.name}
+              src={storeInfo.avatar_url}
+              alt={storeInfo.store_name}
             />
             <AvatarFallback className="border-primary bg-primary text-foreground">
-              <b>{value?.data()?.name.slice(0, 1).toUpperCase()}</b>
+              <b>{storeInfo.store_name.slice(0, 1).toUpperCase()}</b>
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -79,7 +107,7 @@ export const UserDropdown = () => {
             className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
           >
             <Link href={`/store/${user_store}`} aria-label="Store">
-              @{default_store}
+              @{user_store}
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -90,7 +118,7 @@ export const UserDropdown = () => {
               asChild
               className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
             >
-              <Link href={`/switch-stores`} aria-label="Store">
+              <Link href={`/switch-stores`} aria-label="Switch Store">
                 <FontAwesomeIcon className="icon mr-4" icon={faRepeat} />
                 Swtich Stores
               </Link>
@@ -233,6 +261,22 @@ export const UserDropdown = () => {
             </DropdownMenuPortal>
           </DropdownMenuSub>
         </DropdownMenuGroup>
+        {user_role === 'admin' && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuGroup className="space-y-0 py-4">
+              <DropdownMenuItem
+                asChild
+                className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+              >
+                <Link href={`/admin`} aria-label="Admin">
+                  <FontAwesomeIcon className="icon mr-4" icon={faToolbox} />
+                  Admin
+                </Link>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
