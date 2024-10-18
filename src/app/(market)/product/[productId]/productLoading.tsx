@@ -1,6 +1,5 @@
 'use client';
 import { Skeleton } from '@/components/ui/skeleton';
-import ProductComments from './comments/productComments';
 
 export default function ProductLoading() {
   return (
@@ -8,7 +7,6 @@ export default function ProductLoading() {
       <section key="productInfo" className="flex flex-col gap-8 md:flex-row">
         <section className="flex w-full flex-1 flex-col gap-4">
           <Skeleton className="flex aspect-square w-full" />
-          <ProductComments />
         </section>
         <section className="flex w-full flex-col md:w-[350px] xl:w-[400px]">
           <section className="flex justify-between">
