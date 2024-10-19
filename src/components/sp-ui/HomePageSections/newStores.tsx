@@ -19,7 +19,6 @@ import {
   orderBy,
   query,
   QuerySnapshot,
-  where,
 } from 'firebase/firestore';
 import React from 'react';
 
@@ -36,12 +35,7 @@ export function NewStores() {
 
   async function getStores() {
     const storesRef: CollectionReference = collection(db, 'stores');
-    const q = query(
-      storesRef,
-      where('password_protected', '==', false),
-      orderBy('created_at', 'desc'),
-      limit(6)
-    );
+    const q = query(storesRef, orderBy('created_at', 'desc'), limit(6));
     const storesData: QuerySnapshot<DocumentData, DocumentData> =
       await getDocs(q);
     if (!storesData.empty) {

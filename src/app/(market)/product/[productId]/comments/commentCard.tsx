@@ -34,6 +34,7 @@ import {
   Timestamp,
   updateDoc,
 } from 'firebase/firestore';
+import Link from 'next/link';
 import React from 'react';
 import { toast } from 'sonner';
 import { revalidate } from './actions';
@@ -180,16 +181,26 @@ export default function CommentCard(props: {
 
   return (
     <section className="flex w-full items-start gap-4">
-      <Avatar className="h-[50px] w-[50px]">
-        <AvatarImage src={props.avatar_url} alt="Avatar" />
-        <AvatarFallback className="border-background bg-primary text-primary-foreground">
-          <b>{props.store_name.slice(0, 1).toUpperCase()}</b>
-        </AvatarFallback>
-      </Avatar>
+      <Link
+        href={`/store/${props.store_id}`}
+        title={`@${props.store_id} store`}
+      >
+        <Avatar className="h-[50px] w-[50px]">
+          <AvatarImage src={props.avatar_url} alt="Avatar" />
+          <AvatarFallback className="border-background bg-primary text-primary-foreground">
+            <b>{props.store_name.slice(0, 1).toUpperCase()}</b>
+          </AvatarFallback>
+        </Avatar>
+      </Link>
       <section className="flex flex-1 gap-4">
         <section className="flex flex-1 flex-col items-start gap-1">
           <section className="jusitfy-start flex w-full items-center gap-2">
-            <p className="text-sm font-bold">@{props.store_id}</p>
+            <Link
+              href={`/store/${props.store_id}`}
+              title={`@${props.store_id} store`}
+            >
+              <p className="text-sm font-bold">@{props.store_id}</p>
+            </Link>
             <p className="text-sm text-muted-foreground">{timeDifference()}</p>
             {props.is_pinned && (
               <p className="text-sm text-muted-foreground">

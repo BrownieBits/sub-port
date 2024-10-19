@@ -1,8 +1,5 @@
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
-import { faStore } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   DocumentData,
   DocumentReference,
@@ -11,7 +8,6 @@ import {
 } from 'firebase/firestore';
 import { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { LatestBlog } from './latestBlog';
 import { LatestProduct } from './latestProduct';
@@ -66,27 +62,6 @@ export default async function Dashboard() {
 
   return (
     <>
-      {!data.data().password_protected ? (
-        <></>
-      ) : (
-        <section className="flex w-full justify-center bg-destructive py-[5px]">
-          <p>
-            Your store is currently password protect with:{' '}
-            <b>{data.data().password}</b>. You can change this in the{' '}
-            <Button
-              variant="link"
-              size="sm"
-              asChild
-              className="px-[5px] text-foreground"
-            >
-              <Link href="/dashboard/preferences">
-                <FontAwesomeIcon className="icon mr-[5px]" icon={faStore} />
-                <b>Preferences</b>
-              </Link>
-            </Button>
-          </p>
-        </section>
-      )}
       <section className="mx-auto w-full max-w-[2428px]">
         <section className="flex w-full items-center justify-between gap-4 px-4 py-4">
           <h1>Dashboard</h1>

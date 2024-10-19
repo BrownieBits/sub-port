@@ -1,10 +1,8 @@
-import ProductCard from '@/components/sp-ui/ProductCard';
 import { ShowAvatar } from '@/components/sp-ui/ShowAvatar';
 import { SubsciberButton } from '@/components/sp-ui/SubscribeButton';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
-import { GridProduct } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import {
   CollectionReference,
@@ -19,21 +17,19 @@ import {
   where,
 } from 'firebase/firestore';
 import { Metadata } from 'next';
-import { revalidatePath } from 'next/cache';
 import { cookies, headers } from 'next/headers';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
-import { StorePasswordForm } from '../../password-protection';
 import { ShowMoreText } from '../../showMoreText';
 import StoreLoading from '../../storeLoading';
 import TrackStoreViews from '../../trackStoreViews';
+import { ProductFeed } from './productFeed';
 
 type Params = Promise<{ slug: string; collection: string }>;
 type Data = {
   store: DocumentData;
   collection: DocumentData;
-  products: QuerySnapshot<DocumentData, DocumentData>;
   collections: QuerySnapshot<DocumentData, DocumentData>;
 };
 
@@ -56,16 +52,6 @@ async function getData(store: string, collectionId: string) {
     redirect(`/store/${store}`);
   }
 
-  const productsRef: CollectionReference = collection(db, 'products');
-  const q = query(
-    productsRef,
-    where('store_id', '==', store),
-    where('__name__', 'in', collectionData.data().products),
-    where('status', '==', 'Public')
-  );
-  const productData: QuerySnapshot<DocumentData, DocumentData> =
-    await getDocs(q);
-
   const collectionsRef: CollectionReference = collection(
     db,
     `stores/${store}/collections`
@@ -77,7 +63,6 @@ async function getData(store: string, collectionId: string) {
   return {
     store: storeData,
     collection: collectionData,
-    products: productData,
     collections: collectionsData,
   };
 }
@@ -143,11 +128,6 @@ export default async function StoreCollection({ params }: { params: Params }) {
   const region = (await headers()).get('x-geo-region') as string;
   const ip = (await headers()).get('x-ip') as string;
 
-  async function revalidate() {
-    'use server';
-    revalidatePath(`/store/${slug}`);
-  }
-
   if (data === 'No Store') {
     return (
       <section>
@@ -157,42 +137,7 @@ export default async function StoreCollection({ params }: { params: Params }) {
       </section>
     );
   }
-  if (
-    data.store.data().password_protected &&
-    data.store.data().password !== null &&
-    data.store.data().password !== store_pw?.value!
-  ) {
-    return (
-      <section>
-        <section className="align-center flex h-[calc(100vh-56px)] w-full flex-col items-center justify-center gap-4 px-4 py-8">
-          <section className="flex flex-col rounded border bg-layer-one p-8">
-            <p className="pb-4">
-              <b>{data.store.data().name} is password protected</b>
-            </p>
-            <StorePasswordForm
-              revalidate={revalidate}
-              pw={data.store.data().password}
-              cookieSlug={`${slug}-pw`}
-            />
-          </section>
-        </section>
-      </section>
-    );
-  }
-  const products: GridProduct[] = data.products.docs.map((product) => {
-    return {
-      name: product.data().name,
-      images: product.data().images,
-      product_type: product.data().product_type,
-      price: product.data().price,
-      compare_at: product.data().compare_at,
-      currency: product.data().currency,
-      like_count: product.data().like_count,
-      store_id: product.data().store_id,
-      created_at: product.data().created_at,
-      id: product.id,
-    };
-  });
+
   return (
     <Suspense fallback={<StoreLoading />}>
       <>
@@ -226,10 +171,10 @@ export default async function StoreCollection({ params }: { params: Params }) {
                     {data.store.data().subscription_count > 1 ? 's' : ''}
                   </p>
                   <span className="text-sm text-muted-foreground">&bull;</span>
-                  <p className="block w-auto text-sm text-muted-foreground">
+                  {/* <p className="block w-auto text-sm text-muted-foreground">
                     {data.products.docs.length} product
                     {data.products.docs.length > 1 ? 's' : ''}
-                  </p>
+                  </p> */}
                 </section>
                 <section className="hidden md:flex">
                   <ShowMoreText
@@ -239,7 +184,7 @@ export default async function StoreCollection({ params }: { params: Params }) {
                     location={data.store.data().country}
                     created_at={data.store.data().created_at}
                     view_count={data.store.data().view_count}
-                    product_count={data.products.docs.length}
+                    // product_count={data.products.docs.length}
                     subscription_count={data.store.data().subscription_count}
                   />
                 </section>
@@ -253,7 +198,7 @@ export default async function StoreCollection({ params }: { params: Params }) {
                 location={data.store.data().country}
                 created_at={data.store.data().created_at}
                 view_count={data.store.data().view_count}
-                product_count={data.products.docs.length}
+                // product_count={data.products.docs.length}
                 subscription_count={data.store.data().subscription_count}
               />
             </section>
@@ -304,22 +249,16 @@ export default async function StoreCollection({ params }: { params: Params }) {
           )}
         </section>
         <Separator />
-        <section className="mx-auto w-full max-w-[2428px]">
-          {products?.length! > 0 ? (
-            <section className="grid grid-cols-1 gap-8 p-4 md:grid-cols-3 xl:grid-cols-6">
-              {products?.map((doc) => (
-                <ProductCard
-                  product={doc}
-                  show_creator={false}
-                  key={doc.id}
-                  avatar={data.store.data().avatar_url}
-                />
-              ))}
-            </section>
-          ) : (
-            <p>This store has no products at this time.</p>
-          )}
-        </section>
+        {data.collection.data().type === 'Manual' && (
+          <ProductFeed
+            store_id={slug}
+            product_list={data.collection.data().products}
+          />
+        )}
+        {data.collection.data().type === 'Smart' && (
+          <ProductFeed store_id={slug} tag_list={data.collection.data().tags} />
+        )}
+
         <TrackStoreViews
           country={country}
           city={city}

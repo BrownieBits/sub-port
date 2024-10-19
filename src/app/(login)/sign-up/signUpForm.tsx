@@ -22,7 +22,6 @@ import {
   writeBatch,
 } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { generate } from 'random-words';
 import {
   useAuthState,
   useCreateUserWithEmailAndPassword,
@@ -112,12 +111,6 @@ export function SignUpForm({
   });
 
   async function onSubmit() {
-    const words = generate({
-      exactly: 2,
-      formatter: (word) => {
-        return word.slice(0, 1).toUpperCase().concat(word.slice(1));
-      },
-    }) as string[];
     const newUser = await createUserWithEmailAndPassword(
       form.getValues('email'),
       form.getValues('passwords.password')
@@ -150,8 +143,6 @@ export function SignUpForm({
       ],
       users_list: [newUser?.user.uid!],
       status: 'Public',
-      password_protected: true,
-      password: words.join('-'),
       subscription_count: 0,
       view_count: 0,
       country: country,

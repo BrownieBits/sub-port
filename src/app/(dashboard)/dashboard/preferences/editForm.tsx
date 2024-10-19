@@ -20,7 +20,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { country_list } from '@/lib/countryList';
 import { db, storage } from '@/lib/firebase';
@@ -37,7 +36,6 @@ import {
 import { deleteObject, getDownloadURL, ref } from 'firebase/storage';
 import Image from 'next/image';
 import Link from 'next/link';
-import { generate } from 'random-words';
 import React from 'react';
 import { useUploadFile } from 'react-firebase-hooks/storage';
 import { useForm } from 'react-hook-form';
@@ -91,14 +89,6 @@ const formSchema = z.object({
         ),
       'Only these types are allowed .jpg, .jpeg, .png and .webp'
     ),
-  password_protected: z.boolean().default(false),
-  password: z
-    .string()
-    .min(1, { message: 'Store password must be 1 or more characters long' })
-    .max(32, {
-      message: 'Store password must be no more than 32 characters long',
-    })
-    .optional(),
 });
 
 export default function EditForm(props: {
@@ -121,8 +111,6 @@ export default function EditForm(props: {
       country: props.data.country,
       avatar: undefined,
       banner: undefined,
-      password_protected: props.data.password_protected || false,
-      password: props.data.password || '',
     },
   });
 
@@ -209,21 +197,6 @@ export default function EditForm(props: {
   }
 
   async function onSubmit() {
-    let password = form.getValues('password');
-
-    if (
-      form.getValues('password_protected') &&
-      form.getValues('password') === ''
-    ) {
-      const words = generate({
-        exactly: 2,
-        formatter: (word) => {
-          return word.slice(0, 1).toUpperCase().concat(word.slice(1));
-        },
-      }) as string[];
-      password = words.join('-');
-      form.setValue('password', password);
-    }
     const docRef: DocumentReference = doc(db, 'stores', props.storeID);
     try {
       setDisabled(true);
@@ -237,8 +210,6 @@ export default function EditForm(props: {
         avatar_filename: avatar_fileName,
         banner_url: banner,
         banner_filename: banner_fileName,
-        password_protected: form.getValues('password_protected'),
-        password: password,
         country: form.getValues('country'),
         updated_at: Timestamp.fromDate(new Date()),
       });
@@ -555,54 +526,6 @@ export default function EditForm(props: {
                       </FormItem>
                     );
                   }}
-                />
-              </aside>
-            </section>
-
-            <section className="flex flex-col gap-8 md:flex-row">
-              <aside className="w-full md:w-[200px] lg:w-[300px] xl:w-[600px]">
-                <p className="pb-4">
-                  <b>Restrict Store Access</b>
-                </p>
-                <p>Limit who can access your online store.</p>
-              </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
-                <FormField
-                  control={form.control}
-                  name="password_protected"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between gap-8 rounded-lg border p-3 shadow-sm">
-                      <div className="space-y-0.5">
-                        <FormLabel>Password protection</FormLabel>
-                        <FormDescription>
-                          Restrict access to visitors with the password
-                        </FormDescription>
-                      </div>
-                      <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="password"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Password</FormLabel>
-                      <FormControl>
-                        <Input
-                          onChangeCapture={field.onChange}
-                          id="password"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
                 />
               </aside>
             </section>

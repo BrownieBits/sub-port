@@ -33,7 +33,6 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { generate } from 'random-words';
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -80,12 +79,6 @@ export default function NewStoreForm({ userID }: { userID: string }) {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setOpen(false);
-    const words = generate({
-      exactly: 2,
-      formatter: (word) => {
-        return word.slice(0, 1).toUpperCase().concat(word.slice(1));
-      },
-    }) as string[];
     const storeRef: DocumentReference = doc(
       db,
       'stores',
@@ -110,8 +103,6 @@ export default function NewStoreForm({ userID }: { userID: string }) {
       ],
       users_list: [userID],
       status: 'Public',
-      password_protected: true,
-      password: words.join('-'),
       subscription_count: 0,
       owner_id: userID,
       created_at: Timestamp.fromDate(new Date()),

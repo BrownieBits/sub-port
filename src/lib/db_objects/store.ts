@@ -9,8 +9,6 @@ type _DBStore = {
     description: string;
     name: string;
     owner_id: string;
-    password: string;
-    password_protected: boolean;
     status: string;
     subscription_count: number;
     users: {

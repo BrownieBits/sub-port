@@ -244,7 +244,7 @@ export default function ProductDetailPage(props: Props) {
     setSelectedOptions(newOptionList);
   }, []);
 
-  if (!user_loaded || !cart_loaded) {
+  if (!user_loaded) {
     return <ProductLoading />;
   }
   return (
@@ -387,38 +387,47 @@ export default function ProductDetailPage(props: Props) {
             </Form>
           </section>
 
-          {maxQuantity == 0 ? (
+          {!cart_loaded ? (
             <Button variant="outline" className="mt-8">
-              Sold Out
+              Loading Cart
             </Button>
           ) : (
             <>
-              {props.options.length == 0 ||
-              (props.options.length > 0 && !selectedOptions.includes('')) ? (
+              {maxQuantity == 0 ? (
+                <Button variant="outline" className="mt-8">
+                  Sold Out
+                </Button>
+              ) : (
                 <>
-                  {thinking ? (
-                    <Button variant="outline" className="mt-8">
-                      <FontAwesomeIcon
-                        className="icon mr-2 h-4 w-4"
-                        icon={faSpinner}
-                        spin
-                      />
-                      Adding
-                    </Button>
+                  {props.options.length == 0 ||
+                  (props.options.length > 0 &&
+                    !selectedOptions.includes('')) ? (
+                    <>
+                      {thinking ? (
+                        <Button variant="outline" className="mt-8">
+                          <FontAwesomeIcon
+                            className="icon mr-2 h-4 w-4"
+                            icon={faSpinner}
+                            spin
+                          />
+                          Adding
+                        </Button>
+                      ) : (
+                        <Button
+                          type="submit"
+                          onClick={form.handleSubmit(onSubmit)}
+                          className="mt-8"
+                        >
+                          Add To Cart
+                        </Button>
+                      )}
+                    </>
                   ) : (
-                    <Button
-                      type="submit"
-                      onClick={form.handleSubmit(onSubmit)}
-                      className="mt-8"
-                    >
-                      Add To Cart
+                    <Button variant="outline" className="mt-8">
+                      Select Options
                     </Button>
                   )}
                 </>
-              ) : (
-                <Button variant="outline" className="mt-8">
-                  Select Options
-                </Button>
               )}
             </>
           )}

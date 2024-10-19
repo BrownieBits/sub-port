@@ -102,7 +102,7 @@ export default function NewCollectionButton() {
         name: values.name,
         type: values.type,
         products: [],
-        tags: '',
+        tags: [],
         status: 'Private',
         owner_id: user_id,
         store_id: default_store,

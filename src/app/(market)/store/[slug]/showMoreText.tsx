@@ -29,7 +29,6 @@ import {
   faHeart,
   faInfoCircle,
   faShare,
-  faShirt,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Timestamp } from 'firebase/firestore';
@@ -42,7 +41,7 @@ export const ShowMoreText = (props: {
   location: string;
   created_at: Timestamp;
   view_count: number;
-  product_count: number;
+  // product_count: number;
   subscription_count: number;
 }) => {
   const timestamp = new Date(
@@ -95,14 +94,14 @@ export const ShowMoreText = (props: {
                   {props.subscription_count} subscriber
                   {props.subscription_count > 1 ? 's' : ''}
                 </span>
-                <span className="pb-4 text-foreground">
+                {/* <span className="pb-4 text-foreground">
                   <FontAwesomeIcon
                     className="icon mr-2 h-4 w-4"
                     icon={faShirt}
                   />
                   {props.product_count} product
                   {props.product_count > 1 ? 's' : ''}
-                </span>
+                </span> */}
                 <span className="pb-4 text-foreground">
                   <FontAwesomeIcon
                     className="icon mr-2 h-4 w-4"
@@ -201,11 +200,11 @@ export const ShowMoreText = (props: {
                 {props.subscription_count} subscriber
                 {props.subscription_count > 1 ? 's' : ''}
               </span>
-              <span className="pb-4 text-foreground">
+              {/* <span className="pb-4 text-foreground">
                 <FontAwesomeIcon className="icon mr-2 h-4 w-4" icon={faShirt} />
                 {props.product_count} product
                 {props.product_count > 1 ? 's' : ''}
-              </span>
+              </span> */}
               <span className="pb-4 text-foreground">
                 <FontAwesomeIcon
                   className="icon mr-2 h-4 w-4"

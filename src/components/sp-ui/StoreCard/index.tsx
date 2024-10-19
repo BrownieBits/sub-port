@@ -18,8 +18,10 @@ export default function StoreCard(props: Props) {
         <section className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-full">
           <Avatar className="aspect-square h-full w-full">
             <AvatarImage src={props.avatar_url!} alt={props.name} />
-            <AvatarFallback className="border-background bg-foreground text-background">
-              {props.name.slice(0, 1).toUpperCase()}
+            <AvatarFallback className="border-background bg-primary text-primary-foreground">
+              <p className="text-6xl font-bold">
+                {props.name.slice(0, 1).toUpperCase()}
+              </p>
             </AvatarFallback>
           </Avatar>
         </section>

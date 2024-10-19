@@ -24,6 +24,7 @@ export type GridProduct = {
     id: string;
     revenue?: number;
     view_count?: number;
+    status?: string;
 };
 
 export type Item = {
