@@ -43,7 +43,6 @@ export function NavSection({
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => {
-            console.log(item.url, pathname);
             if (item.needs_user && user_id === '') {
               return (
                 <SidebarMenuItem key={`menu_item_${item.name}`}>

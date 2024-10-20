@@ -185,7 +185,6 @@ export default function Edit(props: {
       setSelectedTags([]);
     }
   }, [tagField]);
-  console.log(selectedTags);
   return (
     <section>
       <section className="mx-auto w-full max-w-[1754px]">

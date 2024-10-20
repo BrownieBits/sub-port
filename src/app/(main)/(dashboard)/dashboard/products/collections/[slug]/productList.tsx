@@ -21,7 +21,6 @@ export function ProductList(props: {
   product_list?: string[];
   tag_list?: string[];
 }) {
-  console.log('PL Tags', props.tag_list);
   const [products, setProducts] = React.useState<GridProduct[] | undefined>(
     undefined
   );

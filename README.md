@@ -101,8 +101,7 @@ TODO:
   - [ ] Privacy Policy
     - [ ] Need to get a privacy policy and lay it out
   - [x] Product
-  - [ ] Send Feedback
-    - [ ] Create form to submit feedback
+  - [x] Send Feedback
   - [x] Store
   - [x] Subscriptions
   - [ ] Terms of Services
