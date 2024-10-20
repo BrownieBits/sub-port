@@ -86,7 +86,7 @@ export default function AddOptionDrawer(props: Props) {
             variant="ghost"
             size="icon"
             type="button"
-            className="bg-layer-one text-xl hover:bg-layer-two"
+            className="hover: text-xl"
             asChild
           >
             <p className="text-lg">
@@ -94,11 +94,7 @@ export default function AddOptionDrawer(props: Props) {
             </p>
           </Button>
         ) : (
-          <Button
-            variant="outline"
-            type="button"
-            className="bg-layer-one hover:bg-layer-two"
-          >
+          <Button variant="outline" type="button" className="hover:">
             <FontAwesomeIcon className="icon mr-2" icon={faSquarePlus} />
             Add Option
           </Button>

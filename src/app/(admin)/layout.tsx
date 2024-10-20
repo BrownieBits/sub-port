@@ -13,7 +13,7 @@ export default async function AdminLayout({
       </section>
       <section className="grid w-full grid-cols-[0_auto] xl:grid-cols-[250px_auto]">
         <nav
-          className={`flex h-[calc(100vh-56px)] min-h-[calc(100vh-56px)] border-r-[1px] border-r-border bg-layer-one`}
+          className={`bg-red flex h-[calc(100vh-56px)] min-h-[calc(100vh-56px)] border-r-[1px] border-r-border`}
         >
           <AdminNav inSheet={false} />
         </nav>

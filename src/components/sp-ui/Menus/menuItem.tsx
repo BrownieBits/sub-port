@@ -29,7 +29,7 @@ export const MenuItem = (props: Props) => {
               <Link
                 href={`/sign-in?redirect=${props.item.url}`}
                 aria-label={`Sign In to Access ${props.item.name}`}
-                className="flex w-full justify-start bg-layer-one px-4 py-2 text-muted-foreground hover:bg-layer-two hover:no-underline"
+                className="hover: flex w-full justify-start px-4 py-2 text-muted-foreground hover:no-underline"
               >
                 <p>
                   <i className={`${props.item.icon} mr-2 h-4 w-4`}></i>
@@ -48,7 +48,7 @@ export const MenuItem = (props: Props) => {
           <Link
             href={`/sign-in?redirect=${props.item.url}`}
             aria-label={`Sign In to Access ${props.item.name}`}
-            className="flex w-full justify-start bg-layer-one px-4 py-2 text-muted-foreground hover:bg-layer-two hover:no-underline"
+            className="hover: flex w-full justify-start px-4 py-2 text-muted-foreground hover:no-underline"
           >
             <p>
               <i className={`${props.item.icon} mr-2 h-4 w-4`}></i>
@@ -68,11 +68,7 @@ export const MenuItem = (props: Props) => {
           href={props.item.url}
           aria-label={props.item.name}
           className={cn(
-            'flex w-full justify-start px-4 py-2 text-foreground hover:no-underline',
-            {
-              'bg-layer-two hover:bg-layer-three': pathname === props.item.url,
-              'bg-layer-one hover:bg-layer-two': pathname !== props.item.url,
-            }
+            'flex w-full justify-start px-4 py-2 text-foreground hover:no-underline'
           )}
         >
           <p>
@@ -88,11 +84,7 @@ export const MenuItem = (props: Props) => {
       href={props.item.url}
       aria-label={props.item.name}
       className={cn(
-        'flex w-full justify-start px-4 py-2 text-foreground hover:no-underline',
-        {
-          'bg-layer-two hover:bg-layer-three': pathname === props.item.url,
-          'bg-layer-one hover:bg-layer-two': pathname !== props.item.url,
-        }
+        'flex w-full justify-start px-4 py-2 text-foreground hover:no-underline'
       )}
     >
       <p>

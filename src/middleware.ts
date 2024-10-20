@@ -17,6 +17,9 @@ export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/dashboard') && request.cookies.get('user_id') === undefined) {
     return NextResponse.redirect(new URL(`/sign-in?redirect=${request.nextUrl.pathname}`, request.url))
   }
+  if (request.nextUrl.pathname.startsWith('/switch-stores') && request.cookies.get('user_id') === undefined) {
+    return NextResponse.redirect(new URL(`/sign-in?redirect=${request.nextUrl.pathname}`, request.url))
+  }
   if (request.nextUrl.pathname.startsWith('/sign-in') && request.cookies.get('user_id') !== undefined) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }

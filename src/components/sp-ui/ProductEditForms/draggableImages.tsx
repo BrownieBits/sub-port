@@ -75,7 +75,7 @@ export default function DraggableImages(props: Props) {
           data-swapy-slot="1"
         >
           <section
-            className="relative flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three"
+            className="relative flex aspect-square items-center justify-center overflow-hidden rounded"
             data-swapy-item={productImages[0].id}
           >
             <section
@@ -84,7 +84,7 @@ export default function DraggableImages(props: Props) {
             >
               <Button
                 size="sm"
-                className="h-auto border bg-background p-2 text-foreground hover:bg-layer-two"
+                className="hover: h-auto border bg-background p-2 text-foreground"
               >
                 <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
               </Button>
@@ -116,7 +116,7 @@ export default function DraggableImages(props: Props) {
           data-swapy-slot="2"
         >
           <section
-            className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three"
+            className="flex aspect-square items-center justify-center overflow-hidden rounded"
             data-swapy-item={productImages[1].id}
           >
             <section
@@ -125,7 +125,7 @@ export default function DraggableImages(props: Props) {
             >
               <Button
                 size="sm"
-                className="h-auto border bg-background p-2 text-foreground hover:bg-layer-two"
+                className="hover: h-auto border bg-background p-2 text-foreground"
               >
                 <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
               </Button>
@@ -157,7 +157,7 @@ export default function DraggableImages(props: Props) {
           data-swapy-slot="3"
         >
           <section
-            className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three"
+            className="flex aspect-square items-center justify-center overflow-hidden rounded"
             data-swapy-item={productImages[2].id}
           >
             <section
@@ -166,7 +166,7 @@ export default function DraggableImages(props: Props) {
             >
               <Button
                 size="sm"
-                className="h-auto border bg-background p-2 text-foreground hover:bg-layer-two"
+                className="hover: h-auto border bg-background p-2 text-foreground"
               >
                 <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
               </Button>
@@ -198,7 +198,7 @@ export default function DraggableImages(props: Props) {
           data-swapy-slot="4"
         >
           <section
-            className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three"
+            className="flex aspect-square items-center justify-center overflow-hidden rounded"
             data-swapy-item={productImages[3].id}
           >
             <section
@@ -207,7 +207,7 @@ export default function DraggableImages(props: Props) {
             >
               <Button
                 size="sm"
-                className="h-auto border bg-background p-2 text-foreground hover:bg-layer-two"
+                className="hover: h-auto border bg-background p-2 text-foreground"
               >
                 <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
               </Button>
@@ -239,7 +239,7 @@ export default function DraggableImages(props: Props) {
           data-swapy-slot="5"
         >
           <section
-            className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three"
+            className="flex aspect-square items-center justify-center overflow-hidden rounded"
             data-swapy-item={productImages[4].id}
           >
             <section
@@ -248,7 +248,7 @@ export default function DraggableImages(props: Props) {
             >
               <Button
                 size="sm"
-                className="h-auto border bg-background p-2 text-foreground hover:bg-layer-two"
+                className="hover: h-auto border bg-background p-2 text-foreground"
               >
                 <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
               </Button>
@@ -280,7 +280,7 @@ export default function DraggableImages(props: Props) {
           data-swapy-slot="6"
         >
           <section
-            className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three"
+            className="flex aspect-square items-center justify-center overflow-hidden rounded"
             data-swapy-item={productImages[5].id}
           >
             <section
@@ -289,7 +289,7 @@ export default function DraggableImages(props: Props) {
             >
               <Button
                 size="sm"
-                className="h-auto border bg-background p-2 text-foreground hover:bg-layer-two"
+                className="hover: h-auto border bg-background p-2 text-foreground"
               >
                 <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
               </Button>
@@ -318,13 +318,13 @@ export default function DraggableImages(props: Props) {
 
       {productImages.length === 2 && (
         <section className="col-start-2 row-start-3 aspect-square md:col-start-4 md:row-start-1">
-          <section className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+          <section className="flex aspect-square items-center justify-center overflow-hidden rounded">
             <Button
               onClick={(event) => {
                 event.preventDefault();
                 props.uploadRef.current?.click();
               }}
-              className="h-full w-full rounded bg-layer-three text-foreground hover:bg-layer-four"
+              className="hover: h-full w-full rounded text-foreground"
             >
               <p className="text-4xl">
                 <FontAwesomeIcon className="icon" icon={faUpload} />
@@ -335,13 +335,13 @@ export default function DraggableImages(props: Props) {
       )}
       {productImages.length === 3 && (
         <section className="col-start-1 row-start-4 aspect-square md:col-start-5 md:row-start-1">
-          <section className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+          <section className="flex aspect-square items-center justify-center overflow-hidden rounded">
             <Button
               onClick={(event) => {
                 event.preventDefault();
                 props.uploadRef.current?.click();
               }}
-              className="h-full w-full rounded bg-layer-three text-foreground hover:bg-layer-four"
+              className="hover: h-full w-full rounded text-foreground"
             >
               <p className="text-4xl">
                 <FontAwesomeIcon className="icon" icon={faUpload} />
@@ -352,13 +352,13 @@ export default function DraggableImages(props: Props) {
       )}
       {productImages.length === 4 && (
         <section className="col-start-2 row-start-4 aspect-square md:col-start-3 md:row-start-2">
-          <section className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+          <section className="flex aspect-square items-center justify-center overflow-hidden rounded">
             <Button
               onClick={(event) => {
                 event.preventDefault();
                 props.uploadRef.current?.click();
               }}
-              className="h-full w-full rounded bg-layer-three text-foreground hover:bg-layer-four"
+              className="hover: h-full w-full rounded text-foreground"
             >
               <p className="text-4xl">
                 <FontAwesomeIcon className="icon" icon={faUpload} />
@@ -369,13 +369,13 @@ export default function DraggableImages(props: Props) {
       )}
       {productImages.length === 5 && (
         <section className="col-start-1 row-start-5 aspect-square md:col-start-4 md:row-start-2">
-          <section className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+          <section className="flex aspect-square items-center justify-center overflow-hidden rounded">
             <Button
               onClick={(event) => {
                 event.preventDefault();
                 props.uploadRef.current?.click();
               }}
-              className="h-full w-full rounded bg-layer-three text-foreground hover:bg-layer-four"
+              className="hover: h-full w-full rounded text-foreground"
             >
               <p className="text-4xl">
                 <FontAwesomeIcon className="icon" icon={faUpload} />

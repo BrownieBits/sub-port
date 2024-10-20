@@ -100,9 +100,7 @@ TODO:
     - [ ] Create system to post press articles
   - [ ] Privacy Policy
     - [ ] Need to get a privacy policy and lay it out
-  - [ ] Product
-    - [ ] Create form to submit a comment
-    - [ ] Show a list of comments
+  - [x] Product
   - [ ] Send Feedback
     - [ ] Create form to submit feedback
   - [x] Store

@@ -13,21 +13,17 @@ import { AdminNav } from './adminNav';
 
 export const AdminHeader = () => {
   return (
-    <header className="flex h-[56px] items-center justify-between border-b-[1px] border-b-border bg-layer-one px-4">
+    <header className="flex h-[56px] items-center justify-between border-b-[1px] border-b-border px-4">
       <div className="flex items-center gap-4">
         <Sheet>
           <SheetTrigger className="flex xl:hidden" asChild>
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-layer-one hover:bg-layer-two"
-            >
+            <Button variant="outline" size="sm" className="hover:">
               <FontAwesomeIcon icon={faBars} />
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="p-0">
             <SheetTitle className="hidden"></SheetTitle>
-            <nav className={`flex h-[100vh] bg-layer-one pt-8`}>
+            <nav className={`flex h-[100vh] pt-8`}>
               <AdminNav inSheet={true} />
             </nav>
           </SheetContent>
@@ -49,7 +45,7 @@ export const AdminHeader = () => {
             copy="Create"
             variant="outline"
             size="sm"
-            className="bg-layer-one hover:bg-layer-two"
+            className=" hover:"
           />
         </li> */}
         <li>

@@ -126,28 +126,28 @@ export default function CheckoutSummary() {
   if (!cart_loaded || cart_items === null || cart_items === undefined) {
     return (
       <aside className="flex w-full flex-col gap-4 md:w-[350px] xl:w-[400px]">
-        <Skeleton className="h-[200px] w-full rounded bg-layer-two" />
+        <Skeleton className="h-[200px] w-full rounded" />
         <section className="flex w-full flex-col gap-2">
           <section className="flex w-full justify-between">
-            <Skeleton className="h-[24px] w-[150px] rounded bg-layer-two" />
-            <Skeleton className="h-[24px] w-[75px] rounded bg-layer-two" />
+            <Skeleton className="h-[24px] w-[150px] rounded" />
+            <Skeleton className="h-[24px] w-[75px] rounded" />
           </section>
           <section className="flex w-full justify-between">
-            <Skeleton className="h-[24px] w-[150px] rounded bg-layer-two" />
-            <Skeleton className="h-[24px] w-[75px] rounded bg-layer-two" />
+            <Skeleton className="h-[24px] w-[150px] rounded" />
+            <Skeleton className="h-[24px] w-[75px] rounded" />
           </section>
           <section className="flex w-full justify-between">
-            <Skeleton className="h-[24px] w-[150px] rounded bg-layer-two" />
-            <Skeleton className="h-[24px] w-[75px] rounded bg-layer-two" />
+            <Skeleton className="h-[24px] w-[150px] rounded" />
+            <Skeleton className="h-[24px] w-[75px] rounded" />
           </section>
           <section className="flex w-full justify-between">
-            <Skeleton className="h-[24px] w-[150px] rounded bg-layer-two" />
-            <Skeleton className="h-[24px] w-[75px] rounded bg-layer-two" />
+            <Skeleton className="h-[24px] w-[150px] rounded" />
+            <Skeleton className="h-[24px] w-[75px] rounded" />
           </section>
           <Separator />
           <section className="flex w-full justify-between pt-4">
-            <Skeleton className="h-[24px] w-[150px] rounded bg-layer-two" />
-            <Skeleton className="h-[24px] w-[75px] rounded bg-layer-two" />
+            <Skeleton className="h-[24px] w-[150px] rounded" />
+            <Skeleton className="h-[24px] w-[75px] rounded" />
           </section>
         </section>
       </aside>

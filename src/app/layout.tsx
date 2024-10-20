@@ -2,6 +2,7 @@ import AuthState from '@/components/sp-ui/AuthState';
 import CartState from '@/components/sp-ui/CartState';
 import CookieConsent from '@/components/sp-ui/CookieConsent';
 import { ThemeProvider } from '@/components/sp-ui/ThemeProvider';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { analytics } from '@/lib/firebase';
@@ -80,15 +81,17 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <TooltipProvider>{children}</TooltipProvider>
-          <CookieConsent />
-          <Toaster />
-          <AuthState />
-          <CartState />
-          <Script
-            src="https://kit.fontawesome.com/fd72af6caf.js"
-            crossOrigin="anonymous"
-          ></Script>
+          <SidebarProvider>
+            <TooltipProvider>{children}</TooltipProvider>
+            <CookieConsent />
+            <Toaster />
+            <AuthState />
+            <CartState />
+            <Script
+              src="https://kit.fontawesome.com/fd72af6caf.js"
+              crossOrigin="anonymous"
+            ></Script>
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>

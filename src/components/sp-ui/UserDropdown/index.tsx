@@ -83,7 +83,7 @@ export const UserDropdown = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="bg-layer-one p-0 hover:bg-layer-one">
+        <Button variant="ghost" className="hover: p-0">
           <Avatar className="h-[29px] w-[29px] bg-secondary text-foreground">
             <AvatarImage
               src={storeInfo.avatar_url}
@@ -104,7 +104,7 @@ export const UserDropdown = () => {
           </DropdownMenuItem>
           <DropdownMenuItem
             asChild
-            className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+            className="focus: w-full cursor-pointer px-4 py-1"
           >
             <Link href={`/store/${user_store}`} aria-label="Store">
               @{user_store}
@@ -116,7 +116,7 @@ export const UserDropdown = () => {
           {user_plan !== 'free' && (
             <DropdownMenuItem
               asChild
-              className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+              className="focus: w-full cursor-pointer px-4 py-1"
             >
               <Link href={`/switch-stores`} aria-label="Switch Store">
                 <FontAwesomeIcon className="icon mr-4" icon={faRepeat} />
@@ -126,7 +126,7 @@ export const UserDropdown = () => {
           )}
           <DropdownMenuItem
             asChild
-            className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+            className="focus: w-full cursor-pointer px-4 py-1"
           >
             <form action={onSubmit}>
               <button type="submit" className="w-full text-left">
@@ -140,7 +140,7 @@ export const UserDropdown = () => {
         <DropdownMenuGroup className="space-y-0 py-4">
           <DropdownMenuItem
             asChild
-            className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+            className="focus: w-full cursor-pointer px-4 py-1"
           >
             <Link href={`/dashboard`} className="w-full" aria-label="Store">
               <FontAwesomeIcon className="icon mr-4" icon={faColumns} />
@@ -149,7 +149,7 @@ export const UserDropdown = () => {
           </DropdownMenuItem>
           <DropdownMenuItem
             asChild
-            className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+            className="focus: w-full cursor-pointer px-4 py-1"
           >
             <Link
               href={`/dashboard/products`}
@@ -162,7 +162,7 @@ export const UserDropdown = () => {
           </DropdownMenuItem>
           <DropdownMenuItem
             asChild
-            className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+            className="focus: w-full cursor-pointer px-4 py-1"
           >
             <Link
               href={`/dashboard/preferences`}
@@ -177,26 +177,26 @@ export const UserDropdown = () => {
         <DropdownMenuSeparator />
         <DropdownMenuGroup className="space-y-0 py-4">
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three">
+            <DropdownMenuSubTrigger className="focus: w-full cursor-pointer px-4 py-1">
               <FontAwesomeIcon className="icon mr-4" icon={faBrush} />
               Appearance
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent className="space-y-0 py-4">
                 <DropdownMenuItem
-                  className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+                  className="focus: w-full cursor-pointer px-4 py-1"
                   onClick={() => setTheme('light')}
                 >
                   Light
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+                  className="focus: w-full cursor-pointer px-4 py-1"
                   onClick={() => setTheme('dark')}
                 >
                   Dark
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+                  className="focus: w-full cursor-pointer px-4 py-1"
                   onClick={() => setTheme('system')}
                 >
                   System
@@ -205,26 +205,26 @@ export const UserDropdown = () => {
             </DropdownMenuPortal>
           </DropdownMenuSub>
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three">
+            <DropdownMenuSubTrigger className="focus: w-full cursor-pointer px-4 py-1">
               <FontAwesomeIcon className="icon mr-4" icon={faLanguage} />
               Language
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent className="space-y-0 py-4">
                 <DropdownMenuItem
-                  className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+                  className="focus: w-full cursor-pointer px-4 py-1"
                   onClick={() => setTheme('light')}
                 >
                   Light
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+                  className="focus: w-full cursor-pointer px-4 py-1"
                   onClick={() => setTheme('dark')}
                 >
                   Dark
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+                  className="focus: w-full cursor-pointer px-4 py-1"
                   onClick={() => setTheme('system')}
                 >
                   System
@@ -233,26 +233,26 @@ export const UserDropdown = () => {
             </DropdownMenuPortal>
           </DropdownMenuSub>
           <DropdownMenuSub>
-            <DropdownMenuSubTrigger className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three">
+            <DropdownMenuSubTrigger className="focus: w-full cursor-pointer px-4 py-1">
               <FontAwesomeIcon className="icon mr-4" icon={faGlobe} />
               Location
             </DropdownMenuSubTrigger>
             <DropdownMenuPortal>
               <DropdownMenuSubContent className="space-y-0 py-4">
                 <DropdownMenuItem
-                  className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+                  className="focus: w-full cursor-pointer px-4 py-1"
                   onClick={() => setTheme('light')}
                 >
                   Light
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+                  className="focus: w-full cursor-pointer px-4 py-1"
                   onClick={() => setTheme('dark')}
                 >
                   Dark
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+                  className="focus: w-full cursor-pointer px-4 py-1"
                   onClick={() => setTheme('system')}
                 >
                   System
@@ -267,7 +267,7 @@ export const UserDropdown = () => {
             <DropdownMenuGroup className="space-y-0 py-4">
               <DropdownMenuItem
                 asChild
-                className="w-full cursor-pointer bg-layer-one px-4 py-1 focus:bg-layer-three"
+                className="focus: w-full cursor-pointer px-4 py-1"
               >
                 <Link href={`/admin`} aria-label="Admin">
                   <FontAwesomeIcon className="icon mr-4" icon={faToolbox} />

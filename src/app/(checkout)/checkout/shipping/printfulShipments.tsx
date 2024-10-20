@@ -34,7 +34,7 @@ export default function PrintfulShipment(props: Props) {
             key={`shipping-item-${item.name}${item.options.join('')}`}
           >
             {item.images.length > 0 && (
-              <section className="group flex aspect-square w-[50px] items-center justify-center overflow-hidden rounded border bg-layer-one">
+              <section className="group flex aspect-square w-[50px] items-center justify-center overflow-hidden rounded border">
                 <Image
                   src={item.images[0]}
                   width="50"

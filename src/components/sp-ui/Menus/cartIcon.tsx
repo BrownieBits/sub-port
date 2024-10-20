@@ -11,12 +11,7 @@ export const CartIcon = () => {
   const item_count = cartStore((state) => state.item_count);
 
   return (
-    <Button
-      asChild
-      variant="outline"
-      size="sm"
-      className="bg-layer-one hover:bg-layer-two"
-    >
+    <Button asChild variant="outline" size="sm">
       <Link href="/cart" aria-label="Cart" title="Cart">
         <FontAwesomeIcon
           icon={faCartShopping}

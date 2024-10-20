@@ -43,7 +43,7 @@ export default function ProductCard({
     <section className="flex w-full flex-col">
       <Link
         href={`/product/${product.id}`}
-        className="group flex aspect-square items-center justify-center overflow-hidden rounded border bg-layer-one"
+        className="group flex aspect-square items-center justify-center overflow-hidden rounded border"
       >
         {product.images.length > 1 ? (
           <>

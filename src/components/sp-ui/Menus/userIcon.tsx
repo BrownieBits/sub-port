@@ -15,11 +15,7 @@ export const UserIcon = () => {
       {user ? (
         <UserDropdown />
       ) : (
-        <Button
-          asChild
-          variant="outline"
-          className="bg-layer-one hover:bg-layer-two"
-        >
+        <Button asChild variant="outline" className="hover:">
           <Link href="/sign-in" aria-label="Creator Login">
             <FontAwesomeIcon icon={faUser} className="mr-2 h-4 w-4" />
             Sign In

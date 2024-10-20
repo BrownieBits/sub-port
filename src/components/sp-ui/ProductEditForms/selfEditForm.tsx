@@ -1014,7 +1014,7 @@ export default function SelfEditForm(props: Props) {
                   shows up on search engines.
                 </p>
               </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
+              <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
                 <FormField
                   control={form.control}
                   name="name"
@@ -1143,17 +1143,17 @@ export default function SelfEditForm(props: Props) {
                   }}
                 />
               </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 overflow-x-auto rounded bg-layer-one p-4 drop-shadow">
+              <aside className="flex w-full flex-1 flex-col gap-8 overflow-x-auto rounded p-4 drop-shadow">
                 {productImages.length === 0 && (
                   <section className="grid grid-cols-2 grid-rows-2 gap-4 md:grid-cols-5 md:grid-rows-2">
                     <section className="col-span-2 row-span-2 aspect-square w-full">
-                      <section className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+                      <section className="flex aspect-square items-center justify-center overflow-hidden rounded">
                         <Button
                           onClick={(event) => {
                             event.preventDefault();
                             productImagesRef.current?.click();
                           }}
-                          className="h-full w-full rounded bg-layer-three text-foreground hover:bg-layer-four"
+                          className="hover: h-full w-full rounded text-foreground"
                         >
                           <p className="text-4xl">
                             <FontAwesomeIcon className="icon" icon={faUpload} />
@@ -1166,7 +1166,7 @@ export default function SelfEditForm(props: Props) {
                 {productImages.length === 1 && (
                   <section className="grid grid-cols-2 grid-rows-3 gap-4 md:grid-cols-5 md:grid-rows-2">
                     <section className="col-span-2 row-span-2 aspect-square w-full">
-                      <section className="relative flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+                      <section className="relative flex aspect-square items-center justify-center overflow-hidden rounded">
                         <section className="absolute right-[2px] top-[2px]">
                           <Button
                             size="sm"
@@ -1191,13 +1191,13 @@ export default function SelfEditForm(props: Props) {
                       className="slot col-start-1 row-start-3 aspect-square md:col-start-3 md:row-start-1"
                       data-swapy-slot="2"
                     >
-                      <section className="flex aspect-square items-center justify-center overflow-hidden rounded bg-layer-three">
+                      <section className="flex aspect-square items-center justify-center overflow-hidden rounded">
                         <Button
                           onClick={(event) => {
                             event.preventDefault();
                             productImagesRef.current?.click();
                           }}
-                          className="h-full w-full rounded bg-layer-three text-foreground hover:bg-layer-four"
+                          className="hover: h-full w-full rounded text-foreground"
                         >
                           <p className="text-4xl">
                             <FontAwesomeIcon className="icon" icon={faUpload} />
@@ -1228,7 +1228,7 @@ export default function SelfEditForm(props: Props) {
                   searchable.
                 </p>
               </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
+              <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
                 <section className="flex w-full flex-col gap-8 md:flex-row">
                   <FormField
                     control={form.control}
@@ -1321,7 +1321,7 @@ export default function SelfEditForm(props: Props) {
                   searchable.
                 </p>
               </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
+              <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
                 <section className="flex w-full items-center justify-between gap-8">
                   <p>
                     <b>Options</b>
@@ -1348,7 +1348,7 @@ export default function SelfEditForm(props: Props) {
                             {item.options.map((opt, i) => {
                               return (
                                 <span
-                                  className="rounded bg-layer-four px-2.5 py-0.5 text-xs font-medium text-background"
+                                  className="rounded px-2.5 py-0.5 text-xs font-medium text-background"
                                   key={i}
                                 >
                                   {opt}
@@ -1492,7 +1492,7 @@ export default function SelfEditForm(props: Props) {
                   searchable.
                 </p>
               </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
+              <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
                 <FormField
                   control={form.control}
                   name="tags"
@@ -1605,7 +1605,7 @@ export default function SelfEditForm(props: Props) {
                   settings.
                 </p>
               </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 rounded bg-layer-one p-8 drop-shadow">
+              <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
                 <section className="flex w-full flex-col gap-8 md:flex-row">
                   <FormField
                     control={form.control}

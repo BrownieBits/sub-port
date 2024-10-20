@@ -71,19 +71,19 @@ export default function ItemDetails(props: Props) {
                 className="flex w-full gap-4"
                 key={`item-breakdown-item-${item.id}${item.options.join('')}`}
               >
-                <section className="flex w-full flex-1 gap-2 overflow-hidden whitespace-nowrap">
+                <section className="flex flex-1 gap-2 overflow-hidden whitespace-nowrap">
                   {item.images.length > 0 && (
-                    <section className="group flex aspect-square w-[40px] items-center justify-center overflow-hidden rounded border bg-layer-one">
+                    <section className="group flex aspect-square w-[50px] items-center justify-center overflow-hidden rounded border">
                       <Image
                         src={item.images[0]}
-                        width="40"
-                        height="40"
+                        width="50"
+                        height="50"
                         alt={item.name}
-                        className="flex w-full"
+                        className="w-full"
                       />
                     </section>
                   )}
-                  <section className="flex w-full flex-1 flex-col">
+                  <section className="flex flex-1 flex-col truncate">
                     <p className="truncate text-sm">
                       <b>{item.name}</b>
                     </p>

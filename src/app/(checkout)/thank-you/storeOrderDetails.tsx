@@ -165,7 +165,7 @@ export default function StoreOrderDetails(props: Props) {
                   >
                     <section className="flex w-full flex-1 gap-2 overflow-hidden whitespace-nowrap">
                       {item.images.length > 0 && (
-                        <section className="group flex aspect-square w-[100px] items-center justify-center overflow-hidden rounded border bg-layer-one">
+                        <section className="group flex aspect-square w-[100px] items-center justify-center overflow-hidden rounded border">
                           <Image
                             src={item.images[0]}
                             width="100"
