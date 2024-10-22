@@ -28,8 +28,6 @@ export type Product = {
   is_featured: boolean;
   like_count: number;
   name: string;
-  created_at: Timestamp;
-  updated_at: Timestamp;
   revenue: number;
   tags: string[];
   product_type: string;
@@ -39,6 +37,7 @@ export type Product = {
   status: 'Private' | 'Public';
   store_id: string;
   images: string[];
+  filter: string;
 };
 
 async function ChangeStatus(action: string, id: string) {
@@ -58,6 +57,11 @@ async function ChangeStatus(action: string, id: string) {
 }
 
 export const columns: ColumnDef<Product>[] = [
+  {
+    accessorKey: 'filter',
+    header: () => <div className="hidden">Filter</div>,
+    cell: ({ row }) => <div className="hidden">{row.getValue('filter')}</div>,
+  },
   {
     accessorKey: 'store_id',
     header: () => <div className="hidden"></div>,

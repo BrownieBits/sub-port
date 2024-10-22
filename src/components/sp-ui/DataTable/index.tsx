@@ -37,6 +37,7 @@ export function DataTable<TData, TValue>({
       id: false,
       store_id: false,
       currency: false,
+      filter: false,
     });
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -63,9 +64,9 @@ export function DataTable<TData, TValue>({
       <section className="mx-4 flex items-center pb-4 pt-8">
         <Input
           placeholder="Filter"
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn('filter')?.getFilterValue() as string) ?? ''}
           onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
+            table.getColumn('filter')?.setFilterValue(event.target.value)
           }
           className="w-full max-w-sm"
         />

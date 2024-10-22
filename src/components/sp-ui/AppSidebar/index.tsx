@@ -17,7 +17,6 @@ import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { IconLogo, WordLogo } from '../Logo';
-import { footer_nav_items } from '../Menus/footerNavItems';
 import {
   dashboardNavSections,
   footerNavItems,
@@ -91,12 +90,12 @@ export function AppSidebar() {
                 {footerNavItems.map((link: _FooterNavItem, index: number) => {
                   return (
                     <SidebarMenuItem key={`menu_item_${link.name}`}>
-                      <SidebarMenuButton className="h-auto p-0">
+                      <SidebarMenuButton className="h-auto p-0 hover:bg-sidebar">
                         <Link
                           href={link.url}
                           className={cn(
-                            'px-0 py-0 text-xs text-foreground',
-                            index !== footer_nav_items.length - 1 &&
+                            'hover:bg-none" px-0 py-0 text-xs text-foreground',
+                            index !== footerNavItems.length - 1 &&
                               "after:pl-2 after:content-['|']"
                           )}
                           aria-label={link.name}

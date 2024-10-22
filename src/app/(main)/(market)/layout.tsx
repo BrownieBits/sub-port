@@ -6,12 +6,12 @@ export default function MarketLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section>
+    <section className="min-h-screen">
       <section className="sticky top-0 z-50 w-full">
         <MarketHeader />
       </section>
-      <section className="w-full">
-        <main className="overflow-x-hidden">{children}</main>
+      <section className="min-h-screen w-full">
+        <main className="min-h-screen overflow-x-hidden">{children}</main>
       </section>
     </section>
   );

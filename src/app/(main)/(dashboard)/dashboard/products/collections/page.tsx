@@ -38,6 +38,7 @@ async function getData(slug: { [key: string]: string } | undefined) {
       owner_id: item.data().owner_id,
       tags: item.data().tags,
       store_id: item.data().store_id,
+      filter: `${item.id}_${item.data().name}_${item.data().type}_${item.data().tags.join(',')}`,
     };
   });
 

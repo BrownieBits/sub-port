@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Tooltip,
   TooltipContent,
@@ -51,6 +52,7 @@ export default function EditAddresses(props: {
   const [originalAddress, setOriginalAddress] = React.useState<Address | null>(
     null
   );
+  const [defaultAddress, seDefaultAddress] = React.useState<string>('');
 
   async function addValidatedAddress(address: Address) {
     setMatchedAddress(null);
@@ -89,6 +91,7 @@ export default function EditAddresses(props: {
     await updateDoc(docRef, {
       default_address: newID,
     });
+    seDefaultAddress(newID);
     revalidate();
   }
 
@@ -115,6 +118,9 @@ export default function EditAddresses(props: {
     };
     getData();
   }, [props.addresses]);
+  React.useEffect(() => {
+    seDefaultAddress(props.default_address);
+  }, [props.default_address]);
 
   return (
     <section className="flex flex-col gap-8 md:flex-row">
@@ -128,110 +134,113 @@ export default function EditAddresses(props: {
         </p>
         <AddAddress setValidated={setValidated} />
       </aside>
-      <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
-        {props.addresses.length === 0 ? (
-          <p>You currently have no stored addresses.</p>
-        ) : (
-          <>
-            {addressData.map((doc) => (
-              <section
-                className="flex items-center gap-8 rounded-lg border p-3 shadow-sm"
-                key={doc.id}
-              >
-                {doc.id === props.default_address ? (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <FontAwesomeIcon
-                          className="icon h-4 w-4"
-                          icon={faCircleDot}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Default Address</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ) : (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Button
-                          variant="ghost"
-                          className="p-0"
-                          onClick={() => {
-                            makeDefault(doc.id);
-                          }}
-                          asChild
-                        >
+      <Card className="w-full flex-1">
+        <CardContent className="flex w-full flex-col gap-8">
+          {props.addresses.length === 0 ? (
+            <p>You currently have no stored addresses.</p>
+          ) : (
+            <>
+              {addressData.map((doc) => (
+                <section
+                  className="flex items-center gap-4 rounded-lg border p-3 shadow-sm"
+                  key={doc.id}
+                >
+                  {doc.id === defaultAddress ? (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
                           <FontAwesomeIcon
                             className="icon h-4 w-4"
-                            icon={faCircle}
+                            icon={faCircleDot}
                           />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Make Default Address</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-                <div className="flex-1">
-                  <p>
-                    <b>{doc.data().name}</b>
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {doc.data().address_line1}
-                    {doc.data().address_line2}
-                    {', '}
-                    {doc.data().city_locality}
-                    {', '}
-                    {doc.data().state_province} {doc.data().postal_code}
-                  </p>
-                </div>
-                {doc.id === props.default_address ? (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <FontAwesomeIcon
-                          className="icon h-4 w-4 text-muted-foreground"
-                          icon={faTrash}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Cannot delete while default</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                ) : (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Button
-                          variant="ghost"
-                          className="p-0"
-                          onClick={() => {
-                            deleteAddress(doc.id);
-                          }}
-                          asChild
-                        >
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Default Address</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ) : (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Button
+                            variant="ghost"
+                            className="p-0"
+                            onClick={() => {
+                              makeDefault(doc.id);
+                            }}
+                            asChild
+                          >
+                            <FontAwesomeIcon
+                              className="icon h-4 w-4"
+                              icon={faCircle}
+                            />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Make Default Address</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                  <div className="flex-1">
+                    <p>
+                      <b>{doc.data().name}</b>
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {doc.data().address_line1}
+                      {doc.data().address_line2}
+                      {', '}
+                      {doc.data().city_locality}
+                      {', '}
+                      {doc.data().state_province} {doc.data().postal_code}
+                    </p>
+                  </div>
+                  {doc.id === defaultAddress ? (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
                           <FontAwesomeIcon
-                            className="icon h-4 w-4 text-destructive"
+                            className="icon h-4 w-4 text-muted-foreground"
                             icon={faTrash}
                           />
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Delete Address</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
-              </section>
-            ))}
-          </>
-        )}
-      </aside>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Cannot delete while default</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  ) : (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Button
+                            variant="ghost"
+                            className="p-0"
+                            onClick={() => {
+                              deleteAddress(doc.id);
+                            }}
+                            asChild
+                          >
+                            <FontAwesomeIcon
+                              className="icon h-4 w-4 text-destructive"
+                              icon={faTrash}
+                            />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Delete Address</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </section>
+              ))}
+            </>
+          )}
+        </CardContent>
+      </Card>
+
       <SelectVerifiedAddress
         matchedAddress={matchedAddress}
         originalAddress={originalAddress}

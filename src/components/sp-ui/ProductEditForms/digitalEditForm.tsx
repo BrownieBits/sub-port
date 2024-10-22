@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
@@ -491,6 +492,19 @@ export default function DigitalEditForm(props: Props) {
             <h1 className="line-clamp-1">Add Product</h1>
           )}
           <div className="flex w-auto items-center gap-4">
+            {!disabled && (
+              <Button
+                type="submit"
+                size="sm"
+                onClick={form.handleSubmit(onSubmit)}
+                asChild
+              >
+                <div>
+                  <FontAwesomeIcon className="icon mr-[5px]" icon={faSave} />
+                  Save
+                </div>
+              </Button>
+            )}
             {props.status !== undefined && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -570,20 +584,6 @@ export default function DigitalEditForm(props: Props) {
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-
-            {!disabled && (
-              <Button
-                type="submit"
-                size="sm"
-                onClick={form.handleSubmit(onSubmit)}
-                asChild
-              >
-                <div>
-                  <FontAwesomeIcon className="icon mr-[5px]" icon={faSave} />
-                  Save
-                </div>
-              </Button>
-            )}
           </div>
         </section>
       </section>
@@ -604,47 +604,49 @@ export default function DigitalEditForm(props: Props) {
                   shows up on search engines.
                 </p>
               </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          onChangeCapture={field.onChange}
-                          id="name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Meta Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          onChangeCapture={field.onChange}
-                          placeholder="Tell us a little bit about this product..."
-                          className="resize-none"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Having trouble writing a description? Use Ai to help...{' '}
-                        <AiDescriptionWriter />
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </aside>
+              <Card className="w-full flex-1">
+                <CardContent className="flex w-full flex-col gap-8">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            onChangeCapture={field.onChange}
+                            id="name"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel>Meta Description</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            onChangeCapture={field.onChange}
+                            placeholder="Tell us a little bit about this product..."
+                            className="resize-none"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Having trouble writing a description? Use Ai to
+                          help... <AiDescriptionWriter />
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
             </section>
 
             <section className="flex flex-col gap-8 md:flex-row">
@@ -716,79 +718,90 @@ export default function DigitalEditForm(props: Props) {
                   }}
                 />
               </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 overflow-x-auto rounded p-8 drop-shadow">
-                {productImages.length === 0 && (
-                  <section className="grid grid-cols-2 grid-rows-2 gap-4 md:grid-cols-5 md:grid-rows-2">
-                    <section className="col-span-2 row-span-2 aspect-square w-full">
-                      <section className="flex aspect-square items-center justify-center overflow-hidden rounded">
-                        <Button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            productImagesRef.current?.click();
-                          }}
-                          className="hover: h-full w-full rounded text-foreground"
-                        >
-                          <p className="text-4xl">
-                            <FontAwesomeIcon className="icon" icon={faUpload} />
-                          </p>
-                        </Button>
-                      </section>
-                    </section>
-                  </section>
-                )}
-                {productImages.length === 1 && (
-                  <section className="grid grid-cols-2 grid-rows-3 gap-4 md:grid-cols-5 md:grid-rows-2">
-                    <section className="col-span-2 row-span-2 aspect-square w-full">
-                      <section className="relative flex aspect-square items-center justify-center overflow-hidden rounded">
-                        <section className="absolute right-[2px] top-[2px]">
+              <Card className="w-full flex-1">
+                <CardContent className="flex w-full flex-col gap-8">
+                  {productImages.length === 0 && (
+                    <section className="grid grid-cols-2 grid-rows-2 gap-4 md:grid-cols-5 md:grid-rows-2">
+                      <section className="col-span-2 row-span-2 aspect-square w-full">
+                        <section className="flex aspect-square items-center justify-center overflow-hidden rounded">
                           <Button
-                            size="sm"
                             onClick={(event) => {
                               event.preventDefault();
-                              removeImage(productImages[0].id);
+                              productImagesRef.current?.click();
                             }}
-                            className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+                            className="hover: h-full w-full rounded text-foreground"
                           >
-                            <FontAwesomeIcon className="icon" icon={faTrash} />
+                            <p className="text-4xl">
+                              <FontAwesomeIcon
+                                className="icon"
+                                icon={faUpload}
+                              />
+                            </p>
                           </Button>
                         </section>
-                        <Image
-                          src={productImages[0].image}
-                          height={400}
-                          width={400}
-                          alt="Main Product Image"
-                        />
                       </section>
                     </section>
-                    <section
-                      className="slot col-start-1 row-start-3 aspect-square md:col-start-3 md:row-start-1"
-                      data-swapy-slot="2"
-                    >
-                      <section className="flex aspect-square items-center justify-center overflow-hidden rounded">
-                        <Button
-                          onClick={(event) => {
-                            event.preventDefault();
-                            productImagesRef.current?.click();
-                          }}
-                          className="hover: h-full w-full rounded text-foreground"
-                        >
-                          <p className="text-4xl">
-                            <FontAwesomeIcon className="icon" icon={faUpload} />
-                          </p>
-                        </Button>
+                  )}
+                  {productImages.length === 1 && (
+                    <section className="grid grid-cols-2 grid-rows-3 gap-4 md:grid-cols-5 md:grid-rows-2">
+                      <section className="col-span-2 row-span-2 aspect-square w-full">
+                        <section className="relative flex aspect-square items-center justify-center overflow-hidden rounded">
+                          <section className="absolute right-[2px] top-[2px]">
+                            <Button
+                              size="sm"
+                              onClick={(event) => {
+                                event.preventDefault();
+                                removeImage(productImages[0].id);
+                              }}
+                              className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+                            >
+                              <FontAwesomeIcon
+                                className="icon"
+                                icon={faTrash}
+                              />
+                            </Button>
+                          </section>
+                          <Image
+                            src={productImages[0].image}
+                            height={400}
+                            width={400}
+                            alt="Main Product Image"
+                          />
+                        </section>
+                      </section>
+                      <section
+                        className="slot col-start-1 row-start-3 aspect-square md:col-start-3 md:row-start-1"
+                        data-swapy-slot="2"
+                      >
+                        <section className="flex aspect-square items-center justify-center overflow-hidden rounded">
+                          <Button
+                            onClick={(event) => {
+                              event.preventDefault();
+                              productImagesRef.current?.click();
+                            }}
+                            className="hover: h-full w-full rounded text-foreground"
+                          >
+                            <p className="text-4xl">
+                              <FontAwesomeIcon
+                                className="icon"
+                                icon={faUpload}
+                              />
+                            </p>
+                          </Button>
+                        </section>
                       </section>
                     </section>
-                  </section>
-                )}
-                {productImages.length > 1 && (
-                  <DraggableImages
-                    product_images={productImages}
-                    uploadRef={productImagesRef}
-                    removeImage={removeImage}
-                    reOrderImages={setProductImages}
-                  />
-                )}
-              </aside>
+                  )}
+                  {productImages.length > 1 && (
+                    <DraggableImages
+                      product_images={productImages}
+                      uploadRef={productImagesRef}
+                      removeImage={removeImage}
+                      reOrderImages={setProductImages}
+                    />
+                  )}
+                </CardContent>
+              </Card>
             </section>
 
             <section className="flex flex-col gap-8 md:flex-row">
@@ -873,40 +886,42 @@ export default function DigitalEditForm(props: Props) {
                   }}
                 />
               </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
-                {digitalFile === '' ? (
-                  <section className="flex flex-col">
-                    <p>
-                      <b>No File Yet</b>
-                    </p>
-                    <p className="text-sm">
-                      Add a file to send to your customers.
-                    </p>
-                  </section>
-                ) : (
-                  <section className="flex items-center gap-8">
-                    <section className="flex flex-col items-center justify-center">
-                      <FontAwesomeIcon
-                        className="icon mb-4 text-8xl"
-                        icon={faFile}
-                      />
-                      <p>{digitalFileName}</p>
-                    </section>
-                    <Button
-                      asChild
-                      variant="destructive"
-                      onClick={clearDigitalFile}
-                    >
+              <Card className="w-full flex-1">
+                <CardContent className="flex w-full flex-col gap-8">
+                  {digitalFile === '' ? (
+                    <section className="flex flex-col">
                       <p>
-                        <FontAwesomeIcon
-                          className="icon text-xs"
-                          icon={faRefresh}
-                        />
+                        <b>No File Yet</b>
                       </p>
-                    </Button>
-                  </section>
-                )}
-              </aside>
+                      <p className="text-sm">
+                        Add a file to send to your customers.
+                      </p>
+                    </section>
+                  ) : (
+                    <section className="flex items-center gap-8">
+                      <section className="flex flex-col items-center justify-center">
+                        <FontAwesomeIcon
+                          className="icon mb-4 text-8xl"
+                          icon={faFile}
+                        />
+                        <p>{digitalFileName}</p>
+                      </section>
+                      <Button
+                        asChild
+                        variant="destructive"
+                        onClick={clearDigitalFile}
+                      >
+                        <p>
+                          <FontAwesomeIcon
+                            className="icon text-xs"
+                            icon={faRefresh}
+                          />
+                        </p>
+                      </Button>
+                    </section>
+                  )}
+                </CardContent>
+              </Card>
             </section>
 
             <section className="flex flex-col gap-8 md:flex-row">
@@ -919,129 +934,134 @@ export default function DigitalEditForm(props: Props) {
                   searchable.
                 </p>
               </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
-                <section className="flex w-full flex-col gap-8 md:flex-row">
-                  <FormField
-                    control={form.control}
-                    name="prices.price"
-                    render={({ field }) => (
-                      <FormItem className="w-full flex-1">
-                        <FormLabel>Price</FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="price"
-                            type="number"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="prices.compare_at"
-                    render={({ field }) => (
-                      <FormItem className="w-full flex-1">
-                        <FormLabel>Compare At Price</FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="compare_at"
-                            type="number"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="currency"
-                    render={({ field }) => (
-                      <FormItem className="w-full flex-1">
-                        <FormLabel>Currency</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+              <Card className="w-full flex-1">
+                <CardContent className="flex w-full flex-col gap-8">
+                  <section className="flex w-full flex-col gap-4 md:flex-row">
+                    <FormField
+                      control={form.control}
+                      name="prices.price"
+                      render={({ field }) => (
+                        <FormItem className="w-full flex-1">
+                          <FormLabel>Price</FormLabel>
                           <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a currency type" />
-                            </SelectTrigger>
+                            <Input
+                              onChangeCapture={field.onChange}
+                              id="price"
+                              type="number"
+                              {...field}
+                            />
                           </FormControl>
-                          <SelectContent>
-                            {currency_list.map((item) => {
-                              return (
-                                <SelectItem value={item.value} key={item.value}>
-                                  {item.name}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="prices.compare_at"
+                      render={({ field }) => (
+                        <FormItem className="w-full flex-1">
+                          <FormLabel>Compare At Price</FormLabel>
+                          <FormControl>
+                            <Input
+                              onChangeCapture={field.onChange}
+                              id="compare_at"
+                              type="number"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="currency"
+                      render={({ field }) => (
+                        <FormItem className="w-full flex-1">
+                          <FormLabel>Currency</FormLabel>
+                          <Select
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select a currency type" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {currency_list.map((item) => {
+                                return (
+                                  <SelectItem
+                                    value={item.value}
+                                    key={item.value}
+                                  >
+                                    {item.name}
+                                  </SelectItem>
+                                );
+                              })}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </section>
+                  <FormField
+                    control={form.control}
+                    name="tags"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel>Tags</FormLabel>
+                        <FormControl>
+                          <Input
+                            onChangeCapture={field.onChange}
+                            id="tags"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Use commas to seperate different tags.
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                </section>
-                <FormField
-                  control={form.control}
-                  name="tags"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Tags</FormLabel>
-                      <FormControl>
-                        <Input
-                          onChangeCapture={field.onChange}
-                          id="tags"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Use commas to seperate different tags.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="sku"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>SKU</FormLabel>
-                      <FormControl>
-                        <Input
-                          onChangeCapture={field.onChange}
-                          id="tags"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="is_featured"
-                  render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className="space-y-1 leading-none">
-                        <FormLabel>Featured</FormLabel>
-                      </div>
-                    </FormItem>
-                  )}
-                />
-              </aside>
+                  <FormField
+                    control={form.control}
+                    name="sku"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel>SKU</FormLabel>
+                        <FormControl>
+                          <Input
+                            onChangeCapture={field.onChange}
+                            id="tags"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="is_featured"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>Featured</FormLabel>
+                        </div>
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
             </section>
           </form>
         </Form>

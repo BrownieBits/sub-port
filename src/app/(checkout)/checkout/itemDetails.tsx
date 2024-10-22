@@ -93,15 +93,25 @@ export default function ItemDetails(props: Props) {
                   </section>
                 </section>
                 <section className="flex">
-                  {item.compare_at > 0 && item.compare_at < item.price ? (
-                    <p className="text-sm">
-                      <b>
+                  {parseFloat(item.compare_at.toString()) > 0 &&
+                  parseFloat(item.compare_at.toString()) <
+                    parseFloat(item.price.toString()) ? (
+                    <section className="flex flex-col items-end">
+                      <p className="text-sm text-destructive line-through">
                         {new Intl.NumberFormat('en-US', {
                           style: 'currency',
                           currency: item.currency,
-                        }).format(item.compare_at * item.quantity)}
-                      </b>
-                    </p>
+                        }).format(item.price * item.quantity)}
+                      </p>
+                      <p className="text-sm">
+                        <b>
+                          {new Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: item.currency,
+                          }).format(item.compare_at * item.quantity)}
+                        </b>
+                      </p>
+                    </section>
                   ) : (
                     <p className="text-sm">
                       <b>

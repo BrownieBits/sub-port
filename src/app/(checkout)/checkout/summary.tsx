@@ -39,7 +39,11 @@ export default function CheckoutSummary() {
       Object.keys(cart_items).map((store: string) => {
         let store_total = 0;
         cart_items[store].map((item) => {
-          if (item.compare_at > 0 && item.compare_at < item.price) {
+          if (
+            parseFloat(item.compare_at.toString()) > 0 &&
+            parseFloat(item.compare_at.toString()) <
+              parseFloat(item.price.toString())
+          ) {
             store_total +=
               parseFloat(item.compare_at.toString()) * item.quantity;
             item_total +=

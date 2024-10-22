@@ -17,12 +17,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { db, storage } from '@/lib/firebase';
 import { faSpinner, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Separator } from '@radix-ui/react-separator';
 import {
   collection,
   CollectionReference,
@@ -164,7 +164,7 @@ export function FeedbackForm({
   }
 
   return (
-    <section className="flex h-full flex-col items-center justify-center p-4">
+    <section className="flex h-full min-h-screen flex-col items-center justify-center p-4">
       <Card className="w-full max-w-[600px]">
         <CardHeader>
           <CardTitle>Submit Feedback</CardTitle>

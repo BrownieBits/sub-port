@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
 import {
@@ -15,8 +16,8 @@ import {
 import { Metadata } from 'next';
 import { revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
-import AcceptButton from './accept-invite';
-import NewStoreForm from './new-store-form';
+import AcceptButton from './acceptInvite';
+import NewStoreForm from './newStoreForm';
 import SwitchButton from './switch-button';
 
 type ReturnData = {
@@ -127,49 +128,53 @@ export default async function SwitchStores() {
               </p>
               <p>These are stores you have started and own.</p>
             </aside>
-            <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
-              {data.my_stores.length === 0 ? (
-                <p>No Stores</p>
-              ) : (
-                <>
-                  {data.my_stores.map((doc: any) => {
-                    return (
-                      <section
-                        className="flex flex-col items-center gap-8 rounded-lg border p-3 shadow-sm md:flex-row"
-                        key={doc.id}
-                      >
-                        <Avatar className="h-[72px] w-[72px] bg-secondary text-foreground">
-                          <AvatarImage
-                            src={doc.data().avatar_url}
-                            alt={doc.data().name}
-                          />
-                          <AvatarFallback className="border-background bg-foreground text-background">
-                            <b>{doc.data().name?.slice(0, 1).toUpperCase()}</b>
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 space-y-0.5">
-                          <p>
-                            <b>{doc.data().name}</b>
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {doc.data().description.substring(0, 50)}...
-                          </p>
-                        </div>
-                        {doc.id === default_store?.value ? (
-                          <></>
-                        ) : (
-                          <SwitchButton
-                            storeID={doc.id}
-                            userID={user_id?.value!}
-                            revalidate={revalidate}
-                          />
-                        )}
-                      </section>
-                    );
-                  })}
-                </>
-              )}
-            </aside>
+            <Card className="w-full flex-1">
+              <CardContent className="flex w-full flex-col gap-8">
+                {data.my_stores.length === 0 ? (
+                  <p>No Stores</p>
+                ) : (
+                  <>
+                    {data.my_stores.map((doc: any) => {
+                      return (
+                        <section
+                          className="flex flex-col items-center gap-8 rounded-lg border p-3 shadow-sm md:flex-row"
+                          key={doc.id}
+                        >
+                          <Avatar className="h-[72px] w-[72px] bg-secondary text-foreground">
+                            <AvatarImage
+                              src={doc.data().avatar_url}
+                              alt={doc.data().name}
+                            />
+                            <AvatarFallback className="border-background bg-foreground text-background">
+                              <b>
+                                {doc.data().name?.slice(0, 1).toUpperCase()}
+                              </b>
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 space-y-0.5">
+                            <p>
+                              <b>{doc.data().name}</b>
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {doc.data().description.substring(0, 50)}...
+                            </p>
+                          </div>
+                          {doc.id === default_store?.value ? (
+                            <></>
+                          ) : (
+                            <SwitchButton
+                              storeID={doc.id}
+                              userID={user_id?.value!}
+                              revalidate={revalidate}
+                            />
+                          )}
+                        </section>
+                      );
+                    })}
+                  </>
+                )}
+              </CardContent>
+            </Card>
           </section>
 
           <section className="flex flex-col gap-8 md:flex-row">
@@ -182,49 +187,53 @@ export default async function SwitchStores() {
                 manage.
               </p>
             </aside>
-            <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
-              {data.team_stores.length === 0 ? (
-                <p>No Stores</p>
-              ) : (
-                <>
-                  {data.team_stores.map((doc: any) => {
-                    return (
-                      <section
-                        className="flex flex-col items-center gap-8 rounded-lg border p-3 shadow-sm md:flex-row"
-                        key={doc.id}
-                      >
-                        <Avatar className="h-[72px] w-[72px] bg-secondary text-foreground">
-                          <AvatarImage
-                            src={doc.data().avatar_url}
-                            alt={doc.data().name}
-                          />
-                          <AvatarFallback className="border-background bg-foreground text-background">
-                            <b>{doc.data().name?.slice(0, 1).toUpperCase()}</b>
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 space-y-0.5">
-                          <p>
-                            <b>{doc.data().name}</b>
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {doc.data().description.substring(0, 50)}...
-                          </p>
-                        </div>
-                        {doc.id === default_store?.value ? (
-                          <></>
-                        ) : (
-                          <SwitchButton
-                            storeID={doc.id}
-                            userID={user_id?.value!}
-                            revalidate={revalidate}
-                          />
-                        )}
-                      </section>
-                    );
-                  })}
-                </>
-              )}
-            </aside>
+            <Card className="w-full flex-1">
+              <CardContent className="flex w-full flex-col gap-8">
+                {data.team_stores.length === 0 ? (
+                  <p>No Stores</p>
+                ) : (
+                  <>
+                    {data.team_stores.map((doc: any) => {
+                      return (
+                        <section
+                          className="flex flex-col items-center gap-8 rounded-lg border p-3 shadow-sm md:flex-row"
+                          key={doc.id}
+                        >
+                          <Avatar className="h-[72px] w-[72px] bg-secondary text-foreground">
+                            <AvatarImage
+                              src={doc.data().avatar_url}
+                              alt={doc.data().name}
+                            />
+                            <AvatarFallback className="border-background bg-foreground text-background">
+                              <b>
+                                {doc.data().name?.slice(0, 1).toUpperCase()}
+                              </b>
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 space-y-0.5">
+                            <p>
+                              <b>{doc.data().name}</b>
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {doc.data().description.substring(0, 50)}...
+                            </p>
+                          </div>
+                          {doc.id === default_store?.value ? (
+                            <></>
+                          ) : (
+                            <SwitchButton
+                              storeID={doc.id}
+                              userID={user_id?.value!}
+                              revalidate={revalidate}
+                            />
+                          )}
+                        </section>
+                      );
+                    })}
+                  </>
+                )}
+              </CardContent>
+            </Card>
           </section>
 
           <section className="flex flex-col gap-8 md:flex-row">
@@ -237,50 +246,54 @@ export default async function SwitchStores() {
                 accepted.
               </p>
             </aside>
-            <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
-              {data.invited_stores.length === 0 ? (
-                <p>No Stores</p>
-              ) : (
-                <>
-                  {data.invited_stores.map((doc: any) => {
-                    return (
-                      <section
-                        className="flex flex-col items-center gap-8 rounded-lg border p-3 shadow-sm md:flex-row"
-                        key={doc.id}
-                      >
-                        <Avatar className="h-[72px] w-[72px] bg-secondary text-foreground">
-                          <AvatarImage
-                            src={doc.data().avatar_url}
-                            alt={doc.data().name}
-                          />
-                          <AvatarFallback className="border-background bg-foreground text-background">
-                            <b>{doc.data().name?.slice(0, 1).toUpperCase()}</b>
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 space-y-0.5">
-                          <p>
-                            <b>{doc.data().name}</b>
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {doc.data().description.substring(0, 50)}...
-                          </p>
-                        </div>
-                        {doc.id === default_store?.value ? (
-                          <></>
-                        ) : (
-                          <AcceptButton
-                            storeID={doc.id}
-                            revalidate={revalidate}
-                            userID={user_id?.value!}
-                            usersList={doc.data().users}
-                          />
-                        )}
-                      </section>
-                    );
-                  })}
-                </>
-              )}
-            </aside>
+            <Card className="w-full flex-1">
+              <CardContent className="flex w-full flex-col gap-8">
+                {data.invited_stores.length === 0 ? (
+                  <p>No Stores</p>
+                ) : (
+                  <>
+                    {data.invited_stores.map((doc: any) => {
+                      return (
+                        <section
+                          className="flex flex-col items-center gap-8 rounded-lg border p-3 shadow-sm md:flex-row"
+                          key={doc.id}
+                        >
+                          <Avatar className="h-[72px] w-[72px] bg-secondary text-foreground">
+                            <AvatarImage
+                              src={doc.data().avatar_url}
+                              alt={doc.data().name}
+                            />
+                            <AvatarFallback className="border-background bg-foreground text-background">
+                              <b>
+                                {doc.data().name?.slice(0, 1).toUpperCase()}
+                              </b>
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 space-y-0.5">
+                            <p>
+                              <b>{doc.data().name}</b>
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {doc.data().description.substring(0, 50)}...
+                            </p>
+                          </div>
+                          {doc.id === default_store?.value ? (
+                            <></>
+                          ) : (
+                            <AcceptButton
+                              storeID={doc.id}
+                              revalidate={revalidate}
+                              userID={user_id?.value!}
+                              usersList={doc.data().users}
+                            />
+                          )}
+                        </section>
+                      );
+                    })}
+                  </>
+                )}
+              </CardContent>
+            </Card>
           </section>
         </section>
       </section>

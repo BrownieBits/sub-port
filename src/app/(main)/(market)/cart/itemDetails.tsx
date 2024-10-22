@@ -104,6 +104,13 @@ export default function ItemDetails(props: Props) {
     }
     setSelectableQuantity(selectable);
   }, []);
+  console.log(
+    props.item.compare_at,
+    props.item.price,
+    props.item.compare_at < props.item.price,
+    typeof props.item.compare_at,
+    typeof props.item.price
+  );
   return (
     <section className="flex w-full flex-col gap-4 md:flex-row">
       <section className="flex w-full flex-1 gap-4">
@@ -134,10 +141,11 @@ export default function ItemDetails(props: Props) {
         </section>
       </section>
       <section className="flex w-full flex-row-reverse items-end justify-between gap-4 md:w-auto md:flex-col">
-        <section className="flex flex-col">
-          {props.item.compare_at > 0 &&
-          props.item.compare_at < props.item.price ? (
-            <>
+        <section className="flex flex-col items-end">
+          {parseFloat(props.item.compare_at.toString()) > 0 &&
+          parseFloat(props.item.compare_at.toString()) <
+            parseFloat(props.item.price.toString()) ? (
+            <section className="flex flex-col items-end">
               <p className="text-destructive line-through">
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
@@ -152,7 +160,7 @@ export default function ItemDetails(props: Props) {
                   }).format(props.item.compare_at)}
                 </b>
               </p>
-            </>
+            </section>
           ) : (
             <p>
               <b>

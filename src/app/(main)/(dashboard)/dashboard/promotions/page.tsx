@@ -12,8 +12,8 @@ import {
 import { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { columns } from './dataColumns';
-import { NoPromotions } from './noPromotions';
 import { NewPromotionButton } from './newPromotionButton';
+import { NoPromotions } from './noPromotions';
 
 async function getData(store_id: string) {
   const promotionsRef: CollectionReference = collection(
@@ -35,11 +35,12 @@ async function getData(store_id: string) {
       number_of_uses: item.data().number_of_used,
       times_used: item.data().times_used,
       type: item.data().type,
-      expiration_date: item.data().expiration_date,
+      expiration_date: new Date(item.data().expiration_date.seconds * 1000),
       user_id: item.data().user_id,
       status: item.data().status,
       store_id: item.data().store_id,
       show_in_banner: item.data().show_in_banner,
+      filter: `${item.id}_${item.data().type}`,
     };
   });
 

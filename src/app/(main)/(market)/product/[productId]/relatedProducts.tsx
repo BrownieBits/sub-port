@@ -122,7 +122,7 @@ export default function RelatedProducts(props: {
             <section
               className={cn('h-[10px] w-[10px] rounded', {
                 'bg-primary': index === current - 1,
-                '': index !== current - 1,
+                'bg-muted': index !== current - 1,
               })}
               onClick={() => {
                 api?.scrollTo(index);

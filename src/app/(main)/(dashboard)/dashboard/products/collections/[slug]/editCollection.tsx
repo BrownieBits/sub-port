@@ -9,6 +9,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -312,77 +313,79 @@ export default function Edit(props: {
                     collection shows up on search engines.
                   </p>
                 </aside>
-                <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="name"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>Meta Description</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            onChangeCapture={field.onChange}
-                            placeholder="Tell us a little bit about this collection..."
-                            className="resize-none"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="type"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>Collection Type</FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className="flex items-center space-x-6"
-                          >
-                            <FormItem className="flex items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <RadioGroupItem value="Manual" />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                Manual
-                              </FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <RadioGroupItem value="Smart" />
-                              </FormControl>
-                              <FormLabel className="font-normal">
-                                Smart
-                              </FormLabel>
-                            </FormItem>
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </aside>
+                <Card className="w-full flex-1">
+                  <CardContent className="flex w-full flex-col gap-8">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input
+                              onChangeCapture={field.onChange}
+                              id="name"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel>Meta Description</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              onChangeCapture={field.onChange}
+                              placeholder="Tell us a little bit about this collection..."
+                              className="resize-none"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="type"
+                      render={({ field }) => (
+                        <FormItem className="space-y-3">
+                          <FormLabel>Collection Type</FormLabel>
+                          <FormControl>
+                            <RadioGroup
+                              onValueChange={field.onChange}
+                              defaultValue={field.value}
+                              className="flex items-center space-x-6"
+                            >
+                              <FormItem className="flex items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <RadioGroupItem value="Manual" />
+                                </FormControl>
+                                <FormLabel className="font-normal">
+                                  Manual
+                                </FormLabel>
+                              </FormItem>
+                              <FormItem className="flex items-center space-x-3 space-y-0">
+                                <FormControl>
+                                  <RadioGroupItem value="Smart" />
+                                </FormControl>
+                                <FormLabel className="font-normal">
+                                  Smart
+                                </FormLabel>
+                              </FormItem>
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
               </section>
               {props.type === 'Manual' ? (
                 <></>
@@ -397,26 +400,28 @@ export default function Edit(props: {
                       of products for you.
                     </p>
                   </aside>
-                  <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
-                    <FormField
-                      control={form.control}
-                      name="tags"
-                      render={({ field }) => (
-                        <FormItem className="w-full">
-                          <FormLabel>Tags</FormLabel>
-                          <FormControl>
-                            <Input
-                              onChangeCapture={field.onChange}
-                              id="tags"
-                              {...field}
-                              {...register('tags')}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </aside>
+                  <Card className="w-full flex-1">
+                    <CardContent className="flex w-full flex-col gap-8">
+                      <FormField
+                        control={form.control}
+                        name="tags"
+                        render={({ field }) => (
+                          <FormItem className="w-full">
+                            <FormLabel>Tags</FormLabel>
+                            <FormControl>
+                              <Input
+                                onChangeCapture={field.onChange}
+                                id="tags"
+                                {...field}
+                                {...register('tags')}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </CardContent>
+                  </Card>
                 </section>
               )}
             </form>
@@ -460,20 +465,22 @@ export default function Edit(props: {
                 </AlertDialog>
               )}
             </aside>
-            <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
-              {form.getValues('type') === 'Manual' && (
-                <ProductList
-                  store_id={props.store_id}
-                  product_list={selectedProducts}
-                />
-              )}
-              {form.getValues('type') === 'Smart' && (
-                <ProductList
-                  store_id={props.store_id}
-                  tag_list={selectedTags}
-                />
-              )}
-            </aside>
+            <Card className="w-full flex-1">
+              <CardContent className="flex w-full flex-col gap-8">
+                {form.getValues('type') === 'Manual' && (
+                  <ProductList
+                    store_id={props.store_id}
+                    product_list={selectedProducts}
+                  />
+                )}
+                {form.getValues('type') === 'Smart' && (
+                  <ProductList
+                    store_id={props.store_id}
+                    tag_list={selectedTags}
+                  />
+                )}
+              </CardContent>
+            </Card>
           </section>
         </section>
       </section>

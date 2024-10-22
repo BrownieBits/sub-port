@@ -50,9 +50,15 @@ export type Collection = {
   owner_id: string;
   tags: string;
   store_id: string;
+  filter: string;
 };
 
 export const columns: ColumnDef<Collection>[] = [
+  {
+    accessorKey: 'filter',
+    header: () => <div className="hidden">Filter</div>,
+    cell: ({ row }) => <div className="hidden">{row.getValue('filter')}</div>,
+  },
   {
     accessorKey: 'id',
     header: () => <div className="hidden"></div>,
@@ -228,7 +234,7 @@ export const columns: ColumnDef<Collection>[] = [
     },
     cell: ({ row }) => {
       return row.getValue('status') === 'Public' ? (
-        <span className="bg-success text-success-foreground mr-2 rounded px-2.5 py-0.5 text-xs font-medium">
+        <span className="mr-2 rounded bg-success px-2.5 py-0.5 text-xs font-medium text-success-foreground">
           {row.getValue('status')}
         </span>
       ) : (

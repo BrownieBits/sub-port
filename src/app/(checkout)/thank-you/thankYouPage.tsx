@@ -89,7 +89,11 @@ export default function ThankYouPage(props: Props) {
         let store_discounts_total = 0;
         let store_shipping_total = 0;
         orderData.items[store].map((product: _CartFullItem) => {
-          if (product.compare_at > 0 && product.compare_at < product.price) {
+          if (
+            parseFloat(product.compare_at.toString()) > 0 &&
+            parseFloat(product.compare_at.toString()) <
+              parseFloat(product.price.toString())
+          ) {
             order_total +=
               parseFloat(product.compare_at.toString()) * product.quantity;
             item_total +=
@@ -143,16 +147,31 @@ export default function ThankYouPage(props: Props) {
         discounts_total += store_discounts_total;
         const shipments: _Shipment[] = [];
         Object.keys(orderData.shipments).map((shipment) => {
-          if (shipment === store) {
-            orderData.shipments[shipment].tracking_number = '';
-            shipments.push(orderData.shipments[shipment]);
+          if (shipment !== 'digital') {
+            const shipment_items = orderData.shipments[
+              shipment
+            ].full_items.filter(
+              (product: _CartFullItem) =>
+                product.store_id === store && product.vendor === 'self'
+            );
+            shipments.push({
+              full_items: shipment_items,
+              rate: orderData.shipments[shipment].rate,
+              ship_to: orderData.shipments[shipment].ship_to,
+              items: [],
+              name: shipment,
+              tracking_number: '',
+              status: 'Unfulfilled',
+              store_id: store,
+            });
             shipments_total += orderData.shipments[shipment].rate.rate;
             store_shipping_total += orderData.shipments[shipment].rate.rate;
           } else if (shipment === 'digital') {
             const shipment_items = orderData.shipments[
               shipment
             ].full_items.filter(
-              (product: _CartFullItem) => product.store_id === store
+              (product: _CartFullItem) =>
+                product.store_id === store && product.vendor === 'digital'
             );
             if (shipment_items.length > 0) {
               shipments.push({
@@ -161,26 +180,30 @@ export default function ThankYouPage(props: Props) {
                 ship_to: orderData.shipments[shipment].ship_to,
                 items: [],
                 name: 'digital',
+                tracking_number: '',
+                status: 'Unfulfilled',
                 store_id: store,
               });
             }
           }
         });
-
         const order = {
           address: orderData.address,
           billing_address: orderData.billing_address,
           created_at: Timestamp.fromDate(new Date()),
           email: orderData.email,
           items: orderData.items[store],
+          item_count: orderData.items[store].length,
+          status: 'Unfulfilled',
           payment_intent: payment_intent,
-          order_total: item_total,
+          order_total: item_total + store_shipping_total + service_total,
           shipments: shipments,
           promotions: orderData.promotions.hasOwnProperty(store)
             ? orderData.promotions[store]
             : null,
           store_id: store,
         };
+        console.log(item_total, store_shipping_total);
         const orderColRef: CollectionReference = collection(db, `orders`);
         const orderDoc: DocumentReference = doc(orderColRef);
         batch.set(orderDoc, order);

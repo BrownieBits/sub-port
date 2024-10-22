@@ -140,7 +140,9 @@ export default function StoreOrderDetails(props: Props) {
             <CardContent className="flex flex-col gap-1">
               <p>{props.order.address.email}</p>
               <p>{props.order.address.address_line1}</p>
-              <p>{props.order.address.address_line2}</p>
+              {props.order.address.address_line2 !== '' && (
+                <p>{props.order.address.address_line2}</p>
+              )}
               <p>
                 {props.order.address.city_locality},{' '}
                 {props.order.address.state_province}{' '}
@@ -165,7 +167,7 @@ export default function StoreOrderDetails(props: Props) {
                   >
                     <section className="flex w-full flex-1 gap-2 overflow-hidden whitespace-nowrap">
                       {item.images.length > 0 && (
-                        <section className="group flex aspect-square w-[100px] items-center justify-center overflow-hidden rounded border">
+                        <section className="group flex aspect-square w-[50px] items-center justify-center overflow-hidden rounded border md:w-[100px]">
                           <Image
                             src={item.images[0]}
                             width="100"
@@ -175,7 +177,7 @@ export default function StoreOrderDetails(props: Props) {
                           />
                         </section>
                       )}
-                      <section className="flex w-full flex-1 flex-col">
+                      <section className="flex w-full flex-1 flex-col truncate">
                         <p className="truncate text-sm">
                           <b>{item.name}</b>
                         </p>
@@ -185,15 +187,27 @@ export default function StoreOrderDetails(props: Props) {
                       </section>
                     </section>
                     <section className="flex">
-                      {item.compare_at > 0 && item.compare_at < item.price ? (
-                        <p className="text-sm">
-                          <b>
-                            {new Intl.NumberFormat('en-US', {
-                              style: 'currency',
-                              currency: item.currency,
-                            }).format(item.compare_at * item.quantity)}
-                          </b>
-                        </p>
+                      {parseFloat(item.compare_at.toString()) > 0 &&
+                      parseFloat(item.compare_at.toString()) <
+                        parseFloat(item.price.toString()) ? (
+                        <section className="flex flex-col items-end">
+                          <p className="text-sm text-destructive line-through">
+                            <b>
+                              {new Intl.NumberFormat('en-US', {
+                                style: 'currency',
+                                currency: item.currency,
+                              }).format(item.price * item.quantity)}
+                            </b>
+                          </p>
+                          <p className="text-sm">
+                            <b>
+                              {new Intl.NumberFormat('en-US', {
+                                style: 'currency',
+                                currency: item.currency,
+                              }).format(item.compare_at * item.quantity)}
+                            </b>
+                          </p>
+                        </section>
                       ) : (
                         <p className="text-sm">
                           <b>

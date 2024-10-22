@@ -8,7 +8,7 @@ export default function NoUserLayout({
   return (
     <>
       <AppSidebar />
-      <section className="w-full">{children}</section>
+      <section className="h-full min-h-screen w-full">{children}</section>
     </>
   );
 }

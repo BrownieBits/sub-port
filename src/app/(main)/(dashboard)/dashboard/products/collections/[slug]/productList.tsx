@@ -26,6 +26,7 @@ export function ProductList(props: {
   );
 
   async function getProducts() {
+    console.log(props.product_list);
     if (props.product_list !== undefined && props.product_list.length === 0) {
       setProducts([]);
       return;
@@ -71,16 +72,16 @@ export function ProductList(props: {
           status: product.data().status,
         };
       });
-      if (products === undefined) {
-        setProducts([...gridProducts]);
-      } else {
-        setProducts([...products, ...gridProducts]);
-      }
+
+      setProducts([...gridProducts]);
     }
   }
   React.useEffect(() => {
     getProducts();
   }, []);
+  React.useEffect(() => {
+    getProducts();
+  }, [props.product_list]);
   React.useEffect(() => {
     getProducts();
   }, [props.tag_list]);

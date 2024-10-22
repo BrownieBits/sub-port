@@ -42,8 +42,6 @@ async function getData(slug: { [key: string]: string } | undefined) {
       is_featured: item.data().is_featured,
       like_count: item.data().like_count,
       name: item.data().name,
-      created_at: item.data().created_at,
-      updated_at: item.data().updated_at,
       revenue: item.data().revenue,
       tags: item.data().tags,
       product_type: item.data().product_type,
@@ -53,6 +51,7 @@ async function getData(slug: { [key: string]: string } | undefined) {
       status: item.data().status,
       store_id: item.data().store_id,
       images: item.data().images,
+      filter: `${item.id}_${item.data().name}_${item.data().product_type}`,
     };
   });
 

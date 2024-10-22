@@ -88,6 +88,8 @@ export type _Shipment = {
     ship_from?: _Address;
     ship_to?: _Address | string;
     store_id: string;
+    tracking_number?: string;
+    status?: string;
 }
 export type _Shipments = {
     [key: string]: _Shipment;

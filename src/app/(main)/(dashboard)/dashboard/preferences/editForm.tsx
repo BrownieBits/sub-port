@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -23,6 +24,7 @@ import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { country_list } from '@/lib/countryList';
 import { db, storage } from '@/lib/firebase';
+import userStore from '@/stores/userStore';
 import { faSave, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -31,6 +33,7 @@ import {
   DocumentReference,
   Timestamp,
   doc,
+  getDoc,
   updateDoc,
 } from 'firebase/firestore';
 import { deleteObject, getDownloadURL, ref } from 'firebase/storage';
@@ -41,7 +44,8 @@ import { useUploadFile } from 'react-firebase-hooks/storage';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import { revalidate } from './action';
+import { revalidate } from './actions';
+import { AiDescriptionWriter } from './aiDescriptionWriter';
 
 const MAX_IMAGE_SIZE = 5242880; // 5 MB
 const ALLOWED_IMAGE_TYPES = [
@@ -91,27 +95,20 @@ const formSchema = z.object({
     ),
 });
 
-export default function EditForm(props: {
-  data: DocumentData;
-  storeID: string;
-  userID: string;
-}) {
+export default function EditForm(props: {}) {
+  const user_loaded = userStore((state) => state.user_loaded);
+  const user_id = userStore((state) => state.user_id);
+  const user_store = userStore((state) => state.user_store);
   const [disabled, setDisabled] = React.useState<boolean>(false);
   const [selectedAvatar, setSelectedAvatar] = React.useState<string>('');
   const [selectedBanner, setSelectedBanner] = React.useState<string>('');
   const [avatarRemoval, setAvatarRemoval] = React.useState<string>('');
   const [bannerRemoval, setBannerRemoval] = React.useState<string>('');
+  const [country, setCountry] = React.useState<string>('');
   const [uploadFile, uploading, snapshot, uploadError] = useUploadFile();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: props.data.name || '',
-      description: props.data.description || '',
-      country: props.data.country,
-      avatar: undefined,
-      banner: undefined,
-    },
   });
 
   async function uploadImages() {
@@ -126,7 +123,7 @@ export default function EditForm(props: {
       avatar_fileName = 'avatar_' + form.getValues('avatar')[0].name;
       const storageRef = ref(
         storage,
-        `${props.userID}/stores/${props.storeID}/${avatar_fileName}`
+        `${user_id}/stores/${user_store}/${avatar_fileName}`
       );
 
       await uploadFile(storageRef, form.getValues('avatar')[0], {
@@ -153,7 +150,7 @@ export default function EditForm(props: {
       banner_fileName = 'banner_' + form.getValues('banner')[0].name;
       const storageRef = ref(
         storage,
-        `${props.userID}/stores/${props.storeID}/${banner_fileName}`
+        `${user_id}/stores/${user_store}/${banner_fileName}`
       );
 
       await uploadFile(storageRef, form.getValues('banner')[0], {
@@ -175,13 +172,13 @@ export default function EditForm(props: {
 
     avatar_fileName = avatar
       .replace(
-        `https://firebasestorage.googleapis.com/v0/b/creator-base-6c959.appspot.com/o/${props.userID}%2Fstores%2F${props.storeID}%2F`,
+        `https://firebasestorage.googleapis.com/v0/b/creator-base-6c959.appspot.com/o/${user_id}%2Fstores%2F${user_store}%2F`,
         ''
       )
       .replace(/\?alt.*/, '');
     banner_fileName = banner
       .replace(
-        `https://firebasestorage.googleapis.com/v0/b/creator-base-6c959.appspot.com/o/${props.userID}%2Fstores%2F${props.storeID}%2F`,
+        `https://firebasestorage.googleapis.com/v0/b/creator-base-6c959.appspot.com/o/${user_id}%2Fstores%2F${user_store}%2F`,
         ''
       )
       .replace(/\?alt.*/, '');
@@ -195,9 +192,8 @@ export default function EditForm(props: {
       banner_fileName: banner_fileName,
     };
   }
-
   async function onSubmit() {
-    const docRef: DocumentReference = doc(db, 'stores', props.storeID);
+    const docRef: DocumentReference = doc(db, 'stores', user_store);
     try {
       setDisabled(true);
       const { avatar, avatar_fileName, banner, banner_fileName } =
@@ -210,7 +206,7 @@ export default function EditForm(props: {
         avatar_filename: avatar_fileName,
         banner_url: banner,
         banner_filename: banner_fileName,
-        country: form.getValues('country'),
+        country: country,
         updated_at: Timestamp.fromDate(new Date()),
       });
       revalidate();
@@ -242,14 +238,28 @@ export default function EditForm(props: {
     const data = new DataTransfer();
     form.setValue('banner', data.files);
   }
+  async function getData() {
+    const storeRef: DocumentReference = doc(db, 'stores', user_store);
+    const storeDoc: DocumentData = await getDoc(storeRef);
+    if (storeDoc.exists) {
+      setSelectedAvatar(storeDoc.data().avatar_url);
+      setSelectedBanner(storeDoc.data().banner_url);
+      // form.setValue('country', );
+      form.setValue('name', storeDoc.data().name);
+      form.setValue('description', storeDoc.data().description);
+      setCountry(storeDoc.data().country);
+    }
+  }
 
   React.useEffect(() => {
-    setSelectedAvatar(props.data.avatar_url);
-  }, [props.data.avatar_url]);
-  React.useEffect(() => {
-    setSelectedBanner(props.data.banner_url);
-  }, [props.data.banner_url]);
+    if (user_id !== '') {
+      getData();
+    }
+  }, [user_loaded]);
 
+  if (user_id === '') {
+    return <></>;
+  }
   return (
     <section>
       <section className="mx-auto w-full max-w-[1754px]">
@@ -267,7 +277,7 @@ export default function EditForm(props: {
               </Button>
             )}
             <Button variant="outline" asChild>
-              <Link href={`/store/${props.storeID}`}>View store</Link>
+              <Link href={`/store/${user_store}`}>View store</Link>
             </Button>
           </div>
         </section>
@@ -289,75 +299,83 @@ export default function EditForm(props: {
                   up on search engines.
                 </p>
               </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          onChangeCapture={field.onChange}
-                          id="name"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem className="w-full">
-                      <FormLabel>Meta Description</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          onChangeCapture={field.onChange}
-                          placeholder="Tell us a little bit about this store..."
-                          className="resize-none"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Store Country</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+              <Card className="w-full flex-1">
+                <CardContent className="flex w-full flex-col gap-8">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel>Name</FormLabel>
                         <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a default currency" />
-                          </SelectTrigger>
+                          <Input
+                            onChangeCapture={field.onChange}
+                            id="name"
+                            {...field}
+                          />
                         </FormControl>
-                        <SelectContent>
-                          {country_list.map((item: any, i: number) => {
-                            return (
-                              <SelectItem
-                                value={item.value}
-                                key={`country-${i}`}
-                              >
-                                {item.name}
-                              </SelectItem>
-                            );
-                          })}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </aside>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem className="w-full">
+                        <FormLabel>Meta Description</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            onChangeCapture={field.onChange}
+                            placeholder="Tell us a little bit about this store..."
+                            className="resize-none"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          Having trouble writing a description? Use Ai to
+                          help... <AiDescriptionWriter />
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="country"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Store Country</FormLabel>
+                        <Select
+                          value={country}
+                          onValueChange={(value) => {
+                            setCountry(value);
+                          }}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a default currency" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {country_list.map((item: any, i: number) => {
+                              return (
+                                <SelectItem
+                                  value={item.value}
+                                  key={`country-${i}`}
+                                >
+                                  {item.name}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
             </section>
 
             <section className="flex flex-col gap-8 md:flex-row">
@@ -370,110 +388,31 @@ export default function EditForm(props: {
                   brand and personality.
                 </p>
               </aside>
-              <aside className="flex w-full flex-1 flex-col gap-8 rounded p-8 drop-shadow">
-                <FormField
-                  control={form.control}
-                  name="avatar"
-                  render={({ field: { onChange }, ...field }) => {
-                    // Get current images value (always watched updated)
-                    const images = form.watch('avatar');
+              <Card className="w-full flex-1">
+                <CardContent className="flex w-full flex-col gap-8">
+                  <FormField
+                    control={form.control}
+                    name="avatar"
+                    render={({ field: { onChange }, ...field }) => {
+                      // Get current images value (always watched updated)
+                      const images = form.watch('avatar');
 
-                    return (
-                      <FormItem className="w-full">
-                        <FormLabel>Avatar</FormLabel>
-                        <FormControl>
-                          {selectedAvatar ? (
-                            <section className="flex items-center gap-8">
-                              <Avatar className="h-[150px] w-[150px]">
-                                <AvatarImage
-                                  src={selectedAvatar}
-                                  alt="Avatar"
-                                />
-                              </Avatar>
-                              <Button
-                                asChild
-                                variant="destructive"
-                                onClick={clearAvatar}
-                              >
-                                <p>
-                                  <FontAwesomeIcon
-                                    className="icon"
-                                    icon={faTrash}
+                      return (
+                        <FormItem className="w-full">
+                          <FormLabel>Avatar</FormLabel>
+                          <FormControl>
+                            {selectedAvatar ? (
+                              <section className="flex items-center gap-8">
+                                <Avatar className="h-[150px] w-[150px]">
+                                  <AvatarImage
+                                    src={selectedAvatar}
+                                    alt="Avatar"
                                   />
-                                </p>
-                              </Button>
-                            </section>
-                          ) : (
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              {...field}
-                              onChange={(event) => {
-                                // Triggered when user uploaded a new file
-                                // FileList is immutable, so we need to create a new one
-                                const dataTransfer = new DataTransfer();
-
-                                // Add old images
-                                if (images) {
-                                  Array.from(images).forEach((image) =>
-                                    dataTransfer.items.add(image)
-                                  );
-                                }
-
-                                // Add newly uploaded images
-                                Array.from(event.target.files!).forEach(
-                                  (image) => dataTransfer.items.add(image)
-                                );
-
-                                // Validate and update uploaded file
-                                const newFiles = dataTransfer.files;
-
-                                const [file] = newFiles;
-                                if (file) {
-                                  setSelectedAvatar(URL.createObjectURL(file));
-                                }
-                                onChange(newFiles);
-                              }}
-                            />
-                          )}
-                        </FormControl>
-                        <FormDescription>
-                          For best results we suggest an image that is 300x300
-                          pixels.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="banner"
-                  render={({ field: { onChange }, ...field }) => {
-                    // Get current images value (always watched updated)
-                    const images = form.watch('banner');
-
-                    return (
-                      <FormItem className="w-full">
-                        <FormLabel>Store Banner</FormLabel>
-                        <FormControl>
-                          {selectedBanner ? (
-                            <section className="flex w-full items-center gap-8">
-                              <section className="flex flex-1">
-                                <Image
-                                  src={selectedBanner}
-                                  alt="Store Banner"
-                                  width={3096}
-                                  height={526}
-                                  style={{ width: '100%', height: 'auto' }}
-                                ></Image>
-                              </section>
-                              <section>
+                                </Avatar>
                                 <Button
                                   asChild
                                   variant="destructive"
-                                  onClick={clearBanner}
+                                  onClick={clearAvatar}
                                 >
                                   <p>
                                     <FontAwesomeIcon
@@ -483,51 +422,136 @@ export default function EditForm(props: {
                                   </p>
                                 </Button>
                               </section>
-                            </section>
-                          ) : (
-                            <Input
-                              type="file"
-                              accept="image/*"
-                              {...field}
-                              onChange={(event) => {
-                                // Triggered when user uploaded a new file
-                                // FileList is immutable, so we need to create a new one
-                                const dataTransfer = new DataTransfer();
+                            ) : (
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                {...field}
+                                onChange={(event) => {
+                                  // Triggered when user uploaded a new file
+                                  // FileList is immutable, so we need to create a new one
+                                  const dataTransfer = new DataTransfer();
 
-                                // Add old images
-                                if (images) {
-                                  Array.from(images).forEach((image) =>
-                                    dataTransfer.items.add(image)
+                                  // Add old images
+                                  if (images) {
+                                    Array.from(images).forEach((image) =>
+                                      dataTransfer.items.add(image)
+                                    );
+                                  }
+
+                                  // Add newly uploaded images
+                                  Array.from(event.target.files!).forEach(
+                                    (image) => dataTransfer.items.add(image)
                                   );
-                                }
 
-                                // Add newly uploaded images
-                                Array.from(event.target.files!).forEach(
-                                  (image) => dataTransfer.items.add(image)
-                                );
+                                  // Validate and update uploaded file
+                                  const newFiles = dataTransfer.files;
 
-                                // Validate and update uploaded file
-                                const newFiles = dataTransfer.files;
+                                  const [file] = newFiles;
+                                  if (file) {
+                                    setSelectedAvatar(
+                                      URL.createObjectURL(file)
+                                    );
+                                  }
+                                  onChange(newFiles);
+                                }}
+                              />
+                            )}
+                          </FormControl>
+                          <FormDescription>
+                            For best results we suggest an image that is 300x300
+                            pixels.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
 
-                                const [file] = newFiles;
-                                if (file) {
-                                  setSelectedBanner(URL.createObjectURL(file));
-                                }
-                                onChange(newFiles);
-                              }}
-                            />
-                          )}
-                        </FormControl>
-                        <FormDescription>
-                          For best results we suggest an image that is 3096x526
-                          pixels.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    );
-                  }}
-                />
-              </aside>
+                  <FormField
+                    control={form.control}
+                    name="banner"
+                    render={({ field: { onChange }, ...field }) => {
+                      // Get current images value (always watched updated)
+                      const images = form.watch('banner');
+
+                      return (
+                        <FormItem className="w-full">
+                          <FormLabel>Store Banner</FormLabel>
+                          <FormControl>
+                            {selectedBanner ? (
+                              <section className="flex w-full items-center gap-8">
+                                <section className="flex flex-1">
+                                  <Image
+                                    src={selectedBanner}
+                                    alt="Store Banner"
+                                    width={3096}
+                                    height={526}
+                                    style={{ width: '100%', height: 'auto' }}
+                                  ></Image>
+                                </section>
+                                <section>
+                                  <Button
+                                    asChild
+                                    variant="destructive"
+                                    onClick={clearBanner}
+                                  >
+                                    <p>
+                                      <FontAwesomeIcon
+                                        className="icon"
+                                        icon={faTrash}
+                                      />
+                                    </p>
+                                  </Button>
+                                </section>
+                              </section>
+                            ) : (
+                              <Input
+                                type="file"
+                                accept="image/*"
+                                {...field}
+                                onChange={(event) => {
+                                  // Triggered when user uploaded a new file
+                                  // FileList is immutable, so we need to create a new one
+                                  const dataTransfer = new DataTransfer();
+
+                                  // Add old images
+                                  if (images) {
+                                    Array.from(images).forEach((image) =>
+                                      dataTransfer.items.add(image)
+                                    );
+                                  }
+
+                                  // Add newly uploaded images
+                                  Array.from(event.target.files!).forEach(
+                                    (image) => dataTransfer.items.add(image)
+                                  );
+
+                                  // Validate and update uploaded file
+                                  const newFiles = dataTransfer.files;
+
+                                  const [file] = newFiles;
+                                  if (file) {
+                                    setSelectedBanner(
+                                      URL.createObjectURL(file)
+                                    );
+                                  }
+                                  onChange(newFiles);
+                                }}
+                              />
+                            )}
+                          </FormControl>
+                          <FormDescription>
+                            For best results we suggest an image that is
+                            3096x526 pixels.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </CardContent>
+              </Card>
             </section>
           </form>
         </Form>

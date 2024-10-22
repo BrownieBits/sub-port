@@ -1,32 +1,36 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { db } from '@/lib/firebase';
+import { faFedex, faUps, faUsps } from '@fortawesome/free-brands-svg-icons';
 import {
   faArrowDown,
   faArrowUp,
-  faTrash,
+  faEnvelope,
+  faEye,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ColumnDef } from '@tanstack/react-table';
 import { getCookie } from 'cookies-next';
 import { format } from 'date-fns';
-import { Timestamp, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import Link from 'next/link';
 import { revalidate } from './actions';
-import { EditPromotionButton } from './editPromotionButton';
 
-export type Promotion = {
+export type Order = {
   id: string;
-  amount: number;
+  order_id: string;
   name: string;
-  minimum_order_value: number;
-  number_of_uses: number;
-  times_used: number;
-  type: string;
-  user_id: string;
-  expiration_date: Date | undefined;
-  status: 'Active' | 'Inactive';
+  amount: number;
+  status: string;
+  order_date: Date;
+  item_count: number;
+  delivery_methods: string[];
   store_id: string;
   filter: string;
 };
@@ -40,27 +44,27 @@ export async function ChangeStatus(
   const docRef = doc(db, 'stores', store_id!, 'promotions', id);
   if (action === 'Delete') {
     await deleteDoc(docRef);
-    revalidate();
+    revalidate('/dashboard/orders');
     return;
   }
   if (item === 'status') {
     await updateDoc(docRef, {
       status: action,
     });
-    revalidate();
+    revalidate('/dashboard/orders');
   } else {
     await updateDoc(docRef, {
       show_in_banner: action,
     });
-    revalidate();
+    revalidate('/dashboard/orders');
   }
 }
 
-export const columns: ColumnDef<Promotion>[] = [
+export const columns: ColumnDef<Order>[] = [
   {
     accessorKey: 'filter',
-    header: () => <div className="hidden"></div>,
-    cell: ({ row }) => <div className="hidden"></div>,
+    header: () => <div className="hidden">Filter</div>,
+    cell: ({ row }) => <div className="hidden">{row.getValue('filter')}</div>,
   },
   {
     accessorKey: 'store_id',
@@ -73,7 +77,7 @@ export const columns: ColumnDef<Promotion>[] = [
     cell: ({ row }) => <div className="hidden"></div>,
   },
   {
-    accessorKey: 'name',
+    accessorKey: 'order_id',
     header: ({ column }) => {
       if (column.getIsSorted() === 'asc') {
         return (
@@ -82,7 +86,7 @@ export const columns: ColumnDef<Promotion>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             className="bg-inherit p-0 text-foreground hover:bg-inherit"
           >
-            Code
+            Order ID
             <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowDown} />
           </Button>
         );
@@ -93,7 +97,7 @@ export const columns: ColumnDef<Promotion>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             className="bg-inherit p-0 text-foreground hover:bg-inherit"
           >
-            Code
+            Order ID
             <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowUp} />
           </Button>
         );
@@ -104,7 +108,7 @@ export const columns: ColumnDef<Promotion>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           className="bg-inherit p-0 hover:bg-inherit"
         >
-          Code
+          Order ID
           <FontAwesomeIcon
             className="icon ml-[5px] text-muted-foreground hover:text-foreground"
             icon={faArrowDown}
@@ -115,13 +119,13 @@ export const columns: ColumnDef<Promotion>[] = [
     cell: ({ row }) => {
       return (
         <p>
-          <b>{row.getValue('name')}</b>
+          <b>{row.getValue('order_id')}</b>
         </p>
       );
     },
   },
   {
-    accessorKey: 'type',
+    accessorKey: 'order_date',
     header: ({ column }) => {
       if (column.getIsSorted() === 'asc') {
         return (
@@ -130,7 +134,7 @@ export const columns: ColumnDef<Promotion>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             className="bg-inherit p-0 text-foreground hover:bg-inherit"
           >
-            Type
+            Order Date
             <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowDown} />
           </Button>
         );
@@ -141,7 +145,7 @@ export const columns: ColumnDef<Promotion>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             className="bg-inherit p-0 text-foreground hover:bg-inherit"
           >
-            Type
+            Order Date
             <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowUp} />
           </Button>
         );
@@ -152,13 +156,60 @@ export const columns: ColumnDef<Promotion>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           className="bg-inherit p-0 hover:bg-inherit"
         >
-          Type
+          Order Date
           <FontAwesomeIcon
             className="icon ml-[5px] text-muted-foreground hover:text-foreground"
             icon={faArrowDown}
           />
         </Button>
       );
+    },
+    cell: ({ row }) => {
+      return <p>{format(row.getValue('order_date'), 'LLL dd, yyyy')}</p>;
+    },
+  },
+  {
+    accessorKey: 'name',
+    header: ({ column }) => {
+      if (column.getIsSorted() === 'asc') {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            className="bg-inherit p-0 text-foreground hover:bg-inherit"
+          >
+            Customer Name
+            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowDown} />
+          </Button>
+        );
+      } else if (column.getIsSorted() === 'desc') {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            className="bg-inherit p-0 text-foreground hover:bg-inherit"
+          >
+            Customer Name
+            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowUp} />
+          </Button>
+        );
+      }
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          className="bg-inherit p-0 hover:bg-inherit"
+        >
+          Customer Name
+          <FontAwesomeIcon
+            className="icon ml-[5px] text-muted-foreground hover:text-foreground"
+            icon={faArrowDown}
+          />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      return <p>{row.getValue('name')}</p>;
     },
   },
   {
@@ -202,163 +253,14 @@ export const columns: ColumnDef<Promotion>[] = [
       );
     },
     cell: ({ row }) => {
-      const type = row.getValue('type') as string;
-      if (type === 'Flat Amount') {
-        return (
-          <p>
-            {new Intl.NumberFormat('en-US', {
-              style: 'currency',
-              currency: 'USD',
-            }).format(row.getValue('amount'))}
-          </p>
-        );
-      }
-      return <p>{row.getValue('amount')}%</p>;
-    },
-  },
-  {
-    accessorKey: 'times_used',
-    header: ({ column }) => {
-      if (column.getIsSorted() === 'asc') {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="bg-inherit p-0 text-foreground hover:bg-inherit"
-          >
-            # of Times Used
-            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowDown} />
-          </Button>
-        );
-      } else if (column.getIsSorted() === 'desc') {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="bg-inherit p-0 text-foreground hover:bg-inherit"
-          >
-            # of Times Used
-            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowUp} />
-          </Button>
-        );
-      }
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="bg-inherit p-0 hover:bg-inherit"
-        >
-          # of Times Used
-          <FontAwesomeIcon
-            className="icon ml-[5px] text-muted-foreground hover:text-foreground"
-            icon={faArrowDown}
-          />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorKey: 'minimum_order_value',
-    header: ({ column }) => {
-      if (column.getIsSorted() === 'asc') {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="bg-inherit p-0 text-foreground hover:bg-inherit"
-          >
-            Min Order Value
-            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowDown} />
-          </Button>
-        );
-      } else if (column.getIsSorted() === 'desc') {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="bg-inherit p-0 text-foreground hover:bg-inherit"
-          >
-            Min Order Value
-            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowUp} />
-          </Button>
-        );
-      }
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="bg-inherit p-0 hover:bg-inherit"
-        >
-          Min Order Value
-          <FontAwesomeIcon
-            className="icon ml-[5px] text-muted-foreground hover:text-foreground"
-            icon={faArrowDown}
-          />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      if (row.getValue('minimum_order_value') === 0) {
-        return <></>;
-      }
       return (
         <p>
           {new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD',
-          }).format(row.getValue('minimum_order_value'))}
+          }).format(row.getValue('amount'))}
         </p>
       );
-    },
-  },
-  {
-    accessorKey: 'expiration_date',
-    header: ({ column }) => {
-      if (column.getIsSorted() === 'asc') {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="bg-inherit p-0 text-foreground hover:bg-inherit"
-          >
-            Expiration Date
-            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowDown} />
-          </Button>
-        );
-      } else if (column.getIsSorted() === 'desc') {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="bg-inherit p-0 text-foreground hover:bg-inherit"
-          >
-            Expiration Date
-            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowUp} />
-          </Button>
-        );
-      }
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="bg-inherit p-0 hover:bg-inherit"
-        >
-          Expiration Date
-          <FontAwesomeIcon
-            className="icon ml-[5px] text-muted-foreground hover:text-foreground"
-            icon={faArrowDown}
-          />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      if (
-        row.getValue('expiration_date') === undefined ||
-        row.getValue('expiration_date') === null
-      ) {
-        return <></>;
-      }
-      return <p>{format(row.getValue('expiration_date'), 'LLL dd, yyyy')}</p>;
     },
   },
   {
@@ -371,7 +273,7 @@ export const columns: ColumnDef<Promotion>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             className="bg-inherit p-0 text-foreground hover:bg-inherit"
           >
-            Status
+            Fulfillment Status
             <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowDown} />
           </Button>
         );
@@ -382,7 +284,7 @@ export const columns: ColumnDef<Promotion>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             className="bg-inherit p-0 text-foreground hover:bg-inherit"
           >
-            Status
+            Fulfillment Status
             <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowUp} />
           </Button>
         );
@@ -393,7 +295,7 @@ export const columns: ColumnDef<Promotion>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           className="bg-inherit p-0 hover:bg-inherit"
         >
-          Status
+          Fulfillment Status
           <FontAwesomeIcon
             className="icon ml-[5px] text-muted-foreground hover:text-foreground"
             icon={faArrowDown}
@@ -402,28 +304,25 @@ export const columns: ColumnDef<Promotion>[] = [
       );
     },
     cell: ({ row }) => {
-      const id = row.getValue('id') as string;
-      const store_id = row.getValue('store_id') as string;
-      const on = row.getValue('status') === 'Active' ? true : false;
-      return (
-        <Switch
-          id="status"
-          aria-label={`Status ${row.getValue('status')}`}
-          title={`Status ${row.getValue('status')}`}
-          checked={on}
-          onCheckedChange={(event) => {
-            if (event) {
-              ChangeStatus('Active', id, 'status');
-            } else {
-              ChangeStatus('Inactive', id, 'status');
-            }
-          }}
-        />
-      );
+      if (row.getValue('status') === 'Unfulfilled') {
+        return (
+          <span className="mr-2 rounded bg-warning px-2.5 py-0.5 text-xs font-medium text-warning-foreground">
+            {row.getValue('status')}
+          </span>
+        );
+      }
+      if (row.getValue('status') === 'Fulfilled') {
+        return (
+          <span className="mr-2 rounded bg-success px-2.5 py-0.5 text-xs font-medium text-success-foreground">
+            {row.getValue('status')}
+          </span>
+        );
+      }
+      return <></>;
     },
   },
   {
-    accessorKey: 'show_in_banner',
+    accessorKey: 'item_count',
     header: ({ column }) => {
       if (column.getIsSorted() === 'asc') {
         return (
@@ -432,7 +331,7 @@ export const columns: ColumnDef<Promotion>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             className="bg-inherit p-0 text-foreground hover:bg-inherit"
           >
-            Show In Banner
+            Item Count
             <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowDown} />
           </Button>
         );
@@ -443,7 +342,7 @@ export const columns: ColumnDef<Promotion>[] = [
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
             className="bg-inherit p-0 text-foreground hover:bg-inherit"
           >
-            Show In Banner
+            Item Count
             <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowUp} />
           </Button>
         );
@@ -454,7 +353,7 @@ export const columns: ColumnDef<Promotion>[] = [
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           className="bg-inherit p-0 hover:bg-inherit"
         >
-          Show In Banner
+          Item Count
           <FontAwesomeIcon
             className="icon ml-[5px] text-muted-foreground hover:text-foreground"
             icon={faArrowDown}
@@ -463,22 +362,95 @@ export const columns: ColumnDef<Promotion>[] = [
       );
     },
     cell: ({ row }) => {
-      const id = row.getValue('id') as string;
-      const store_id = row.getValue('store_id') as string;
+      return <>{row.getValue('item_count')}</>;
+    },
+  },
+  {
+    accessorKey: 'delivery_methods',
+    header: ({ column }) => {
+      if (column.getIsSorted() === 'asc') {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            className="bg-inherit p-0 text-foreground hover:bg-inherit"
+          >
+            Delivery Methods
+            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowDown} />
+          </Button>
+        );
+      } else if (column.getIsSorted() === 'desc') {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+            className="bg-inherit p-0 text-foreground hover:bg-inherit"
+          >
+            Delivery Methods
+            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowUp} />
+          </Button>
+        );
+      }
       return (
-        <Switch
-          id="status"
-          aria-label={`Status ${row.getValue('show_in_banner')}`}
-          title={`Status ${row.getValue('show_in_banner')}`}
-          checked={row.getValue('show_in_banner')}
-          onCheckedChange={(event) => {
-            if (event) {
-              ChangeStatus(true, id, 'show');
-            } else {
-              ChangeStatus(false, id, 'show');
-            }
-          }}
-        />
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          className="bg-inherit p-0 hover:bg-inherit"
+        >
+          Delivery Methods
+          <FontAwesomeIcon
+            className="icon ml-[5px] text-muted-foreground hover:text-foreground"
+            icon={faArrowDown}
+          />
+        </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const deliveryMethods: string[] = row.getValue('delivery_methods');
+      console.log(deliveryMethods);
+      return (
+        <section className="flex items-center gap-2">
+          {deliveryMethods.includes('digital') && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <p className="text-lg">
+                  <FontAwesomeIcon className="icon" icon={faEnvelope} />
+                </p>
+              </TooltipTrigger>
+              <TooltipContent>Digital</TooltipContent>
+            </Tooltip>
+          )}
+          {deliveryMethods.includes('usps') && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <p className="text-lg">
+                  <FontAwesomeIcon className="icon" icon={faUsps} />
+                </p>
+              </TooltipTrigger>
+              <TooltipContent>USPS</TooltipContent>
+            </Tooltip>
+          )}
+          {deliveryMethods.includes('fedex') && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <p className="text-lg">
+                  <FontAwesomeIcon className="icon" icon={faFedex} />
+                </p>
+              </TooltipTrigger>
+              <TooltipContent>Fedex</TooltipContent>
+            </Tooltip>
+          )}
+          {deliveryMethods.includes('ups') && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <p className="text-lg">
+                  <FontAwesomeIcon className="icon" icon={faUps} />
+                </p>
+              </TooltipTrigger>
+              <TooltipContent>Fedex</TooltipContent>
+            </Tooltip>
+          )}
+        </section>
       );
     },
   },
@@ -487,32 +459,18 @@ export const columns: ColumnDef<Promotion>[] = [
     header: '',
     cell: ({ row }) => {
       const id = row.getValue('id') as string;
-      const name = row.getValue('name') as string;
-      const min_order_value = row.getValue('minimum_order_value') as number;
-      const amount = row.getValue('amount') as number;
-      const type = row.getValue('type') as
-        | 'Flat Amount'
-        | 'Percentage'
-        | undefined;
-      const store_id = row.getValue('store_id') as string;
-      const expiration_date = row.getValue('expiration_date') as Timestamp;
+
       return (
         <section className="flex items-center justify-end gap-4">
-          <EditPromotionButton
-            id={id}
-            name={name}
-            minimum_order_value={min_order_value}
-            amount={amount}
-            type={type}
-            expiration_date={expiration_date}
-          />
           <Button
             variant="link"
-            title="Make Active"
-            onClick={() => ChangeStatus('Delete', id, 'show')}
+            title="View Order"
             className="p-0 text-foreground"
+            asChild
           >
-            <FontAwesomeIcon className="icon" icon={faTrash} />
+            <Link href={`/dashboard/orders/${id}`}>
+              <FontAwesomeIcon className="icon" icon={faEye} />
+            </Link>
           </Button>
         </section>
       );

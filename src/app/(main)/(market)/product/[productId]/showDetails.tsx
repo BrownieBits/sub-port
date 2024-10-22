@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -49,20 +50,20 @@ export const ShowDetails = (props: {
 
   if (isDesktop) {
     return (
-      <section className="mt-8 w-full rounded border p-4">
-        <h4>Product Details</h4>
-        <p className="whitespace-pre-wrap pt-[5px] text-sm text-muted-foreground">
-          {props.text.length < props.howManyToShow
-            ? props.text.replaceAll('\\n', '\n')
-            : `${props.text.replaceAll('\\n', '\n').substring(0, props.howManyToShow)}...`}
+      <Card className="mt-8 w-full">
+        <CardContent>
+          <h4>Product Details</h4>
+          <p className="line-clamp-2 whitespace-pre-wrap pt-[5px] text-sm text-muted-foreground">
+            {props.text.replaceAll('\\n', '\n')}
+          </p>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button
-                variant="link"
-                className="h-auto p-[0] px-4 text-foreground hover:no-underline"
+                variant="outline"
+                className="mt-2 h-auto p-0 px-3 text-foreground hover:no-underline"
                 asChild
               >
-                <span>...more</span>
+                <span>More</span>
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
@@ -133,27 +134,26 @@ export const ShowDetails = (props: {
               </DialogHeader>
             </DialogContent>
           </Dialog>
-        </p>
-      </section>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <section className="mt-8 w-full rounded border p-4">
-      <h4>Product Details</h4>
-      <p className="whitespace-pre-wrap pt-[5px] text-sm text-muted-foreground">
-        {props.text.length < props.howManyToShow
-          ? props.text.replaceAll('\\n', '\n')
-          : `${props.text.replaceAll('\\n', '\n').substring(0, props.howManyToShow)}...`}
-
+    <Card className="mt-8 w-full">
+      <CardContent>
+        <h4>Product Details</h4>
+        <p className="line-clamp-2 whitespace-pre-wrap pt-[5px] text-sm text-muted-foreground">
+          {props.text.replaceAll('\\n', '\n')}
+        </p>
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger>
             <Button
-              variant="link"
-              className="h-auto p-[0] px-4 text-foreground hover:no-underline"
+              variant="outline"
+              className="mt-2 h-auto p-0 px-3 text-foreground hover:no-underline"
               asChild
             >
-              <span>...more</span>
+              <span>More</span>
             </Button>
           </DrawerTrigger>
           <DrawerContent>
@@ -228,7 +228,7 @@ export const ShowDetails = (props: {
             </DrawerHeader>
           </DrawerContent>
         </Drawer>
-      </p>
-    </section>
+      </CardContent>
+    </Card>
   );
 };

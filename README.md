@@ -59,10 +59,8 @@ TODO:
         - [ ] Build table for showing orders
         - [ ] Create page for seeing individual order information
       - [ ] Store Orders
-        - [ ] Build table for showing orders
         - [ ] Create page for seeing individual order information
-    - [ ] Preferences
-      - [ ] Store cant go live unless getting started guide is complete
+    - [x] Preferences
     - [ ] Products
       - [ ] Products
         - [ ] Add in Edit form for POD products
