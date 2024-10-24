@@ -43,45 +43,44 @@ TODO:
   - [ ] Thank You
     - [ ] Add in branding imagery
 - [ ] Dashboard
-  - [ ] Dashboard
-    - [x] Analytics
-    - [ ] Commissions
-      - [ ] Build table to show payouts
-      - [ ] Build page to show individual payout information
-    - [ ] Integrations
-      - [ ] Printful
-      - [ ] Stripe - should this be in settings
-      - [ ] Youtube
-      - [ ] Twitch
-      - [ ] FB/Instagram
-    - [ ] Orders
-      - [ ] My Orders
-        - [ ] Build table for showing orders
-        - [ ] Create page for seeing individual order information
-      - [ ] Store Orders
-        - [ ] Create page for seeing individual order information
-    - [x] Preferences
+  - [x] Analytics
+  - [ ] Commissions
+    - [ ] Build table to show payouts
+    - [ ] Build page to show individual payout information
+  - [ ] Integrations
+    - [ ] Printful
+    - [ ] Stripe - should this be in settings
+    - [ ] Youtube
+    - [ ] Twitch
+    - [ ] FB/Instagram
+  - [ ] Orders
+    - [ ] My Orders
+      - [ ] Build table for showing orders
+      - [ ] Create page for seeing individual order information
+    - [ ] Store Orders
+      - [ ] Create page for seeing individual order information
+  - [x] Preferences
+  - [ ] Products
     - [ ] Products
-      - [ ] Products
-        - [ ] Add in Edit form for POD products
-      - [x] Collections
-    - [x] Promotions
-    - [x] Settings
-    - [ ] Dashboard
-      - [x] Latest Product Performance
-      - [ ] Store Analytics
-        - [ ] Top Products
-      - [ ] News
-        - [ ] Pull from latest Blog post
-      - [ ] Getting Started Guide
-        - [ ] Create Getting Started Guid
-          - [ ] Update Store Name
-          - [ ] Add Avatar
-          - [ ] Integrate with Stripe for payouts
-          - [ ] Add Product
-          - [ ] Put store Live
-      - [ ] Whats New
-        - [ ] Create Whats New Blog
+      - [ ] Add in Edit form for POD products
+    - [x] Collections
+  - [x] Promotions
+  - [x] Settings
+  - [ ] Dashboard
+    - [x] Latest Product Performance
+    - [ ] Store Analytics
+      - [ ] Top Products
+    - [ ] News
+      - [ ] Pull from latest Blog post
+    - [ ] Getting Started Guide
+      - [ ] Create Getting Started Guid
+        - [ ] Update Store Name
+        - [ ] Add Avatar
+        - [ ] Integrate with Stripe for payouts
+        - [ ] Add Product
+        - [ ] Put store Live
+    - [ ] Whats New
+      - [ ] Create Whats New Blog
   - [ ] Switch Store
     - [ ] Figure out plan level to allow multiple stores
 - [x] Login
