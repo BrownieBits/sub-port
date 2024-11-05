@@ -66,6 +66,15 @@ export const dashboardNavSections: _NavSection[] = [
         ]
     }
 ];
+export const adminNavSections: _NavSection[] = [
+    {
+        name: 'Main',
+        items: [
+            { name: 'Admin', url: '/admin', icon: 'fa-solid fa-toolbox', needs_user: true, required_plans: [], sub_menu: [] },
+            { name: 'Products', url: '/dashboard/products', icon: 'fa-solid fa-shirt', needs_user: true, required_plans: [], sub_menu: [] },
+        ]
+    },
+];
 export const footerNavItems: _FooterNavItem[] = [
     { name: 'About', url: '/about' },
     { name: 'Press', url: '/press' },

@@ -1,15 +1,15 @@
 import { Metadata } from 'next';
-import BlogListPage from './blogList';
+import NewPostForm from './newPostForm';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: `Blog`,
+    title: `Admin - New Blog Post`,
     description:
       'Enjoy the products you love, and share it all with friends, family, and the world on SubPort.',
     openGraph: {
       type: 'website',
-      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/blog/`,
-      title: `Blog`,
+      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/admin//blog/new`,
+      title: `Admin - New Blog Post`,
       siteName: 'SubPort Creator Platform',
       description:
         'Enjoy the products you love, and share it all with friends, family, and the world on SubPort.',
@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       creator: 'SubPort',
-      title: `Blog`,
+      title: `Admin - New Blog Post`,
       description:
         'Enjoy the products you love, and share it all with friends, family, and the world on SubPort.',
       images: [`https://${process.env.NEXT_PUBLIC_BASE_URL}/api/og_image`],
@@ -27,6 +27,6 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function Blog() {
-  return <BlogListPage />;
+export default async function NewBlogPostPage() {
+  return <NewPostForm />;
 }

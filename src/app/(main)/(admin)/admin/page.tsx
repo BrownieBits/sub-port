@@ -8,7 +8,7 @@ export async function generateMetadata(): Promise<Metadata> {
       'Enjoy the products you love, and share it all with friends, family, and the world on SubPort.',
     openGraph: {
       type: 'website',
-      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/`,
+      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/admin/`,
       title: `Admin`,
       siteName: 'SubPort Creator Platform',
       description:

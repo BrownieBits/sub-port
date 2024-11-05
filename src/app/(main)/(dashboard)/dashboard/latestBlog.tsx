@@ -1,7 +1,7 @@
 'use client';
 
-// import RichText from '@/components/sb-ui/RichText';
 import { Button } from '@/components/ui/button';
+// import RichText from '@/components/sb-ui/RichText';
 import {
   Card,
   CardContent,
@@ -11,24 +11,53 @@ import {
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { db } from '@/lib/firebase';
+import {
+  collection,
+  CollectionReference,
+  DocumentData,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  QuerySnapshot,
+  where,
+} from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
+type Post = {
+  id: string;
+  name: string;
+  summary: string;
+  banner_url: string;
+};
+
 export const LatestBlog = (props: {}) => {
-  const [blog, setBlog] = React.useState<any | null>(null);
+  const [blog, setBlog] = React.useState<Post | null>(null);
 
   React.useEffect(() => {
-    // const getLatest = async () => {
-    //   const currentClient = client;
-    //   const data = await currentClient.getEntries({
-    //     content_type: 'blogPost',
-    //     order: '-sys.createdAt',
-    //     limit: 1,
-    //   });
-    //   setBlog(data.items[0]);
-    // };
-    // getLatest();
+    const getLatest = async () => {
+      const blogsRef: CollectionReference = collection(db, 'blog');
+      const q = query(
+        blogsRef,
+        where('status', '==', 'Public'),
+        orderBy('created_at', 'desc'),
+        limit(1)
+      );
+      const blogsData: QuerySnapshot<DocumentData, DocumentData> =
+        await getDocs(q);
+      if (!blogsData.empty) {
+        setBlog({
+          id: blogsData.docs[0].id,
+          name: blogsData.docs[0].data().name,
+          summary: blogsData.docs[0].data().summary,
+          banner_url: blogsData.docs[0].data().banner_url,
+        });
+      }
+    };
+    getLatest();
   }, []);
 
   if (blog === null) {
@@ -58,29 +87,35 @@ export const LatestBlog = (props: {}) => {
   }
 
   return (
-    <section className="flex w-full flex-col items-start justify-start gap-8 rounded border p-4">
-      <h3>SubPort News</h3>
-      {blog.fields.banner && (
-        <Image
-          alt={blog.fields.title}
-          src={`https:${blog.fields.banner.fields.file.url}`}
-          width={blog.fields.banner.fields.file.details.image.width}
-          height={blog.fields.banner.fields.file.details.image.height}
-          className="mb-[5px] flex w-full"
-        />
-      )}
-
-      <section className="flex w-full flex-col gap-2">
+    <Card>
+      <CardHeader>
+        <CardTitle>SubPort News</CardTitle>
+      </CardHeader>
+      <Separator />
+      <CardContent className="flex flex-col gap-4">
+        {blog.banner_url && (
+          <section className="mb-[5px] flex w-full overflow-hidden rounded">
+            <Image
+              alt={blog.name}
+              src={blog.banner_url}
+              width={300}
+              height={200}
+            />
+          </section>
+        )}
         <p>
-          <b>{blog.fields.title}</b>
+          <b>{blog.name}</b>
         </p>
-        <p className="text-sm text-muted-foreground">
-          {/* <RichText content={blog.fields.body} summary /> */}
+        <p className="line-clamp-3 text-sm text-muted-foreground">
+          {blog.summary}
         </p>
-      </section>
-      <Button variant="outline" asChild>
-        <Link href={`/blog/${blog.fields.slug}`}>Read More</Link>
-      </Button>
-    </section>
+      </CardContent>
+      <Separator />
+      <CardFooter>
+        <Button variant="outline" asChild>
+          <Link href={`/blog/${blog.id}`}>Read More</Link>
+        </Button>
+      </CardFooter>
+    </Card>
   );
 };

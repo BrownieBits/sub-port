@@ -1,33 +1,27 @@
 // import RichText from '@/components/sb-ui/RichText';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import { db } from '@/lib/firebase';
+import { format } from 'date-fns';
 import {
   doc,
   DocumentData,
   DocumentReference,
   getDoc,
-  Timestamp,
 } from 'firebase/firestore';
-
 import { Metadata } from 'next';
+import Image from 'next/image';
 import { remark } from 'remark';
 import html from 'remark-html';
 
 type Params = Promise<{ slug: string }>;
 type Data = {
   error?: string;
-  title: string;
-  banner: any;
-  body: any;
-  created_at: any;
+  name: string;
+  banner: string;
+  body: string;
+  summary: string;
+  created_at: Date;
+  tags: string[];
 };
 
 async function getData(slug: string) {
@@ -41,41 +35,31 @@ async function getData(slug: string) {
     const contentHtml = processedContent.toString();
 
     return {
-      title: articleData.data().name,
+      name: articleData.data().name,
       banner: articleData.data().banner_url,
       body: contentHtml,
-      created_at: Timestamp.fromDate(new Date()),
+      summary: articleData.data().summary,
+      created_at: new Date(articleData.data().created_at.seconds * 1000),
+      tags: articleData.data().tags,
     };
   } else if (articleData.exists() && articleData.data().status === 'Private') {
     return {
       error: 'This article is no longer available',
-      title: '',
+      name: '',
       banner: '',
       body: '',
-      created_at: Timestamp.fromDate(new Date()),
+      tags: [],
+      summary: '',
+      created_at: new Date(),
     };
   }
-  // const currentClient = client;
-
-  // fetch data
-  // const data = await currentClient.getEntries({
-  //   content_type: 'blogPost',
-  //   'fields.slug': slug,
-  // });
-  // if (data.total === 0) {
-  //   redirect('/blog');
-  // }
-  // return {
-  //   title: data.items[0].fields.title,
-  //   banner: data.items[0].fields.banner,
-  //   body: data.items[0].fields.body,
-  //   created_at: data.items[0].sys.createdAt,
-  // };
   return {
-    title: '',
+    name: '',
     banner: '',
     body: '',
-    created_at: Timestamp.fromDate(new Date()),
+    tags: [],
+    summary: '',
+    created_at: new Date(),
   };
 }
 
@@ -86,33 +70,28 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const data: Data = await getData(slug);
-  // const strings = data.body.content.map((item: any) => {
-  //   if (item.nodeType === 'embedded-asset-block') {
-  //     return;
-  //   }
-  //   return item.content[0].value;
-  // });
+
   const openGraphImages: string[] = [];
-  // if (data.banner !== undefined) {
-  //   openGraphImages.push(`https:${data.banner.fields.file.url}`);
-  // }
+  if (data.banner !== undefined && data.banner !== '') {
+    openGraphImages.push(`https:${data.banner}`);
+  }
   return {
-    title: `${data.title} - Blog`,
-    description: "strings.join(' ')", // TODO FIX THIS TO DISPLAY Caption of article
+    title: `${data.name} - Blog`,
+    description: data.summary, // TODO FIX THIS TO DISPLAY Caption of article
     openGraph: {
       type: 'website',
       url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/store/${slug}`,
-      title: `${data.title} - Blog`,
+      title: `${data.name} - Blog`,
       siteName: 'SubPort Creator Platform',
-      description: "strings.join(' ')", // TODO FIX THIS TO DISPLAY Caption of article
+      description: data.summary, // TODO FIX THIS TO DISPLAY Caption of article
       images: openGraphImages,
     },
     twitter: {
       card: 'summary_large_image',
-      creator: data.title,
+      creator: data.name,
       images: openGraphImages,
-      title: `${data.title} - Blog`,
-      description: "strings.join(' ')", // TODO FIX THIS TO DISPLAY Caption of article
+      title: `${data.name} - Blog`,
+      description: data.summary, // TODO FIX THIS TO DISPLAY Caption of article
       site: 'SubPort Creator Platform',
     },
   };
@@ -124,28 +103,38 @@ export default async function BlogPost({ params }: { params: Params }) {
 
   return (
     <section>
-      <section className="mx-auto w-full max-w-[2428px]">
-        <section className="flex w-full items-center justify-between gap-4 px-4 pt-4">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/blog">Blog</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{data.title}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </section>
-        <section className="flex w-full items-center justify-between gap-4 px-4 py-4">
-          <h1>{data.title}</h1>
-        </section>
-      </section>
-      <Separator />
-      <section className="mx-auto w-full max-w-[2428px]">
-        <section className="flex flex-col gap-2 px-4 py-8">
-          {/* <RichText content={data.body} /> */}
+      <section className="mx-auto w-full max-w-[1754px]">
+        <section className="flex w-full flex-col items-start gap-4 p-4">
+          {data.banner !== '' ? (
+            <section className="w-full overflow-hidden rounded">
+              <Image
+                src={data.banner}
+                width={1754}
+                height={986}
+                alt={`${data.name} blog post banner`}
+                priority
+              />
+            </section>
+          ) : (
+            <></>
+          )}
+          <h1>{data.name}</h1>
+          <section className="flex gap-4">
+            <p className="text-sm text-muted-foreground">
+              {format(data.created_at, 'LLL dd, yyyy')}
+            </p>
+            {data.tags !== undefined && data.tags.length > 0 && (
+              <>
+                {data.tags.map((tag) => {
+                  return (
+                    <Badge variant="secondary" key={`post-tag-${tag}`}>
+                      {tag}
+                    </Badge>
+                  );
+                })}
+              </>
+            )}
+          </section>
           <div dangerouslySetInnerHTML={{ __html: data.body }} />
         </section>
       </section>

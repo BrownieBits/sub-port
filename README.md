@@ -70,8 +70,7 @@ TODO:
     - [x] Latest Product Performance
     - [ ] Store Analytics
       - [ ] Top Products
-    - [ ] News
-      - [ ] Pull from latest Blog post
+    - [x] News
     - [ ] Getting Started Guide
       - [ ] Create Getting Started Guid
         - [ ] Update Store Name
@@ -86,8 +85,7 @@ TODO:
 - [x] Login
 - [ ] Market
   - [x] About
-  - [ ] Blog
-    - [ ] Create system for creating and showing blog posts
+  - [x] Blog
   - [x] Cart
   - [ ] Help
     - [ ] Create system for posting help articles and organizing them
@@ -105,3 +103,5 @@ TODO:
     - [ ] Need to get a terms of service and lay it out
   - [ ] Home Page
     - [ ] More Modules
+- [ ] Admin
+  - [x] Blog

@@ -18,6 +18,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { IconLogo, WordLogo } from '../Logo';
 import {
+  adminNavSections,
   dashboardNavSections,
   footerNavItems,
   marketNavSections,
@@ -72,9 +73,9 @@ export function AppSidebar() {
             ))}
           </>
         )}
-        {!pathname.startsWith('/dashboard') && (
+        {pathname.startsWith('/admin') && (
           <>
-            {marketNavSections.map((section) => (
+            {adminNavSections.map((section) => (
               <NavSection
                 name={section.name}
                 items={section.items}
@@ -83,6 +84,18 @@ export function AppSidebar() {
             ))}
           </>
         )}
+        {!pathname.startsWith('/dashboard') &&
+          !pathname.startsWith('/admin') && (
+            <>
+              {marketNavSections.map((section) => (
+                <NavSection
+                  name={section.name}
+                  items={section.items}
+                  key={`navigation_section_${section.name}`}
+                />
+              ))}
+            </>
+          )}
         {open && (
           <SidebarGroup>
             <SidebarGroupContent>
