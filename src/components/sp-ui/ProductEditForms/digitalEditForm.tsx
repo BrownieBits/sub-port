@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { TagsInput } from '@/components/ui/tags-input';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Tooltip,
@@ -166,7 +167,7 @@ const formSchema = z.object({
   currency: z.enum(['', ...currencyTypes], {
     required_error: 'You need to select a collection type.',
   }),
-  tags: z.string().optional(),
+  tags: z.array(z.string()),
   sku: z.string().optional(),
   is_featured: z.boolean().default(false),
 });
@@ -218,7 +219,7 @@ export default function DigitalEditForm(props: Props) {
         compare_at: props.compare_at || 0.0,
       },
       currency: props.currency || 'USD',
-      tags: props.tags?.join(',') || '',
+      tags: props.tags || [],
       sku: props.sku || '',
       is_featured: props.is_featured || false,
     },
@@ -325,10 +326,6 @@ export default function DigitalEditForm(props: Props) {
       const compare_at = parseFloat(
         form.getValues('prices.compare_at') as string
       );
-      const tags = form.getValues('tags')?.split(',') || [];
-      tags.map((tag) => {
-        tag = tag.trim();
-      });
       if (props.docID !== undefined) {
         await updateDoc(docRef, {
           name: form.getValues('name'),
@@ -337,7 +334,7 @@ export default function DigitalEditForm(props: Props) {
           price: price.toFixed(2) as unknown as number,
           compare_at: compare_at.toFixed(2) as unknown as number,
           currency: form.getValues('currency'),
-          tags: tags,
+          tags: form.getValues('tags'),
           digital_file: digitalFileUrl,
           digital_file_name: digitalFileName,
           is_featured: form.getValues('is_featured'),
@@ -361,7 +358,7 @@ export default function DigitalEditForm(props: Props) {
           dimensions: null,
           ship_from_address: null,
           status: 'Public',
-          tags: form.getValues('tags')?.replace(/ /g, '').split(',') || [],
+          tags: form.getValues('tags'),
           admin_tags: [],
           like_count: 0,
           product_type: 'Digital',
@@ -1010,17 +1007,20 @@ export default function DigitalEditForm(props: Props) {
                     control={form.control}
                     name="tags"
                     render={({ field }) => (
-                      <FormItem className="w-full">
+                      <FormItem>
                         <FormLabel>Tags</FormLabel>
                         <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="tags"
-                            {...field}
+                          <TagsInput
+                            value={field.value}
+                            onValueChange={field.onChange}
                           />
                         </FormControl>
                         <FormDescription>
-                          Use commas to seperate different tags.
+                          Use{' '}
+                          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                            Enter
+                          </kbd>{' '}
+                          to add tags to list.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>

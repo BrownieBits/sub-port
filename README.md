@@ -105,3 +105,4 @@ TODO:
     - [ ] More Modules
 - [ ] Admin
   - [x] Blog
+  - [x] Analytics

@@ -11,6 +11,7 @@ import {
 import { Metadata } from 'next';
 import Image from 'next/image';
 import { remark } from 'remark';
+import remarkGfm from 'remark-gfm';
 import html from 'remark-html';
 
 type Params = Promise<{ slug: string }>;
@@ -29,9 +30,12 @@ async function getData(slug: string) {
   const articleData: DocumentData = await getDoc(articleRef);
 
   if (articleData.exists() && articleData.data().status === 'Public') {
+    const text = articleData.data().body;
     const processedContent = await remark()
+      // .use(remarkRehype)
+      .use(remarkGfm)
       .use(html)
-      .process(articleData.data().body);
+      .process(text);
     const contentHtml = processedContent.toString();
 
     return {

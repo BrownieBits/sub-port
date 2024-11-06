@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
+import { TagsInput } from '@/components/ui/tags-input';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Tooltip,
@@ -149,7 +150,7 @@ const formSchema = z.object({
   currency: z.enum(['', ...currencyTypes], {
     required_error: 'You need to select a collection type.',
   }),
-  tags: z.string().optional(),
+  tags: z.array(z.string()),
   sku: z.string().optional(),
   is_featured: z.boolean().default(false),
   track_inventory: z.boolean().default(false),
@@ -324,7 +325,7 @@ export default function SelfEditForm(props: Props) {
         price: props.price || 0.0,
         compare_at: props.compare_at || 0.0,
       },
-      tags: props.tags?.join(',') || '',
+      tags: props.tags || [],
       currency: props.currency || 'USD',
       sku: props.sku || '',
       is_featured: props.is_featured || false,
@@ -517,10 +518,7 @@ export default function SelfEditForm(props: Props) {
       }
       const imageFileUrls: string[] = await uploadImages(docRef.id);
       const batch = writeBatch(db);
-      const tags = form.getValues('tags')?.split(',') || [];
-      tags.map((tag) => {
-        tag = tag.trim();
-      });
+
       if (props.docID !== undefined) {
         batch.update(docRef, {
           name: form.getValues('name'),
@@ -532,7 +530,7 @@ export default function SelfEditForm(props: Props) {
             2
           ) as unknown as number,
           currency: form.getValues('currency'),
-          tags: tags,
+          tags: form.getValues('tags'),
           inventory: form.getValues('inventory') as number,
           track_inventory: trackInventory,
           is_featured: form.getValues('is_featured'),
@@ -681,7 +679,7 @@ export default function SelfEditForm(props: Props) {
           },
           ship_from_address: address,
           status: 'Public',
-          tags: form.getValues('tags')?.replace(/ /g, '').split(',') || [],
+          tags: form.getValues('tags'),
           admin_tags: [],
           like_count: 0,
           product_type: form.getValues('product_type'),
@@ -1516,17 +1514,20 @@ export default function SelfEditForm(props: Props) {
                     control={form.control}
                     name="tags"
                     render={({ field }) => (
-                      <FormItem className="w-full">
+                      <FormItem>
                         <FormLabel>Tags</FormLabel>
                         <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="tags"
-                            {...field}
+                          <TagsInput
+                            value={field.value}
+                            onValueChange={field.onChange}
                           />
                         </FormControl>
                         <FormDescription>
-                          Use commas to seperate different tags.
+                          Use{' '}
+                          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                            Enter
+                          </kbd>{' '}
+                          to add tags to list.
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
