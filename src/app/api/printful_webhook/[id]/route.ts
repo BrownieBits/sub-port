@@ -6,7 +6,7 @@ type Params = {
 
 export async function POST(request: NextRequest, context: { params: Promise<Params> }) {
   const data = await request.json();
-  console.log('REQUEST', data.data.sync_product.id);
+  console.log('REQUEST', data.data);
   if (data.type === 'product_updated') {
     const syncResponse = await fetch(
       `https://api.printful.com/store/products/${data.data.sync_product.id}`,
