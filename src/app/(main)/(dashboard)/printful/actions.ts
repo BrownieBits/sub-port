@@ -1,6 +1,8 @@
 'use server';
 
-export async function connectToPrintful(code: string, user_id: string) {
+import { redirect } from "next/navigation";
+
+export async function connectToPrintful(code: string, store_id: string) {
   const tokenResponse = await fetch('https://www.printful.com/oauth/token', {
     method: 'POST',
     headers: {
@@ -15,7 +17,7 @@ export async function connectToPrintful(code: string, user_id: string) {
   });
   const tokenJson = await tokenResponse.json();
   if (tokenResponse.status !== 200) {
-    return tokenJson.error.message;
+    return { error: tokenJson.error.message, status: tokenResponse.status };
   }
   console.log('TokenJson', tokenJson);
   const webhookeResponse = await fetch('https://api.printful.com/webhooks', {
@@ -25,7 +27,7 @@ export async function connectToPrintful(code: string, user_id: string) {
       Authorization: `Bearer ${tokenJson.access_token}`,
     },
     body: JSON.stringify({
-      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/api/printful_webhook/${user_id}`,
+      url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/api/printful_webhook/${store_id}`,
       types: [
         'package_shipped',
         'product_synced',
@@ -37,10 +39,15 @@ export async function connectToPrintful(code: string, user_id: string) {
   const webHookJson = await webhookeResponse.json();
 
   if (webhookeResponse.status !== 200) {
-    return webHookJson.error.message;
+    return { error: webHookJson.error.message, status: webhookeResponse.status };
   }
   console.log('ACCESS TOKEN', tokenJson.access_token);
   console.log('WEBHOOK STATUS', webhookeResponse.status);
   console.log('WEBHOOK', webhookeResponse);
-  return 'Connected!';
+  return { status: 200, access_token: tokenJson.access_token, refresh_token: tokenJson.refresh_token };
+}
+
+export async function goToIntegrations() {
+  'use server'
+  redirect('/dashboard/integrations');
 }

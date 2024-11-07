@@ -1,8 +1,7 @@
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Metadata } from 'next';
 import { cookies } from 'next/headers';
-import Link from 'next/link';
+import PrintfulIntegration from './printfulIntegration';
 import StripeIntegration from './stripeIntegration';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -53,14 +52,8 @@ export default async function Integrations() {
         </section>
       </section>
       <Separator />
-      <section className="mx-auto w-full max-w-[2428px]">
-        <Button asChild>
-          <Link
-            href={`https://www.printful.com/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_PRINTFUL_CLIENT_ID}&state=${user_id?.value!}&redirect_url=https://${process.env.NEXT_PUBLIC_BASE_URL}/printful`}
-          >
-            Link to Printful
-          </Link>
-        </Button>
+      <section className="mx-auto grid w-full max-w-[2428px] grid-cols-1 gap-8 py-4 md:grid-cols-3 xl:grid-cols-6">
+        <PrintfulIntegration />
 
         <StripeIntegration />
       </section>

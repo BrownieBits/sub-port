@@ -1,7 +1,17 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
 import userStore from '@/stores/userStore';
+import { faStripeS } from '@fortawesome/free-brands-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   DocumentReference,
   Timestamp,
@@ -20,7 +30,7 @@ type UserInfo = {
   name: string;
   country: string;
   stripe_connect_id?: string;
-  stripe_charges_engabled?: boolean;
+  stripe_charges_enabled?: boolean;
   stripe_details_submitted?: boolean;
   stripe_payouts_enabled?: boolean;
 };
@@ -62,7 +72,7 @@ export default function StripeIntegration() {
         name: userDoc.data()?.name,
         country: userDoc.data()?.country,
         stripe_connect_id: userDoc.data()?.stripe_connect_id,
-        stripe_charges_engabled: userDoc.data()?.stripe_charges_engabled,
+        stripe_charges_enabled: userDoc.data()?.stripe_charges_enabled,
         stripe_details_submitted: userDoc.data()?.stripe_details_submitted,
         stripe_payouts_enabled: userDoc.data()?.stripe_payouts_enabled,
       };
@@ -87,14 +97,82 @@ export default function StripeIntegration() {
   if (user === null) {
     return <></>;
   }
-  if (stripeLinkURL !== null) {
+  if (
+    user.stripe_charges_enabled &&
+    user.stripe_details_submitted &&
+    user.stripe_payouts_enabled
+  ) {
     return (
-      <Button asChild>
-        <Link href={stripeLinkURL} target="_blank">
-          Complete Stripe Onboarding
-        </Link>
-      </Button>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex gap-4">
+            <FontAwesomeIcon className="icon" icon={faStripeS} />
+            Stripe
+          </CardTitle>
+        </CardHeader>
+        <Separator />
+
+        <CardContent>
+          <p>
+            Get payouts using Stripe Connect. Connect a Stripe account to your
+            SubPort account in order to get paid out.
+          </p>
+        </CardContent>
+        <Separator />
+        <CardFooter>
+          <Button variant="outline">Account Connected!</Button>
+        </CardFooter>
+      </Card>
     );
   }
-  return <Button onClick={CreateAccount}>Link Stripe</Button>;
+  if (stripeLinkURL !== null) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex gap-4">
+            <FontAwesomeIcon className="icon" icon={faStripeS} />
+            Stripe
+          </CardTitle>
+        </CardHeader>
+        <Separator />
+
+        <CardContent>
+          <p>
+            Get payouts using Stripe Connect. Connect a Stripe account to your
+            SubPort account in order to get paid out.
+          </p>
+        </CardContent>
+        <Separator />
+        <CardFooter>
+          <Button asChild>
+            <Link href={stripeLinkURL} target="_blank">
+              Complete Stripe Onboarding
+            </Link>
+          </Button>
+        </CardFooter>
+      </Card>
+    );
+  }
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex gap-4">
+          <FontAwesomeIcon className="icon" icon={faStripeS} />
+          Stripe
+        </CardTitle>
+      </CardHeader>
+      <Separator />
+
+      <CardContent>
+        <p>
+          Get payouts using Stripe Connect. Connect a Stripe account to your
+          SubPort account in order to get paid out.
+        </p>
+      </CardContent>
+      <Separator />
+      <CardFooter>
+        <Button onClick={CreateAccount}>Link Stripe</Button>
+      </CardFooter>
+    </Card>
+  );
 }

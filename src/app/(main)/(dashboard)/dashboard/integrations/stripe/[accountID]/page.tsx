@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { cookies } from 'next/headers';
 import StripeIntegration from './stripeIntegration';
 
 type Params = Promise<{ accountID: string }>;
@@ -36,7 +35,5 @@ export default async function StripeConnectReturn({
   params: Params;
 }) {
   const { accountID } = await params;
-  const cookieStore = await cookies();
-  const user_id = cookieStore.get('user_id');
   return <StripeIntegration accountID={accountID} />;
 }
