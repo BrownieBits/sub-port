@@ -32,7 +32,7 @@ export default function PrintfulIntegration() {
       getData();
     }
   }, [user_loaded]);
-  if (accessToken) {
+  if (accessToken === null) {
     return <></>;
   }
   if (accessToken !== '') {
