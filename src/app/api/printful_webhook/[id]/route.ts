@@ -6,6 +6,7 @@ type Params = {
 
 export async function POST(request: NextRequest, context: { params: Promise<Params> }) {
   const data = await request.json();
+  const parameters = await context.params;
   console.log('REQUEST', data.data);
   if (data.type === 'product_updated') {
     const syncResponse = await fetch(
@@ -18,6 +19,7 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
         },
       }
     );
+    console.log('PRODUCT UPDATE PARAMS', parameters.id);
     console.log('SYNC RESP', syncResponse);
     const syncJson = await syncResponse.json();
     console.log('SYNC JSON', syncJson);
