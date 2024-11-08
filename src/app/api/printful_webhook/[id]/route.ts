@@ -96,8 +96,8 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
           if (variant.availability_status === 'active') {
             console.log(`${variant.id} Variant`, variant)
             variant.files.map((file: VariantFile) => {
-              if (file.visible && file.status === 'ok') {
-                imageURLs.push(file.url);
+              if (file.visible && file.status === 'ok' && file.type === 'preview') {
+                imageURLs.push(file.preview_url);
               }
               console.log(`${variant.id} File`, file)
             })
