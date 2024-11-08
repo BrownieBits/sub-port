@@ -1,5 +1,5 @@
 import { db } from '@/lib/firebase';
-import { collection, doc, DocumentData, getDoc, getDocs, query, QuerySnapshot, Timestamp, updateDoc, where, writeBatch } from 'firebase/firestore';
+import { collection, doc, DocumentData, getDoc, getDocs, query, QuerySnapshot, Timestamp, where, writeBatch } from 'firebase/firestore';
 import { NextRequest } from 'next/server';
 
 type Params = {
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
           if (variant.availability_status === 'active') {
             console.log(`${variant.id} Variant`, variant)
             variant.files.map((file: VariantFile) => {
-              if (file.visible && file.status === 'ok' && file.type === 'preview') {
+              if (file.status === 'ok' && file.type === 'preview') {
                 imageURLs.push(file.preview_url);
               }
               console.log(`${variant.id} File`, file)
@@ -106,7 +106,6 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
               price = newPrice;
             }
             console.log(`${variant.id} PRODUCT`, variant.product)
-
           }
         })
         if (productsData.empty) {
@@ -140,8 +139,19 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
             service_percent: 0.1,
           });
         } else {
-          await updateDoc(productsData.docs[0].ref, {
-            name: syncJson.result.sync_product.name
+          batch.update(productsData.docs[0].ref, {
+            name: syncJson.result.sync_product.name,
+            images: imageURLs,
+            vendor: 'printful',
+            price: price,
+            compare_at: 0,
+            currency: syncJson.result.sync_variants[0].currency,
+            tags: [],
+            like_count: 0,
+            product_type: '',
+            updated_at: Timestamp.fromDate(new Date()),
+            colors: [],
+            sku: '',
           })
         }
         await batch.commit();
