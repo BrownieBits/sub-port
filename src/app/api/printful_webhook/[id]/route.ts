@@ -5,6 +5,58 @@ import { NextRequest } from 'next/server';
 type Params = {
   id: string;
 };
+type VariantFile = {
+  type: string;
+  id: number;
+  url: string;
+  options: {
+    id: string;
+    value: String;
+  }[];
+  hash: string;
+  filename: string;
+  mime_type: string;
+  size: number;
+  width: number;
+  height: number;
+  dpi: number;
+  status: string;
+  created: number;
+  thumbnail_url: string;
+  preview_url: string;
+  visible: boolean;
+  is_temporary: boolean;
+  stitch_count_tier: string;
+}
+type Variant = {
+  id: number;
+  external_id: string;
+  sync_product_id: number;
+  name: string;
+  synced: boolean;
+  variant_id: number;
+  retail_price: string;
+  currency: string;
+  is_ignored: boolean;
+  sku: string;
+  product: {
+    variant_id: number;
+    product_id: number;
+    image: string;
+    name: string;
+  };
+  files: VariantFile[];
+  options: {
+    id: string;
+    value: String;
+  }[];
+  main_category_id: number;
+  warehouse_product_id: number;
+  warehouse_product_variant_id: number;
+  size: string;
+  color: string;
+  availability_status: string;
+}
 
 export async function POST(request: NextRequest, context: { params: Promise<Params> }) {
   const data = await request.json();
@@ -40,10 +92,10 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
         const batch = writeBatch(db);
         const imageURLs: string[] = [];
         let price: number = 0;
-        syncJson.result.sync_variants.map((variant: any) => {
+        syncJson.result.sync_variants.map((variant: Variant) => {
           if (variant.availability_status === 'active') {
             console.log(`${variant.id} Variant`, variant)
-            variant.files((file: any) => {
+            variant.files.map((file: VariantFile) => {
               if (file.visible && file.status === 'ok') {
                 imageURLs.push(file.url);
               }
