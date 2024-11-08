@@ -77,10 +77,7 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
           },
         }
       );
-      console.log('PRODUCT UPDATE PARAMS', parameters.id);
-      console.log('SYNC RESP', syncResponse);
       const syncJson = await syncResponse.json();
-      console.log('SYNC JSON', syncJson);
       if (syncJson.code === 200) {
         const productsRef = collection(db, 'products');
         const q = query(
@@ -97,15 +94,15 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
             console.log(`${variant.id} Variant`, variant)
             variant.files.map((file: VariantFile) => {
               if (file.status === 'ok' && file.type === 'preview') {
-                imageURLs.push(file.preview_url);
+                if (!imageURLs.includes(file.preview_url)) {
+                  imageURLs.push(file.preview_url);
+                }
               }
-              console.log(`${variant.id} File`, file)
             })
             const newPrice = parseFloat(variant.retail_price).toFixed(2) as unknown as number;
             if (price === 0 || price > newPrice) {
               price = newPrice;
             }
-            console.log(`${variant.id} PRODUCT`, variant.product)
           }
         })
         if (productsData.empty) {
