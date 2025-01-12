@@ -30,6 +30,12 @@ export async function connectToPrintful(code: string, store_id: string) {
       url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/api/printful_webhook/${store_id}`,
       types: [
         'package_shipped',
+        'package_returned',
+        'order_created',
+        'order_updated',
+        'order_failed',
+        'order_canceled',
+        'order_refunded',
         'product_synced',
         'product_updated',
         'product_deleted',

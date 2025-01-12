@@ -1,5 +1,5 @@
 import { db } from '@/lib/firebase';
-import { collection, doc, DocumentData, getDoc, getDocs, query, QuerySnapshot, Timestamp, where, writeBatch } from 'firebase/firestore';
+import { collection, doc, DocumentData, getDoc, getDocs, limit, query, QuerySnapshot, Timestamp, where, writeBatch } from 'firebase/firestore';
 import { NextRequest } from 'next/server';
 
 type Params = {
@@ -90,6 +90,7 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
           },
         }
       );
+
       const syncJson = await syncResponse.json();
       if (syncJson.code === 200) {
         const productsRef = collection(db, 'products');
@@ -121,7 +122,6 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
         const variantsToAdd: AddVariant[] = [];
         syncJson.result.sync_variants.map((variant: Variant, index: number) => {
           if (variant.availability_status === 'active') {
-            console.log(`${variant.id} Variant`, variant)
             variant.files.map((file: VariantFile) => {
               if (file.status === 'ok' && file.type === 'preview') {
                 if (!imageURLs.includes(file.preview_url)) {
@@ -165,6 +165,17 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
             })
           }
         })
+        const infoResponse = await fetch(
+          `https://api.printful.com/products/${syncJson.result.sync_variants[0].product.product_id}`,
+          {
+            method: 'GET',
+            headers: {
+              'Content-type': 'application/json',
+              Authorization: `Bearer ${storeDoc.data().printful_access_token}`,
+            },
+          }
+        );
+        const infoJson = await infoResponse.json();
         if (productsData.empty) {
           const newProductDoc = doc(productsRef);
           batch.set(newProductDoc, {
@@ -172,7 +183,7 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
             images: imageURLs,
             vendor: 'printful',
             vendor_id: syncJson.result.sync_product.id,
-            description: '',
+            description: infoJson.result.product.description,
             price: price,
             compare_at: 0,
             currency: syncJson.result.sync_variants[0].currency,
@@ -180,9 +191,9 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
             track_inventory: false,
             status: 'Public',
             tags: [],
-            admin_tags: [],
+            admin_tags: ['print-on-demand'],
             like_count: 0,
-            product_type: '',
+            product_type: infoJson.result.product.type_name,
             store_id: parameters.id,
             owner_id: storeDoc.data().owner_id,
             units_sold: 0,
@@ -252,6 +263,40 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
         }
         await batch.commit();
       }
+    }
+  } else if (data.type === 'product_deleted') {
+    const productsRef = collection(db, 'products');
+    const q = query(
+      productsRef,
+      where('vendor_id', '==', data.data.sync_product.id),
+      limit(1),
+    );
+    const productsData: QuerySnapshot<DocumentData, DocumentData> =
+      await getDocs(q);
+    if (!productsData.empty) {
+      const batch = writeBatch(db);
+
+      const productDoc = productsData.docs[0].ref;
+      const optionsRef = collection(db, `products/${productDoc.id}/options`);
+      const optionsData: QuerySnapshot<DocumentData, DocumentData> =
+        await getDocs(optionsRef);
+      if (!optionsData.empty) {
+        optionsData.docs.map((option) => {
+          const optionDoc = doc(db, `products/${productDoc.id}/options`, option.id);
+          batch.delete(optionDoc);
+        })
+      }
+      const variantsRef = collection(db, `products/${productDoc.id}/variants`);
+      const variantsData: QuerySnapshot<DocumentData, DocumentData> =
+        await getDocs(variantsRef);
+      if (!variantsData.empty) {
+        variantsData.docs.map((variant) => {
+          const variantDoc = doc(db, `products/${productDoc.id}/variants`, variant.id);
+          batch.delete(variantDoc);
+        })
+      }
+      batch.delete(productDoc);
+      await batch.commit();
     }
   }
 
