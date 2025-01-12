@@ -50,7 +50,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getCookie } from 'cookies-next';
+import { getCookie } from 'cookies-next/client';
 import { format } from 'date-fns';
 import {
   DocumentReference,
@@ -119,9 +119,7 @@ export const EditPromotionButton = (props: {
     }
     const promotionDoc: DocumentReference = doc(
       db,
-      'stores',
-      store_id!,
-      'promotions',
+      `stores/${store_id!}/promotions`,
       props.id
     );
     const querySnapshot = await getDoc(promotionDoc);

@@ -2,7 +2,7 @@
 
 import settingsStore from '@/stores/settingsStore';
 import { _SetUserProps } from '@/stores/userStore.types';
-import { setCookie } from 'cookies-next';
+import { setCookie } from 'cookies-next/client';
 import React from 'react';
 
 export default function SettingsState() {

@@ -11,7 +11,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
-import { getCookie } from 'cookies-next';
+import { getCookie } from 'cookies-next/client';
 import { Unsubscribe } from 'firebase/auth';
 import {
   CollectionReference,

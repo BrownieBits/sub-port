@@ -10,7 +10,7 @@ import {
   _StoreItemBreakdown,
 } from '@/stores/cartStore.types';
 import userStore from '@/stores/userStore';
-import { deleteCookie, getCookie, setCookie } from 'cookies-next';
+import { deleteCookie, getCookie, setCookie } from 'cookies-next/client';
 import { User } from 'firebase/auth';
 import {
   collection,

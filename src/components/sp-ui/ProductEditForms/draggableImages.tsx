@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Image from 'next/image';
-import React from 'react';
+import React, { useRef } from 'react';
 import { createSwapy } from 'swapy';
 
 type Props = {
@@ -21,6 +21,7 @@ type Props = {
 };
 
 export default function DraggableImages(props: Props) {
+  const container = useRef(null);
   const [productImages, setProductImages] = React.useState<ProductImage[]>([]);
 
   function removeProductImage(index: number) {
@@ -30,19 +31,20 @@ export default function DraggableImages(props: Props) {
 
   React.useEffect(() => {
     if (productImages.length > 0) {
-      const container = document.querySelector('.container')!;
-      const swapy = createSwapy(container, {
+      // const container = document.querySelector('.container')!;
+      const swapy = createSwapy(container.current!, {
         swapMode: 'drop',
-        continuousMode: true,
         animation: 'spring',
       });
-      swapy.onSwap(({ data }) => {
-        const newImageOrder: ProductImage[] = data.array.map((item, index) => {
-          return {
-            id: index,
-            image: props.product_images[parseInt(item.itemId!)].image,
-          };
-        });
+      swapy.onSwap((data) => {
+        const newImageOrder: ProductImage[] = data.newSlotItemMap.asArray.map(
+          (item, index) => {
+            return {
+              id: index,
+              image: props.product_images[parseInt(item.item)].image,
+            };
+          }
+        );
         props.reOrderImages(newImageOrder.slice(0));
         setProductImages([]);
       });
@@ -58,6 +60,7 @@ export default function DraggableImages(props: Props) {
 
   return (
     <section
+      ref={container}
       className={cn(
         'container grid grid-cols-2 gap-4 md:grid-cols-5 md:grid-rows-2',
         {

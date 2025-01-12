@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { hasCookie, setCookie } from 'cookies-next';
+import { hasCookie, setCookie } from 'cookies-next/client';
 import React from 'react';
 
 export default function CookieConsent() {

@@ -10,7 +10,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ColumnDef } from '@tanstack/react-table';
-import { getCookie } from 'cookies-next';
+import { getCookie } from 'cookies-next/client';
 import { format } from 'date-fns';
 import { Timestamp, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { revalidate } from './actions';
@@ -37,7 +37,7 @@ export async function ChangeStatus(
   item: 'status' | 'show'
 ) {
   const store_id = getCookie('default_store');
-  const docRef = doc(db, 'stores', store_id!, 'promotions', id);
+  const docRef = doc(db, `stores/${store_id!}/promotions`, id);
   if (action === 'Delete') {
     await deleteDoc(docRef);
     revalidate();
