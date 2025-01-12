@@ -68,6 +68,7 @@ type AddVariant = {
   price: number;
   updated_at: Timestamp;
   vendor_id: number;
+  vendor: string;
 }
 
 export async function POST(request: NextRequest, context: { params: Promise<Params> }) {
@@ -107,12 +108,14 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
             name: 'Size',
             options: [] as string[],
             owner_id: storeDoc.data().owner_id,
+            vendor: 'printful',
           },
           {
             index: 1,
             name: 'Color',
             options: [] as string[],
             owner_id: storeDoc.data().owner_id,
+            vendor: 'printful',
           },
         ]
         const variantsToAdd: AddVariant[] = [];
@@ -158,6 +161,7 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
               price: newPrice,
               updated_at: Timestamp.fromDate(new Date()),
               vendor_id: variant.variant_id,
+              vendor: 'printful',
             })
           }
         })
