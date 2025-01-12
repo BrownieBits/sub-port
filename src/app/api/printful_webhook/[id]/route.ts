@@ -155,7 +155,7 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
               compare_at: 0,
               created_at: Timestamp.fromDate(new Date()),
               index: index,
-              inventory: 0,
+              inventory: 1,
               name: name,
               owner_id: storeDoc.data().owner_id,
               price: newPrice,
@@ -232,7 +232,11 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
             variantsData.docs.map((variant) => { existingVariants.push(variant.id) });
             variantsToAdd.map((variant) => {
               const newVariantDoc = doc(db, `products/${productsData.docs[0].id}/variants`, variant.name);
-              batch.set(newVariantDoc, variant);
+              if (existingVariants.includes(variant.name)) {
+                batch.update(newVariantDoc, variant);
+              } else {
+                batch.set(newVariantDoc, variant);
+              }
               existingVariants.splice(existingVariants.indexOf(variant.name), 1);
             })
             existingVariants.map((variant) => {
