@@ -110,13 +110,19 @@ export default function CartState() {
     const userCartsData: QuerySnapshot<DocumentData, DocumentData> =
       await getDocs(q);
     if (userCartsData.empty) {
+      console.log('No carts found for user');
       if (cart_cookie === undefined) {
         createNewCart(user?.email!, user.uid);
       } else {
         updateCartToUserCart(user?.email!, user.uid);
       }
     } else {
-      if (cart_cookie === userCartsData.docs[0].id) {
+      console.log('Carts found for user', cart_cookie);
+      if (cart_cookie === undefined) {
+        setCartCookie(userCartsData.docs[0].id);
+        setCartID(userCartsData.docs[0].id);
+        setCartLoaded(true);
+      } else if (cart_cookie === userCartsData.docs[0].id) {
         setCartID(cart_cookie!);
         setCartCookie(cart_cookie!);
         setCartLoaded(true);
@@ -228,6 +234,7 @@ export default function CartState() {
       });
       const itemsUnsubscribe = await onSnapshot(itemsRef, (snapshot) => {
         if (!snapshot.empty) {
+          console.log('items', snapshot.docs);
           const items: _Item[] = [];
           let item_count: number = 0;
           snapshot.docs.map((doc) => {
@@ -242,6 +249,7 @@ export default function CartState() {
           });
           setItems({ items: items, item_count: item_count });
         } else {
+          console.log('no items');
           setItems({ items: [], item_count: 0 });
         }
       });
@@ -466,6 +474,9 @@ export default function CartState() {
     };
     if (cart_items.length > 0) {
       getLatest();
+    } else if (cart_items.length === 0) {
+      setStoreItemBreakdown({});
+      setRemovedItems([]);
     }
   }, [cart_items]);
 

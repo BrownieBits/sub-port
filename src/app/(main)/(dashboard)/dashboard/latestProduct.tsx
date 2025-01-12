@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
 import { GridProduct } from '@/lib/types';
+import userStore from '@/stores/userStore';
 import { Unsubscribe } from 'firebase/auth';
 import {
   CollectionReference,
@@ -29,6 +30,8 @@ import Link from 'next/link';
 import React from 'react';
 
 export const LatestProduct = (props: { user_id: string }) => {
+  const user_loaded = userStore((state) => state.user_loaded);
+  const user_store = userStore((state) => state.user_store);
   const [latestProduct, setLatestProduct] = React.useState<
     GridProduct | '' | null
   >(null);
@@ -37,8 +40,7 @@ export const LatestProduct = (props: { user_id: string }) => {
       const productsRef: CollectionReference = collection(db, 'products');
       const q = query(
         productsRef,
-        where('created_at', '!=', null),
-        where('owner_id', '==', props.user_id),
+        where('store_id', '==', user_store),
         orderBy('created_at', 'desc'),
         limit(1)
       );
@@ -65,10 +67,12 @@ export const LatestProduct = (props: { user_id: string }) => {
       });
       return unsubscribe;
     };
-    getLatest();
-  }, []);
+    if (user_store !== '') {
+      getLatest();
+    }
+  }, [user_store]);
 
-  if (latestProduct === null) {
+  if (!user_loaded || latestProduct === null) {
     return (
       <Card>
         <CardHeader>

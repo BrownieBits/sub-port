@@ -613,7 +613,7 @@ export default function SelfEditForm(props: Props) {
             let optionRef: DocumentReference = doc(
               db,
               `products/${props.docID}/options`,
-              option.id!
+              option.name.toLowerCase()
             );
             batch.update(optionRef, {
               name: option.name,
@@ -622,12 +622,12 @@ export default function SelfEditForm(props: Props) {
               owner_id: props.userID,
             });
           } else {
-            const optionRef: CollectionReference = collection(
+            let optionRef: DocumentReference = doc(
               db,
-              `products/${docRef.id}/options`
+              `products/${props.docID}/options`,
+              option.name.toLowerCase()
             );
-            let optionDocRef: DocumentReference = doc(optionRef);
-            batch.set(optionDocRef, {
+            batch.set(optionRef, {
               name: option.name,
               options: option.options,
               index: index as number,

@@ -32,6 +32,7 @@ export default function CartDetailPage(props: Props) {
       });
     }
   }, []);
+  console.log(cart_items);
 
   if (cart_items === null || cart_items === undefined) {
     return (

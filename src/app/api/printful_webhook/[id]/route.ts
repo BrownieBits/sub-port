@@ -53,9 +53,21 @@ type Variant = {
   main_category_id: number;
   warehouse_product_id: number;
   warehouse_product_variant_id: number;
-  size: string;
-  color: string;
+  size?: string;
+  color?: string;
   availability_status: string;
+}
+type AddVariant = {
+
+  compare_at: number;
+  created_at: Timestamp;
+  index: number;
+  inventory: number;
+  name: string;
+  owner_id: string;
+  price: number;
+  updated_at: Timestamp;
+  vendor_id: number;
 }
 
 export async function POST(request: NextRequest, context: { params: Promise<Params> }) {
@@ -89,7 +101,22 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
         const batch = writeBatch(db);
         const imageURLs: string[] = [];
         let price: number = 0;
-        syncJson.result.sync_variants.map((variant: Variant) => {
+        const options = [
+          {
+            index: 0,
+            name: 'Size',
+            options: [] as string[],
+            owner_id: storeDoc.data().owner_id,
+          },
+          {
+            index: 1,
+            name: 'Color',
+            options: [] as string[],
+            owner_id: storeDoc.data().owner_id,
+          },
+        ]
+        const variantsToAdd: AddVariant[] = [];
+        syncJson.result.sync_variants.map((variant: Variant, index: number) => {
           if (variant.availability_status === 'active') {
             console.log(`${variant.id} Variant`, variant)
             variant.files.map((file: VariantFile) => {
@@ -100,9 +127,38 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
               }
             })
             const newPrice = parseFloat(variant.retail_price).toFixed(2) as unknown as number;
+            let name = '';
             if (price === 0 || price > newPrice) {
               price = newPrice;
             }
+            if (variant.size !== '' && variant.size !== null) {
+              if (!options[0].options.includes(variant.size!)) {
+                options[0].options.push(variant.size!);
+              }
+              name = variant.size!;
+            }
+            if (variant.color !== '' && variant.color !== null) {
+              if (!options[1].options.includes(variant.color!)) {
+                options[1].options.push(variant.color!);
+              }
+              if (name !== '') {
+                name = `${name}-${variant.color}`;
+              } else {
+                name = variant.color!;
+              }
+            }
+
+            variantsToAdd.push({
+              compare_at: 0,
+              created_at: Timestamp.fromDate(new Date()),
+              index: index,
+              inventory: 0,
+              name: name,
+              owner_id: storeDoc.data().owner_id,
+              price: newPrice,
+              updated_at: Timestamp.fromDate(new Date()),
+              vendor_id: variant.variant_id,
+            })
           }
         })
         if (productsData.empty) {
@@ -135,6 +191,15 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
             view_count: 0,
             service_percent: 0.1,
           });
+          options.map((option) => {
+            const newOptionDoc = doc(db, `products/${newProductDoc.id}/options`,
+              option.name.toLowerCase());
+            batch.set(newOptionDoc, option);
+          })
+          variantsToAdd.map((variant) => {
+            const newVariantDoc = doc(db, `products/${newProductDoc.id}/variants`, variant.name);
+            batch.set(newVariantDoc, variant);
+          })
         } else {
           batch.update(productsData.docs[0].ref, {
             name: syncJson.result.sync_product.name,
@@ -150,10 +215,35 @@ export async function POST(request: NextRequest, context: { params: Promise<Para
             colors: [],
             sku: '',
           })
+          options.map((option) => {
+            const newOptionDoc = doc(db, `products/${productsData.docs[0].id}/options`,
+              option.name.toLowerCase());
+            batch.set(newOptionDoc, option);
+          })
+          const variantsRef = collection(db, `products/${productsData.docs[0].id}/variants`);
+          const variantsData: QuerySnapshot<DocumentData, DocumentData> =
+            await getDocs(variantsRef);
+          if (!variantsData.empty) {
+            const existingVariants: string[] = [];
+            variantsData.docs.map((variant) => { existingVariants.push(variant.id) });
+            variantsToAdd.map((variant) => {
+              const newVariantDoc = doc(db, `products/${productsData.docs[0].id}/variants`, variant.name);
+              batch.set(newVariantDoc, variant);
+              existingVariants.splice(existingVariants.indexOf(variant.name), 1);
+            })
+            existingVariants.map((variant) => {
+              const variantDoc = doc(db, `products/${productsData.docs[0].id}/variants`, variant);
+              batch.delete(variantDoc);
+            });
+          } else {
+            variantsToAdd.map((variant) => {
+              const newVariantDoc = doc(db, `products/${productsData.docs[0].id}/variants`, variant.name);
+              batch.set(newVariantDoc, variant);
+            })
+          }
         }
         await batch.commit();
       }
-
     }
   }
 
