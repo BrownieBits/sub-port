@@ -9,7 +9,6 @@ import {
   _SetCartProps,
   _StoreItemBreakdown,
 } from '@/stores/cartStore.types';
-import userStore from '@/stores/userStore';
 import { deleteCookie, getCookie, setCookie } from 'cookies-next/client';
 import { User } from 'firebase/auth';
 import {
@@ -34,7 +33,6 @@ import {
 import React from 'react';
 
 export default function CartState() {
-  const user_id = userStore((state) => state.user_id);
   const cart_cookie = getCookie('cart_id');
   const cart_id = cartStore((state) => state.cart_id);
   const cart_items = cartStore((state) => state.items);
@@ -110,14 +108,12 @@ export default function CartState() {
     const userCartsData: QuerySnapshot<DocumentData, DocumentData> =
       await getDocs(q);
     if (userCartsData.empty) {
-      console.log('No carts found for user');
       if (cart_cookie === undefined) {
         createNewCart(user?.email!, user.uid);
       } else {
         updateCartToUserCart(user?.email!, user.uid);
       }
     } else {
-      console.log('Carts found for user', cart_cookie);
       if (cart_cookie === undefined) {
         setCartCookie(userCartsData.docs[0].id);
         setCartID(userCartsData.docs[0].id);
@@ -234,7 +230,6 @@ export default function CartState() {
       });
       const itemsUnsubscribe = await onSnapshot(itemsRef, (snapshot) => {
         if (!snapshot.empty) {
-          console.log('items', snapshot.docs);
           const items: _Item[] = [];
           let item_count: number = 0;
           snapshot.docs.map((doc) => {
@@ -249,7 +244,6 @@ export default function CartState() {
           });
           setItems({ items: items, item_count: item_count });
         } else {
-          console.log('no items');
           setItems({ items: [], item_count: 0 });
         }
       });

@@ -255,12 +255,6 @@ export default function ProductDetailPage(props: Props) {
       >
         <section className="flex w-full flex-1 flex-col justify-start gap-4">
           <ProductImages images={props.images} />
-          <ProductComments
-            product_id={props.product_id}
-            store_id={props.store_id}
-          />
-        </section>
-        <section className="flex w-full flex-col md:w-[350px] xl:w-[400px]">
           <section className="flex justify-between">
             <section className="flex flex-col items-start gap-1">
               <h1 className="text-xl">{props.product_name}</h1>
@@ -277,9 +271,6 @@ export default function ProductDetailPage(props: Props) {
                   </span>
                 </p>
               </Link>
-              <p className="text-sm text-muted-foreground">
-                {props.product_type}
-              </p>
             </section>
             <section className="flex flex-col items-end gap-1">
               {compareAt > 0 && price != compareAt ? (
@@ -309,130 +300,134 @@ export default function ProductDetailPage(props: Props) {
               )}
             </section>
           </section>
-
-          <section className="w-full">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className={cn('flex w-full flex-col gap-4 pt-4', {
-                  hidden: props.product_type === 'Digital',
-                })}
-              >
-                {props.options.length > 0 && (
-                  <section className="flex w-full flex-row gap-4 md:flex-col">
-                    {props.options.map((option, index) => {
-                      return (
-                        <div key={`option-${index}`} className="w-full">
-                          <FormField
-                            control={form.control}
-                            name={`options.${index}.option`}
-                            render={({ field }) => (
-                              <FormItem className="w-full flex-1">
-                                <FormLabel>{option.name}</FormLabel>
-                                <Select
-                                  onValueChange={(event) =>
-                                    onOptionChange(event, index)
-                                  }
-                                  defaultValue={field.value}
-                                >
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue
-                                        placeholder={`Select a ${option.name}`}
-                                      />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {option.options.map((item) => {
-                                      return (
-                                        <SelectItem value={item} key={item}>
-                                          {item}
-                                        </SelectItem>
-                                      );
-                                    })}
-                                  </SelectContent>
-                                </Select>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                        </div>
-                      );
-                    })}
-                  </section>
-                )}
-                {maxQuantity != null && (
-                  <FormField
-                    control={form.control}
-                    name="quantity"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>Quantity</FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="quantity"
-                            type="number"
-                            max={maxQuantity}
-                            min={0}
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                )}
-              </form>
-            </Form>
-          </section>
-
-          {!cart_loaded ? (
-            <Button variant="outline" className="mt-8">
-              Loading Cart
-            </Button>
-          ) : (
-            <>
-              {maxQuantity == 0 ? (
-                <Button variant="outline" className="mt-8">
-                  Sold Out
-                </Button>
-              ) : (
-                <>
-                  {props.options.length == 0 ||
-                  (props.options.length > 0 &&
-                    !selectedOptions.includes('')) ? (
+          {props.options.length > 0 && (
+            <section className="w-full">
+              <Form {...form}>
+                <form
+                  onSubmit={form.handleSubmit(onSubmit)}
+                  className={cn('flex w-full flex-col gap-4 md:flex-row', {
+                    hidden: props.product_type === 'Digital',
+                  })}
+                >
+                  {props.options.length > 0 && (
                     <>
-                      {thinking ? (
-                        <Button variant="outline" className="mt-8">
-                          <FontAwesomeIcon
-                            className="icon mr-2 h-4 w-4"
-                            icon={faSpinner}
-                            spin
-                          />
-                          Adding
-                        </Button>
-                      ) : (
-                        <Button
-                          type="submit"
-                          onClick={form.handleSubmit(onSubmit)}
-                          className="mt-8"
-                        >
-                          Add To Cart
-                        </Button>
-                      )}
+                      {props.options.map((option, index) => {
+                        return (
+                          <div key={`option-${index}`} className="w-full">
+                            <FormField
+                              control={form.control}
+                              name={`options.${index}.option`}
+                              render={({ field }) => (
+                                <FormItem className="w-full flex-1">
+                                  <FormLabel>{option.name}</FormLabel>
+                                  <Select
+                                    onValueChange={(event) =>
+                                      onOptionChange(event, index)
+                                    }
+                                    defaultValue={field.value}
+                                  >
+                                    <FormControl>
+                                      <SelectTrigger>
+                                        <SelectValue
+                                          placeholder={`Select a ${option.name}`}
+                                        />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {option.options.map((item) => {
+                                        return (
+                                          <SelectItem value={item} key={item}>
+                                            {item}
+                                          </SelectItem>
+                                        );
+                                      })}
+                                    </SelectContent>
+                                  </Select>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        );
+                      })}
                     </>
-                  ) : (
-                    <Button variant="outline" className="mt-8">
-                      Select Options
-                    </Button>
                   )}
-                </>
-              )}
-            </>
+                  {maxQuantity != null && (
+                    <FormField
+                      control={form.control}
+                      name="quantity"
+                      render={({ field }) => (
+                        <FormItem className="w-full">
+                          <FormLabel>Quantity</FormLabel>
+                          <FormControl>
+                            <Input
+                              onChangeCapture={field.onChange}
+                              id="quantity"
+                              type="number"
+                              max={maxQuantity}
+                              min={0}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
+                </form>
+              </Form>
+            </section>
           )}
-
-          <div className="flex justify-between gap-2 pt-8">
+          <section className="flex w-full items-start gap-4">
+            {!cart_loaded ? (
+              <Button variant="outline" className="w-full md:w-auto">
+                Loading Cart
+              </Button>
+            ) : (
+              <>
+                {maxQuantity == 0 ? (
+                  <Button variant="destructive" className="w-full md:w-auto">
+                    Sold Out
+                  </Button>
+                ) : (
+                  <>
+                    {props.options.length == 0 ||
+                    (props.options.length > 0 &&
+                      !selectedOptions.includes('')) ? (
+                      <>
+                        {thinking ? (
+                          <Button
+                            variant="outline"
+                            className="w-full md:w-auto"
+                          >
+                            <FontAwesomeIcon
+                              className="icon mr-2 h-4 w-4"
+                              icon={faSpinner}
+                              spin
+                            />
+                            Adding
+                          </Button>
+                        ) : (
+                          <Button
+                            type="submit"
+                            onClick={form.handleSubmit(onSubmit)}
+                            className="w-full md:w-auto"
+                          >
+                            Add To Cart
+                          </Button>
+                        )}
+                      </>
+                    ) : (
+                      <Button variant="secondary" className="w-full md:w-auto">
+                        Select Options
+                      </Button>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+          </section>
+          <div className="flex justify-start gap-4 pt-4">
             <LikeButton
               product_id={props.product_id}
               like_count={props.like_count}
@@ -442,18 +437,17 @@ export default function ProductDetailPage(props: Props) {
               region={props.region}
               ip={props.ip}
             />
-            <Button variant="outline" asChild>
+            <Button variant="outline" size="xs" asChild>
               <div>
-                <FontAwesomeIcon className="icon mr-2 h-4 w-4" icon={faShare} />
+                <FontAwesomeIcon className="mr-1 !h-3" icon={faShare} />
                 Share
               </div>
             </Button>
-            <Button variant="outline" className="text-foreground">
-              <FontAwesomeIcon className="icon mr-2 h-4 w-4" icon={faFlag} />
+            <Button variant="outline" size="xs" className="text-foreground">
+              <FontAwesomeIcon className="mr-1 !h-3" icon={faFlag} />
               Report
             </Button>
           </div>
-
           <ShowDetails
             text={props.product_description}
             howManyToShow={100}
@@ -464,8 +458,14 @@ export default function ProductDetailPage(props: Props) {
             created_at_nanoseconds={props.created_at_nanoseconds}
             view_count={props.view_count}
             like_count={props.like_count}
+            product_type={props.product_type}
           />
-
+          <ProductComments
+            product_id={props.product_id}
+            store_id={props.store_id}
+          />
+        </section>
+        <section className="flex w-full flex-col md:w-[350px] xl:w-[400px]">
           <RelatedProducts
             product_id={props.product_id}
             store_id={props.store_id}

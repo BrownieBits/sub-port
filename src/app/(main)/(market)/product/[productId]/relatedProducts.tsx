@@ -7,7 +7,6 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
-import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { GridProduct } from '@/lib/types';
@@ -39,14 +38,19 @@ export default function RelatedProducts(props: {
   React.useEffect(() => {
     const getItems = async () => {
       const itemsRef: CollectionReference = collection(db, 'products');
-      const itemsQuery = query(
-        itemsRef,
-        or(
-          where('store_id', '==', props.store_id),
-          where('tags', 'array-contains-any', props.tags)
-        ),
-        orderBy('revenue')
-      );
+      let itemsQuery = query(itemsRef);
+      if (props.tags.length > 0) {
+        itemsQuery = query(
+          itemsRef,
+          or(
+            where('store_id', '==', props.store_id),
+            where('tags', 'array-contains-any', props.tags)
+          )
+        );
+      } else {
+        itemsQuery = query(itemsRef, where('store_id', '==', props.store_id));
+      }
+      itemsQuery = query(itemsQuery, orderBy('revenue'));
       const itemsData: QuerySnapshot<DocumentData, DocumentData> =
         await getDocs(itemsQuery);
 
@@ -86,23 +90,19 @@ export default function RelatedProducts(props: {
 
   if (isDesktop) {
     return (
-      <section className="flex w-full flex-col gap-4 py-4">
-        <Separator />
-        <section className="flex w-full flex-col gap-4">
-          {related?.map((doc) => {
-            if (doc.id !== props.product_id) {
-              return (
-                <ProductCard product={doc} show_creator={true} key={doc.id} />
-              );
-            }
-          })}
-        </section>
+      <section className="flex w-full flex-col gap-4 pb-4">
+        {related?.map((doc) => {
+          if (doc.id !== props.product_id) {
+            return (
+              <ProductCard product={doc} show_creator={true} key={doc.id} />
+            );
+          }
+        })}
       </section>
     );
   }
   return (
-    <section className="flex w-full flex-col gap-4 py-4">
-      <Separator />
+    <section className="flex w-full flex-col gap-4 pb-4">
       <Carousel opts={{ loop: true }} setApi={setApi}>
         <CarouselContent>
           {related?.map((doc) => {

@@ -107,19 +107,22 @@ export const LikeIt = (props: Props) => {
 
   if (isLiked === null) {
     return (
-      <Button variant="ghost">
-        <FontAwesomeIcon className="icon mr-2 h-4 w-4" icon={faSpinner} spin />{' '}
-        Loading
+      <Button variant="ghost" size="xs">
+        <FontAwesomeIcon className="mr-1 !h-3" icon={faSpinner} spin /> Loading
       </Button>
     );
   }
 
   if (!isLiked) {
     return (
-      <Button variant="outline" onClick={() => UpdateSubStatus('Like')}>
+      <Button
+        variant="outline"
+        size="xs"
+        onClick={() => UpdateSubStatus('Like')}
+      >
         <section>
           <FontAwesomeIcon
-            className="icon mr-2 h-4 w-4 border-r pr-2"
+            className="mr-2 !h-3 border-r pr-2"
             icon={faThumbsUpRegular}
           />
           {props.like_count} Like{props.like_count > 1 ? 's' : ''}
@@ -129,10 +132,14 @@ export const LikeIt = (props: Props) => {
   }
 
   return (
-    <Button variant="outline" onClick={() => UpdateSubStatus('Unlike')}>
+    <Button
+      variant="outline"
+      size="xs"
+      onClick={() => UpdateSubStatus('Unlike')}
+    >
       <section>
         <FontAwesomeIcon
-          className="icon mr-2 h-4 w-4 border-r pr-2"
+          className="mr-2 !h-3 border-r pr-2"
           icon={faThumbsUp}
         />
         {props.like_count} Like{props.like_count > 1 ? 's' : ''}

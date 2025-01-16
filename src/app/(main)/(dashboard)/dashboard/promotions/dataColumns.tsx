@@ -10,7 +10,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ColumnDef } from '@tanstack/react-table';
-import { getCookie } from 'cookies-next/client';
 import { format } from 'date-fns';
 import { Timestamp, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { revalidate } from './actions';
@@ -34,10 +33,10 @@ export type Promotion = {
 export async function ChangeStatus(
   action: string | boolean,
   id: string,
-  item: 'status' | 'show'
+  item: 'status' | 'show',
+  store_id: string
 ) {
-  const store_id = getCookie('default_store');
-  const docRef = doc(db, `stores/${store_id!}/promotions`, id);
+  const docRef = doc(db, `stores/${store_id}/promotions`, id);
   if (action === 'Delete') {
     await deleteDoc(docRef);
     revalidate();
@@ -413,9 +412,9 @@ export const columns: ColumnDef<Promotion>[] = [
           checked={on}
           onCheckedChange={(event) => {
             if (event) {
-              ChangeStatus('Active', id, 'status');
+              ChangeStatus('Active', id, 'status', store_id);
             } else {
-              ChangeStatus('Inactive', id, 'status');
+              ChangeStatus('Inactive', id, 'status', store_id);
             }
           }}
         />
@@ -473,9 +472,9 @@ export const columns: ColumnDef<Promotion>[] = [
           checked={row.getValue('show_in_banner')}
           onCheckedChange={(event) => {
             if (event) {
-              ChangeStatus(true, id, 'show');
+              ChangeStatus(true, id, 'show', store_id);
             } else {
-              ChangeStatus(false, id, 'show');
+              ChangeStatus(false, id, 'show', store_id);
             }
           }}
         />
@@ -509,7 +508,7 @@ export const columns: ColumnDef<Promotion>[] = [
           <Button
             variant="link"
             title="Make Active"
-            onClick={() => ChangeStatus('Delete', id, 'show')}
+            onClick={() => ChangeStatus('Delete', id, 'show', store_id)}
             className="p-0 text-foreground"
           >
             <FontAwesomeIcon className="icon" icon={faTrash} />

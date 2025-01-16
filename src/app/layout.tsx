@@ -6,13 +6,12 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { analytics } from '@/lib/firebase';
-import { config } from '@fortawesome/fontawesome-svg-core';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 import './globals.css';
-config.autoAddCss = false;
+// config.autoAddCss = false;
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',

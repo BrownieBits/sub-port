@@ -147,7 +147,7 @@ export function ProductFeed() {
 
   return (
     <section className="w-full px-4 py-4">
-      {lastProduct !== undefined && <p>lastProducts</p>}
+      {/* {lastProduct !== undefined && <p>lastProducts</p>} */}
       {sectionsData.map((section) => {
         if (section.type === 'products') {
           return (

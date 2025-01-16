@@ -164,7 +164,6 @@ export default function BlogListPage() {
   if (posts.length === 0) {
     return <NoBlogs />;
   }
-  console.log(posts);
   return (
     <>
       <section className="mx-auto w-full max-w-[1754px] p-4">

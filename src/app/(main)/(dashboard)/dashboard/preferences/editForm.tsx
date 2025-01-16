@@ -99,6 +99,7 @@ export default function EditForm(props: {}) {
   const user_loaded = userStore((state) => state.user_loaded);
   const user_id = userStore((state) => state.user_id);
   const user_store = userStore((state) => state.user_store);
+  const [formLoaded, setFormLoaded] = React.useState<boolean>(false);
   const [disabled, setDisabled] = React.useState<boolean>(false);
   const [selectedAvatar, setSelectedAvatar] = React.useState<string>('');
   const [selectedBanner, setSelectedBanner] = React.useState<string>('');
@@ -248,17 +249,18 @@ export default function EditForm(props: {}) {
       form.setValue('name', storeDoc.data().name);
       form.setValue('description', storeDoc.data().description);
       setCountry(storeDoc.data().country);
+      setFormLoaded(true);
     }
   }
 
   React.useEffect(() => {
-    if (user_id !== '') {
+    if (user_store !== '') {
       getData();
     }
-  }, [user_loaded]);
+  }, [user_store]);
 
-  if (user_id === '') {
-    return <></>;
+  if (!user_loaded || !formLoaded) {
+    return null;
   }
   return (
     <section>

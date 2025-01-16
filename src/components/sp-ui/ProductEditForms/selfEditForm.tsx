@@ -1083,6 +1083,55 @@ export default function SelfEditForm(props: Props) {
                 <FormField
                   control={form.control}
                   name="product_images"
+                  render={({ field: { onChange, value, ...rest } }) => (
+                    <>
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            type="file"
+                            accept={ALLOWED_IMAGE_TYPES.join(',')}
+                            hidden={true}
+                            className="hidden"
+                            {...rest}
+                            ref={productImagesRef}
+                            onChange={(event) => {
+                              const dataTransfer = new DataTransfer();
+
+                              // Add newly uploaded images
+                              Array.from(event.target.files!).forEach((image) =>
+                                dataTransfer.items.add(image)
+                              );
+
+                              const files = dataTransfer.files;
+                              const displayUrl = URL.createObjectURL(
+                                event.target.files![0]
+                              );
+
+                              if (files.length > 0) {
+                                setProductImages([
+                                  ...productImages,
+                                  {
+                                    id: productImages.length,
+                                    image: displayUrl,
+                                  },
+                                ]);
+                              }
+                              onChange(files);
+                            }}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          For best results we suggest an image that is 1000x1000
+                          pixels.
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    </>
+                  )}
+                />
+                {/* <FormField
+                  control={form.control}
+                  name="product_images"
                   render={({ field: { onChange }, ...field }) => {
                     // Get current images value (always watched updated)
                     const images = form.watch('product_images');
@@ -1141,7 +1190,7 @@ export default function SelfEditForm(props: Props) {
                       </FormItem>
                     );
                   }}
-                />
+                /> */}
               </aside>
               <Card className="w-full flex-1">
                 <CardContent className="flex w-full flex-col gap-8">

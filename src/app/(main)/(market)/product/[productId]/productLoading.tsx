@@ -6,7 +6,7 @@ export default function ProductLoading() {
     <section className="mx-auto flex max-w-[1754px] flex-col gap-8 p-4">
       <section key="productInfo" className="flex flex-col gap-8 md:flex-row">
         <section className="flex w-full flex-1 flex-col gap-4">
-          <Skeleton className="flex aspect-square w-full" />
+          <Skeleton className="flex aspect-video w-full" />
         </section>
         <section className="flex w-full flex-col md:w-[350px] xl:w-[400px]">
           <section className="flex justify-between">

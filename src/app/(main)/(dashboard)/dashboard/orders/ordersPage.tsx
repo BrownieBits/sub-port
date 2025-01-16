@@ -41,7 +41,6 @@ export const StoreOrdersPage = () => {
     );
     const orderDocs = await getDocs(q);
     const orderData: Order[] = orderDocs.docs.map((order) => {
-      console.log(order.data().shipments);
       const deliveryMethods: string[] = [];
       order.data().shipments.map((shipment: any) => {
         if (shipment.name === 'digital') {

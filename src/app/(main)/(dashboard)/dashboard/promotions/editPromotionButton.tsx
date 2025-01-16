@@ -43,6 +43,7 @@ import {
 } from '@/components/ui/select';
 import { db } from '@/lib/firebase';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import userStore from '@/stores/userStore';
 import {
   faCalendar,
   faClose,
@@ -50,7 +51,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { getCookie } from 'cookies-next/client';
 import { format } from 'date-fns';
 import {
   DocumentReference,
@@ -95,10 +95,10 @@ export const EditPromotionButton = (props: {
   type: 'Flat Amount' | 'Percentage' | undefined;
   expiration_date: Timestamp | undefined;
 }) => {
+  const user_store = userStore((state) => state.user_store);
+  const user_loaded = userStore((state) => state.user_loaded);
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery('(min-width: 768px)');
-  const store_id = getCookie('default_store');
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -107,7 +107,7 @@ export const EditPromotionButton = (props: {
       amount: props.amount,
       min_order_value: props.minimum_order_value,
       expiration_date: props.expiration_date
-        ? new Date(props.expiration_date.seconds * 1000)
+        ? new Date(props.expiration_date!.toString())
         : undefined,
     },
   });
@@ -119,7 +119,7 @@ export const EditPromotionButton = (props: {
     }
     const promotionDoc: DocumentReference = doc(
       db,
-      `stores/${store_id!}/promotions`,
+      `stores/${user_store}/promotions`,
       props.id
     );
     const querySnapshot = await getDoc(promotionDoc);
@@ -146,6 +146,10 @@ export const EditPromotionButton = (props: {
     setOpen(false);
   }
 
+  if (!user_loaded) {
+    return null;
+  }
+
   if (isDesktop) {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
@@ -156,10 +160,8 @@ export const EditPromotionButton = (props: {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>
-              <h3>Edit Promotion</h3>
-            </DialogTitle>
-            <DialogDescription className="flex flex-col">
+            <DialogTitle>Edit Promotion</DialogTitle>
+            <DialogDescription className="flex flex-col" asChild>
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
@@ -265,7 +267,7 @@ export const EditPromotionButton = (props: {
                                 variant={'outline'}
                                 className="w-full justify-start text-left font-normal text-foreground"
                               >
-                                {field.value ? (
+                                {field.value !== undefined ? (
                                   format(field.value, 'LLL dd, yyyy')
                                 ) : (
                                   <span>Pick a date</span>
@@ -311,15 +313,18 @@ export const EditPromotionButton = (props: {
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="mx-auto w-full max-w-[2428px]">
-          <DrawerTitle className="flex justify-between">
-            <h3>Edit Promotion</h3>
-            <DrawerClose>
+          <DrawerTitle className="flex items-center justify-between">
+            Edit Promotion
+            <DrawerClose asChild>
               <Button variant="outline">
                 <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
               </Button>
             </DrawerClose>
           </DrawerTitle>
-          <DrawerDescription className="flex w-full flex-col items-start text-left">
+          <DrawerDescription
+            className="flex w-full flex-col items-start text-left"
+            asChild
+          >
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}

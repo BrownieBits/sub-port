@@ -1,5 +1,6 @@
 'use client';
 
+import { Card } from '@/components/ui/card';
 import {
   Carousel,
   CarouselApi,
@@ -37,39 +38,26 @@ export default function ProductImages(props: { images: string[] }) {
   if (mainImage === '') {
     return <></>;
   }
+  if (props.images.length === 2) {
+    props.images[2] = props.images[0];
+    props.images[3] = props.images[1];
+  }
+  if (props.images.length === 1) {
+    props.images[1] = props.images[0];
+    props.images[2] = props.images[0];
+  }
   return (
-    <section className="flex w-full items-start gap-4">
-      {props.images.length > 1 && (
-        <div className="hidden flex-col items-center justify-center gap-4 md:flex">
-          {props.images.map((image, index) => (
-            <section
-              className={`flex aspect-square w-[50px] cursor-pointer items-center justify-center overflow-hidden rounded border xl:w-[100px] ${
-                index + 1 === current ? 'border-2 border-primary' : ''
-              }`}
-              key={`sub-image-${index}`}
-            >
-              <Image
-                src={image}
-                alt="Product Image"
-                width="100"
-                height="100"
-                className="w-full"
-                onClick={() => api && api.scrollTo(index)}
-              />
-            </section>
-          ))}
-        </div>
-      )}
-      <section className="w-full flex-1">
+    <Card className="w-full py-4">
+      <section className="w-full">
         <Carousel opts={{ loop: true }} setApi={setApi}>
-          <CarouselContent>
-            {props.images.map((image) => {
+          <CarouselContent className="flex">
+            {props.images.map((image, index) => {
               return (
-                <CarouselItem key={image}>
-                  <section
-                    className="flex aspect-square items-center justify-center overflow-hidden rounded border"
-                    key={image}
-                  >
+                <CarouselItem
+                  key={`carousel-image-${image}-${index}`}
+                  className="basis-4/5 md:basis-2/3"
+                >
+                  <section className="flex aspect-square h-full items-center justify-center overflow-hidden rounded border">
                     <Image
                       src={image}
                       alt="Product Image"
@@ -86,6 +74,6 @@ export default function ProductImages(props: { images: string[] }) {
           </CarouselContent>
         </Carousel>
       </section>
-    </section>
+    </Card>
   );
 }

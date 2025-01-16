@@ -61,19 +61,23 @@ export const DatePicker = (props: {
         </DialogTrigger>
         <DialogContent className="max-w-900 w-auto">
           <DialogHeader>
-            <DialogTitle>
-              <h3>Select Dates</h3>
-            </DialogTitle>
-            <DialogDescription className="flex flex-col items-end gap-4">
-              <Calendar
-                initialFocus
-                mode="range"
-                defaultMonth={date?.from}
-                selected={date}
-                onSelect={setDate}
-                numberOfMonths={2}
-              />
-              <Button onClick={setDates}>Set Dates</Button>
+            <DialogTitle>Select Dates</DialogTitle>
+            <DialogDescription
+              className="flex flex-col items-end gap-4"
+              asChild
+            >
+              <section>
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={date?.from}
+                  selected={date}
+                  onSelect={setDate}
+                  numberOfMonths={2}
+                />
+
+                <Button onClick={setDates}>Set Dates</Button>
+              </section>
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
@@ -83,10 +87,10 @@ export const DatePicker = (props: {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger>
+      <DrawerTrigger asChild>
         <Button
           variant="link"
-          className="w-full hover:no-underline"
+          className="w-full px-2 py-1 hover:no-underline"
           onClick={() => setOpen(true)}
         >
           <section className="flex w-full justify-between">
@@ -99,26 +103,31 @@ export const DatePicker = (props: {
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="mx-auto w-full max-w-[2428px]">
-          <DrawerTitle className="flex justify-between">
-            <h3>Select Dates</h3>
-            <DrawerClose>
+          <DrawerTitle className="flex items-center justify-between">
+            Select Dates
+            <DrawerClose asChild>
               <Button variant="outline">
                 <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
               </Button>
             </DrawerClose>
           </DrawerTitle>
-          <DrawerDescription className="flex w-full flex-col items-end text-left">
-            <section className="flex w-full justify-center pb-4">
-              <Calendar
-                initialFocus
-                mode="range"
-                defaultMonth={props.dates.from}
-                selected={props.dates}
-                onSelect={setDate}
-                numberOfMonths={1}
-              />
+          <DrawerDescription
+            className="flex w-full flex-col items-end text-left"
+            asChild
+          >
+            <section>
+              <section className="flex w-full justify-center pb-4">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  defaultMonth={props.dates.from}
+                  selected={props.dates}
+                  onSelect={setDate}
+                  numberOfMonths={1}
+                />
+              </section>
+              <Button onClick={setDates}>Set Dates</Button>
             </section>
-            <Button onClick={setDates}>Set Dates</Button>
           </DrawerDescription>
         </DrawerHeader>
       </DrawerContent>

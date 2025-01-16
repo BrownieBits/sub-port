@@ -65,6 +65,8 @@ const formSchema = z.object({
 
 export default function SettingsForm() {
   const user_id = userStore((state) => state.user_id);
+  const user_loaded = userStore((state) => state.user_loaded);
+  const [formLoaded, setFormLoaded] = React.useState<boolean>(false);
   const [disabled, setDisabled] = React.useState<boolean>(false);
   const [currency, setCurrency] = React.useState<string>('');
   const [addresses, setAddresses] = React.useState<string[]>([]);
@@ -108,6 +110,7 @@ export default function SettingsForm() {
       setAddresses(userDoc.data().addresses);
       seDefaultAddress(userDoc.data().default_address);
       setCurrency(userDoc.data().default_currency);
+      setFormLoaded(true);
     }
   }
 
@@ -117,7 +120,7 @@ export default function SettingsForm() {
     }
   }, [user_id]);
 
-  if (user_id === '') {
+  if (!user_loaded || user_id === '' || !formLoaded) {
     return <></>;
   }
   return (

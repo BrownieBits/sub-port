@@ -16,7 +16,6 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ColumnDef } from '@tanstack/react-table';
-import { getCookie } from 'cookies-next/client';
 import { format } from 'date-fns';
 import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import Link from 'next/link';
@@ -38,10 +37,10 @@ export type Order = {
 export async function ChangeStatus(
   action: string | boolean,
   id: string,
-  item: 'status' | 'show'
+  item: 'status' | 'show',
+  store_id: string
 ) {
-  const store_id = getCookie('default_store');
-  const docRef = doc(db, `stores/${store_id!}/promotions`, id);
+  const docRef = doc(db, `stores/${store_id}/promotions`, id);
   if (action === 'Delete') {
     await deleteDoc(docRef);
     revalidate('/dashboard/orders');
@@ -407,7 +406,6 @@ export const columns: ColumnDef<Order>[] = [
     },
     cell: ({ row }) => {
       const deliveryMethods: string[] = row.getValue('delivery_methods');
-      console.log(deliveryMethods);
       return (
         <section className="flex items-center gap-2">
           {deliveryMethods.includes('digital') && (

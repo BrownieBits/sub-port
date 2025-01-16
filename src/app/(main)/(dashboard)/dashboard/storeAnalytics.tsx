@@ -11,7 +11,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
-import { getCookie } from 'cookies-next/client';
+import userStore from '@/stores/userStore';
 import { Unsubscribe } from 'firebase/auth';
 import {
   CollectionReference,
@@ -37,13 +37,15 @@ type Analytics = {
 };
 
 export const StoreAnalytics = (props: {}) => {
-  const default_store = getCookie('default_store'); // TODO remove and use userStore
+  const user_store = userStore((state) => state.user_store);
+  const user_loaded = userStore((state) => state.user_loaded);
   const [analytics, setAnalytics] = React.useState<Analytics | null>(null);
+
   React.useEffect(() => {
     const getAnalytics: Unsubscribe = async () => {
       const analyticsRef: CollectionReference = collection(
         db,
-        `stores/${default_store}/analytics`
+        `stores/${user_store}/analytics`
       );
       const today = new Date();
       const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
@@ -85,10 +87,12 @@ export const StoreAnalytics = (props: {}) => {
       });
       return unsubscribe;
     };
-    getAnalytics();
-  }, []);
+    if (user_store !== '') {
+      getAnalytics();
+    }
+  }, [user_store]);
 
-  if (analytics === null) {
+  if (!user_loaded || analytics === null) {
     return (
       <Card>
         <CardHeader>

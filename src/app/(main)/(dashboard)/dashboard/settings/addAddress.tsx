@@ -153,23 +153,22 @@ export default function AddAddress(props: Props) {
   if (isDesktop) {
     return (
       <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogTrigger>
-          <Button variant="outline" asChild>
-            <div>
-              <FontAwesomeIcon
-                className="icon mr-2 h-4 w-4"
-                icon={faSquarePlus}
-              />
-              Add Address
-            </div>
+        <AlertDialogTrigger asChild>
+          <Button variant="outline">
+            <FontAwesomeIcon
+              className="icon mr-2 h-4 w-4"
+              icon={faSquarePlus}
+            />
+            Add Address
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              <h3>New Address</h3>
-            </AlertDialogTitle>
-            <AlertDialogDescription className="flex flex-col items-center justify-center gap-4 pt-4">
+            <AlertDialogTitle>New Address</AlertDialogTitle>
+            <AlertDialogDescription
+              className="flex flex-col items-center justify-center gap-4 pt-4"
+              asChild
+            >
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
@@ -341,23 +340,18 @@ export default function AddAddress(props: Props) {
   }
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger>
-        <Button variant="outline" asChild>
-          <div>
-            <FontAwesomeIcon
-              className="icon mr-2 h-4 w-4"
-              icon={faSquarePlus}
-            />
-            Add Address
-          </div>
+      <DrawerTrigger asChild>
+        <Button variant="outline">
+          <FontAwesomeIcon className="icon mr-2 h-4 w-4" icon={faSquarePlus} />
+          Add Address
         </Button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="mx-auto w-full max-w-[2428px]">
           <DrawerTitle className="flex justify-between">
-            <h3>New Address</h3>
+            New Address
           </DrawerTitle>
-          <DrawerDescription className="w-full text-left">
+          <DrawerDescription className="w-full text-left" asChild>
             <ScrollArea className="flex max-h-[600px] flex-col">
               <Form {...form}>
                 <form

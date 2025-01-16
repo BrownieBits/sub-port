@@ -655,55 +655,43 @@ export default function DigitalEditForm(props: Props) {
                 <FormField
                   control={form.control}
                   name="product_images"
-                  render={({ field: { onChange }, ...field }) => {
-                    // Get current images value (always watched updated)
-                    const images = form.watch('product_images');
-
-                    return (
-                      <FormItem className="pt-4">
+                  render={({ field: { onChange, value, ...rest } }) => (
+                    <>
+                      <FormItem>
+                        <FormLabel>Circle Image</FormLabel>
                         <FormControl>
-                          <>
-                            <Input
-                              type="file"
-                              accept={ALLOWED_IMAGE_TYPES.join(',')}
-                              hidden={true}
-                              className="hidden"
-                              ref={productImagesRef}
-                              {...field}
-                              onChange={(event) => {
-                                // Triggered when user uploaded a new file
-                                // FileList is immutable, so we need to create a new one
-                                const dataTransfer = new DataTransfer();
+                          <Input
+                            type="file"
+                            accept={ALLOWED_IMAGE_TYPES.join(',')}
+                            hidden={true}
+                            className="hidden"
+                            {...rest}
+                            ref={productImagesRef}
+                            onChange={(event) => {
+                              const dataTransfer = new DataTransfer();
 
-                                // Add old images
-                                if (images) {
-                                  Array.from(images).forEach((image) =>
-                                    dataTransfer.items.add(image)
-                                  );
-                                }
+                              // Add newly uploaded images
+                              Array.from(event.target.files!).forEach((image) =>
+                                dataTransfer.items.add(image)
+                              );
 
-                                // Add newly uploaded images
-                                Array.from(event.target.files!).forEach(
-                                  (image) => dataTransfer.items.add(image)
-                                );
+                              const files = dataTransfer.files;
+                              const displayUrl = URL.createObjectURL(
+                                event.target.files![0]
+                              );
 
-                                // Validate and update uploaded file
-                                const newFiles = dataTransfer.files;
-                                if (newFiles.length > 0) {
-                                  setProductImages([
-                                    ...productImages,
-                                    {
-                                      id: newFiles.length - 1,
-                                      image: URL.createObjectURL(
-                                        newFiles[newFiles.length - 1]
-                                      ),
-                                    },
-                                  ]);
-                                }
-                                onChange(newFiles);
-                              }}
-                            />
-                          </>
+                              if (files.length > 0) {
+                                setProductImages([
+                                  ...productImages,
+                                  {
+                                    id: productImages.length,
+                                    image: displayUrl,
+                                  },
+                                ]);
+                              }
+                              onChange(files);
+                            }}
+                          />
                         </FormControl>
                         <FormDescription>
                           For best results we suggest an image that is 1000x1000
@@ -711,8 +699,8 @@ export default function DigitalEditForm(props: Props) {
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
-                    );
-                  }}
+                    </>
+                  )}
                 />
               </aside>
               <Card className="w-full flex-1">
@@ -812,11 +800,11 @@ export default function DigitalEditForm(props: Props) {
                 {digitalFile === '' ? (
                   <Button
                     variant="outline"
-                    onClick={() => {
+                    onClick={(event) => {
+                      event.preventDefault();
                       form.setFocus('digital_file');
                       digitalFileRef.current?.click();
                     }}
-                    asChild
                   >
                     <div>
                       <FontAwesomeIcon
@@ -833,11 +821,8 @@ export default function DigitalEditForm(props: Props) {
                 <FormField
                   control={form.control}
                   name="digital_file"
-                  render={({ field: { onChange }, ...field }) => {
-                    // Get current images value (always watched updated)
-                    const images = form.watch('digital_file');
-
-                    return (
+                  render={({ field: { onChange, value, ...rest } }) => (
+                    <>
                       <FormItem>
                         <FormControl>
                           {digitalFile === '' ? (
@@ -845,32 +830,26 @@ export default function DigitalEditForm(props: Props) {
                               type="file"
                               hidden={true}
                               className="hidden"
+                              {...rest}
                               ref={digitalFileRef}
-                              {...field}
                               onChange={(event) => {
-                                // Triggered when user uploaded a new file
-                                // FileList is immutable, so we need to create a new one
                                 const dataTransfer = new DataTransfer();
-
-                                // Add old images
-                                if (images) {
-                                  Array.from(images).forEach((image) =>
-                                    dataTransfer.items.add(image)
-                                  );
-                                }
 
                                 // Add newly uploaded images
                                 Array.from(event.target.files!).forEach(
                                   (image) => dataTransfer.items.add(image)
                                 );
 
-                                // Validate and update uploaded file
-                                const newFiles = dataTransfer.files;
-                                if (newFiles.length > 0) {
-                                  setDigitalFile(newFiles[0].name);
-                                  setDigitalFileName(newFiles[0].name);
+                                const files = dataTransfer.files;
+                                const displayUrl = URL.createObjectURL(
+                                  event.target.files![0]
+                                );
+
+                                if (files.length > 0) {
+                                  setDigitalFile(files[0].name);
+                                  setDigitalFileName(files[0].name);
                                 }
-                                onChange(newFiles);
+                                onChange(files);
                               }}
                             />
                           ) : (
@@ -879,8 +858,8 @@ export default function DigitalEditForm(props: Props) {
                         </FormControl>
                         <FormMessage />
                       </FormItem>
-                    );
-                  }}
+                    </>
+                  )}
                 />
               </aside>
               <Card className="w-full flex-1">

@@ -26,7 +26,6 @@ export function ProductList(props: {
   );
 
   async function getProducts() {
-    console.log(props.product_list);
     if (props.product_list !== undefined && props.product_list.length === 0) {
       setProducts([]);
       return;

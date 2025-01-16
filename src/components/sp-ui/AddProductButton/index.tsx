@@ -33,20 +33,14 @@ export const AddProductButton = (props: {
 }) => {
   return (
     <AlertDialog>
-      <AlertDialogTrigger>
+      <AlertDialogTrigger asChild>
         <Button
-          asChild
           variant={props.variant}
           size={props.size}
           className={props.className}
         >
-          <div>
-            <FontAwesomeIcon
-              className="icon mr-2 h-4 w-4"
-              icon={faSquarePlus}
-            />
-            {props.copy}
-          </div>
+          <FontAwesomeIcon className="icon mr-2 h-4 w-4" icon={faSquarePlus} />
+          {props.copy}
         </Button>
       </AlertDialogTrigger>
 
@@ -58,9 +52,9 @@ export const AddProductButton = (props: {
               <FontAwesomeIcon className="icon h-4 w-4" icon={faXmark} />
             </AlertDialogCancel>
           </AlertDialogHeader>
-          <AlertDialogDescription>
+          <AlertDialogDescription asChild>
             <section className="flex w-full gap-8 pt-8">
-              <AlertDialogTrigger asChild>
+              <AlertDialogCancel asChild>
                 <Button
                   variant="outline"
                   className="h-auto flex-1 py-4"
@@ -71,16 +65,16 @@ export const AddProductButton = (props: {
                     className="group flex flex-col items-center"
                   >
                     <FontAwesomeIcon
-                      className="icon pb-4 text-6xl text-foreground group-hover:text-primary"
+                      className="!h-10 !w-10 pb-4 text-foreground group-hover:text-primary"
                       icon={faCloudArrowDown}
                     />
-                    <p className="text-xs text-foreground">
+                    <p className="text-4xl text-xs text-foreground">
                       <b>Digital Product</b>
                     </p>
                   </Link>
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogTrigger asChild>
+              </AlertDialogCancel>
+              <AlertDialogCancel asChild>
                 <Button
                   variant="outline"
                   className="h-auto flex-1 py-4"
@@ -91,7 +85,7 @@ export const AddProductButton = (props: {
                     className="group flex flex-col items-center"
                   >
                     <FontAwesomeIcon
-                      className="icon pb-4 text-6xl text-foreground group-hover:text-primary"
+                      className="!h-10 !w-10 pb-4 text-foreground group-hover:text-primary"
                       icon={faImagePortrait}
                     />
                     <p className="text-xs text-foreground">
@@ -99,7 +93,7 @@ export const AddProductButton = (props: {
                     </p>
                   </Link>
                 </Button>
-              </AlertDialogTrigger>
+              </AlertDialogCancel>
             </section>
           </AlertDialogDescription>
         </AlertDialogHeader>

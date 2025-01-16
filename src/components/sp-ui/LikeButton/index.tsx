@@ -33,17 +33,21 @@ export const LikeButton = (props: Props) => {
   const user_id = userStore((state) => state.user_id);
 
   if (!user_loaded) {
-    return <Button variant="ghost">Loading</Button>;
+    return (
+      <Button variant="ghost" size="xs">
+        Loading
+      </Button>
+    );
   }
 
   if (user_loaded && user_id === '') {
     return (
       <AlertDialog>
         <AlertDialogTrigger>
-          <Button asChild>
+          <Button size="xs" asChild>
             <div>
               <FontAwesomeIcon
-                className="icon mr-2 h-4 w-4"
+                className="mr-2 !h-3 border-r pr-2"
                 icon={faThumbsUp}
               />
               Like
