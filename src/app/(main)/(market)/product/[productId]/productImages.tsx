@@ -47,7 +47,7 @@ export default function ProductImages(props: { images: string[] }) {
     props.images[2] = props.images[0];
   }
   return (
-    <Card className="w-full py-4">
+    <Card className="w-full overflow-hidden">
       <section className="w-full">
         <Carousel opts={{ loop: true }} setApi={setApi}>
           <CarouselContent className="flex">
@@ -55,7 +55,7 @@ export default function ProductImages(props: { images: string[] }) {
               return (
                 <CarouselItem
                   key={`carousel-image-${image}-${index}`}
-                  className="basis-4/5 md:basis-2/3"
+                  className="basis-7/12"
                 >
                   <section className="flex aspect-square h-full items-center justify-center overflow-hidden rounded border">
                     <Image

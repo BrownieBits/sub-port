@@ -130,14 +130,17 @@ export default function ItemDetails(props: Props) {
             </Link>
           </section>
         )}
-        <section className="flex w-full flex-1 flex-col">
-          <p>
-            <b>{props.item.name}</b>
+        <section className="flex w-full flex-1 flex-col gap-2">
+          <Link href={`/product/${props.item.id}`} className="font-bold">
+            {props.item.name}
+          </Link>
+          {props.item.product_type && (
+            <p className="text-muted-foreground">{props.item.product_type}</p>
+          )}
+
+          <p className="text-muted-foreground">
+            {props.item.options.join(', ')}
           </p>
-          <p className="pb-2 text-sm text-muted-foreground">
-            {props.item.product_type}
-          </p>
-          <p>{props.item.options.join(', ')}</p>
         </section>
       </section>
       <section className="flex w-full flex-row-reverse items-end justify-between gap-4 md:w-auto md:flex-col">

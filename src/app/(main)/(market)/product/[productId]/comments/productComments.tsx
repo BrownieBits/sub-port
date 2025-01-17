@@ -1,9 +1,22 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
 import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import userStore from '@/stores/userStore';
+import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   collection,
   CollectionReference,
@@ -46,6 +59,7 @@ export default function ProductComments(props: {
   const user_loaded = userStore((state) => state.user_loaded);
   const user_id = userStore((state) => state.user_id);
   const isDesktop = useMediaQuery('(min-width: 768px)');
+  const [open, setOpen] = React.useState(false);
   const [pinnedComments, setPinnedComments] = React.useState<Comment[] | null>(
     null
   );
@@ -230,7 +244,7 @@ export default function ProductComments(props: {
   if (isDesktop) {
     return (
       <section className="flex w-full flex-col gap-4">
-        <p className="text-xl font-bold">
+        <p className="font-bold">
           {pinnedComments!.length + comments!.length} Comments
         </p>
         <AddComments
@@ -299,5 +313,170 @@ export default function ProductComments(props: {
       </section>
     );
   }
-  return <></>;
+  return (
+    <section className="flex w-full flex-col gap-4">
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerTrigger asChild>
+          <Card>
+            <CardContent className="flex flex-col gap-4">
+              <p className="font-bold">
+                {pinnedComments!.length + comments!.length} Comments
+              </p>
+              {pinnedComments!.length === 0 && comments!.length === 0 && (
+                <section className="flex w-full items-start gap-4">
+                  <p className="text-lg">Be the first to comment!</p>
+                </section>
+              )}
+              {pinnedComments!.length > 0 && (
+                <>
+                  {pinnedComments!.map((comment, index) => {
+                    const created_at = new Date(
+                      comment.created_at.seconds * 1000
+                    );
+                    const updated_at = new Date(
+                      comment.updated_at.seconds * 1000
+                    );
+                    if (index === 0) {
+                      return (
+                        <CommentCard
+                          id={comment.id}
+                          product_id={props.product_id}
+                          store_id={comment.store_id}
+                          store_name={stores[comment.store_id].store_name}
+                          avatar_url={stores[comment.store_id].avatar_url}
+                          comment={comment.comment}
+                          created_at={created_at}
+                          updated_at={updated_at}
+                          owner_id={comment.owner_id}
+                          reply_count={comment.reply_count}
+                          like_count={comment.like_count}
+                          is_pinned={true}
+                          removeComment={removePinned}
+                          moveToPinned={moveToPinned}
+                          removeFromPinned={removeFromPinned}
+                          key={`trigger-pinned-comment-${comment.id}`}
+                        />
+                      );
+                    }
+                  })}
+                </>
+              )}
+              {pinnedComments!.length === 0 && (
+                <>
+                  {comments!.map((comment, index) => {
+                    const created_at = new Date(
+                      comment.created_at.seconds * 1000
+                    );
+                    const updated_at = new Date(
+                      comment.updated_at.seconds * 1000
+                    );
+                    if (index === 0) {
+                      return (
+                        <CommentCard
+                          id={comment.id}
+                          product_id={props.product_id}
+                          store_id={comment.store_id}
+                          store_name={stores[comment.store_id].store_name}
+                          avatar_url={stores[comment.store_id].avatar_url}
+                          comment={comment.comment}
+                          created_at={created_at}
+                          updated_at={updated_at}
+                          owner_id={comment.owner_id}
+                          reply_count={comment.reply_count}
+                          like_count={comment.like_count}
+                          is_pinned={false}
+                          removeComment={removeComment}
+                          moveToPinned={moveToPinned}
+                          removeFromPinned={removeFromPinned}
+                          key={`trigger-comment-${comment.id}`}
+                        />
+                      );
+                    }
+                  })}
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader className="mx-auto w-full max-w-[2428px]">
+            <DrawerTitle className="flex items-center justify-between">
+              {pinnedComments!.length + comments!.length} Comments
+              <DrawerClose asChild>
+                <Button variant="outline" size="sm">
+                  <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
+                </Button>
+              </DrawerClose>
+            </DrawerTitle>
+
+            <DrawerDescription asChild>
+              <section className="flex w-full flex-col items-start justify-start gap-8 text-left">
+                <AddComments
+                  store_id={props.store_id}
+                  product_id={props.product_id}
+                  addComment={addComment}
+                />
+                {pinnedComments!.map((comment) => {
+                  const created_at = new Date(
+                    comment.created_at.seconds * 1000
+                  );
+                  const updated_at = new Date(
+                    comment.updated_at.seconds * 1000
+                  );
+                  return (
+                    <CommentCard
+                      id={comment.id}
+                      product_id={props.product_id}
+                      store_id={comment.store_id}
+                      store_name={stores[comment.store_id].store_name}
+                      avatar_url={stores[comment.store_id].avatar_url}
+                      comment={comment.comment}
+                      created_at={created_at}
+                      updated_at={updated_at}
+                      owner_id={comment.owner_id}
+                      reply_count={comment.reply_count}
+                      like_count={comment.like_count}
+                      is_pinned={true}
+                      removeComment={removePinned}
+                      moveToPinned={moveToPinned}
+                      removeFromPinned={removeFromPinned}
+                      key={`pinned-comment-${comment.id}`}
+                    />
+                  );
+                })}
+                {comments.map((comment) => {
+                  const created_at = new Date(
+                    comment.created_at.seconds * 1000
+                  );
+                  const updated_at = new Date(
+                    comment.updated_at.seconds * 1000
+                  );
+                  return (
+                    <CommentCard
+                      id={comment.id}
+                      product_id={props.product_id}
+                      store_id={comment.store_id}
+                      store_name={stores[comment.store_id].store_name}
+                      avatar_url={stores[comment.store_id].avatar_url}
+                      comment={comment.comment}
+                      created_at={created_at}
+                      updated_at={updated_at}
+                      owner_id={comment.owner_id}
+                      reply_count={comment.reply_count}
+                      like_count={comment.like_count}
+                      is_pinned={false}
+                      removeComment={removeComment}
+                      moveToPinned={moveToPinned}
+                      removeFromPinned={removeFromPinned}
+                      key={`comment-${comment.id}`}
+                    />
+                  );
+                })}
+              </section>
+            </DrawerDescription>
+          </DrawerHeader>
+        </DrawerContent>
+      </Drawer>
+    </section>
+  );
 }

@@ -130,7 +130,7 @@ export default function AddComments(props: {
   return (
     <section className="flex w-full flex-col gap-4">
       <section className="flex w-full items-center gap-4">
-        <Avatar className="h-[50px] w-[50px]">
+        <Avatar className="h-[32px] w-[32px]">
           <AvatarImage src={storeInfo.avatar_url} alt="Avatar" />
           <AvatarFallback className="border-background bg-primary text-primary-foreground">
             <b>{storeInfo.store_name.slice(0, 1).toUpperCase()}</b>

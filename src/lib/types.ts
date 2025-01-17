@@ -20,7 +20,7 @@ export type GridProduct = {
     currency: string;
     like_count: number;
     store_id: string;
-    created_at: Timestamp;
+    created_at: Date;
     id: string;
     revenue?: number;
     view_count?: number;

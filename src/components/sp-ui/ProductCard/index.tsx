@@ -7,16 +7,15 @@ import Link from 'next/link';
 
 export default function ProductCard({
   product,
-  avatar,
   show_creator,
 }: {
   product: GridProduct;
-  avatar?: string;
   show_creator: boolean;
 }) {
   const today = Timestamp.fromDate(new Date());
+  const created = Timestamp.fromDate(product.created_at);
   function timeDifference() {
-    const difference = today.seconds - product.created_at.seconds;
+    const difference = today.seconds - created.seconds;
     const yearDifference = Math.floor(difference / 60 / 60 / 24 / 365);
     const monthDifference = Math.floor(difference / 60 / 60 / 24 / 30);
     const daysDifference = Math.floor(difference / 60 / 60 / 24);
@@ -40,75 +39,51 @@ export default function ProductCard({
     return `Just Now`;
   }
   return (
-    <section className="flex w-full flex-col">
+    <section className="flex w-full flex-col gap-2">
       <Link
         href={`/product/${product.id}`}
         className="group flex aspect-square items-center justify-center overflow-hidden rounded border"
       >
-        {product.images.length > 1 ? (
-          <>
-            <Image
-              src={product.images[0]}
-              width="300"
-              height="300"
-              alt={product.name}
-              className="flex w-full group-hover:hidden"
-            />
-            <Image
-              src={product.images[1]}
-              width="300"
-              height="300"
-              alt={product.name}
-              className="hidden w-full group-hover:flex"
-            />
-          </>
-        ) : (
-          <Image
-            src={product.images[0]}
-            width="300"
-            height="300"
-            alt={product.name}
-            className="flex w-full"
-          />
-        )}
+        <Image
+          src={product.images[0]}
+          width="300"
+          height="300"
+          alt={product.name}
+          priority
+          className="flex w-full"
+        />
       </Link>
-      <section className="flex w-full gap-4 pt-4">
+      <section className="flex w-full gap-4">
         {show_creator ? (
-          <Link
-            href={`/store/${product.store_id}`}
-            className="text-sm text-muted-foreground"
-          >
+          <Link href={`/store/${product.store_id}`}>
             <ShowAvatar store_id={product.store_id} size="sm" />
           </Link>
         ) : (
           <></>
         )}
         <aside className="flex flex-1 justify-between">
-          <section className="flex flex-col gap-1">
-            <Link
-              href={`/product/${product.id}`}
-              className="flex flex-col gap-1"
-            >
-              <p>
-                <b>{product.name}</b>
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {product.product_type}
-              </p>
+          <section className="flex flex-col">
+            <Link href={`/product/${product.id}`}>
+              <p className="font-bold">{product.name}</p>
             </Link>
+            {/* TODO: switch link to go to search page */}
+            <Link href={`/product/${product.id}`} className="pb-1">
+              <p className="text-muted-foreground">{product.product_type}</p>
+            </Link>
+
             {show_creator ? (
               <Link
                 href={`/store/${product.store_id}`}
-                className="text-sm text-muted-foreground"
+                className="text-muted-foreground"
               >
                 {product.store_id}
               </Link>
             ) : (
               <></>
             )}
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground">
               {product.like_count} Likes{' '}
-              <span className="text-sm text-muted-foreground">&bull;</span>{' '}
+              <span className="ttext-muted-foreground">&bull;</span>{' '}
               {timeDifference()}
             </p>
           </section>

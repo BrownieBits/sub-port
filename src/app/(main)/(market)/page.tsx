@@ -4,7 +4,6 @@ import {
   CollectionReference,
   DocumentData,
   QuerySnapshot,
-  Timestamp,
   collection,
   getDocs,
   orderBy,
@@ -72,7 +71,7 @@ export default async function Home() {
       currency: product.data().currency as string,
       like_count: product.data().like_count as number,
       store_id: product.data().store_id as string,
-      created_at: product.data().created_at as Timestamp,
+      created_at: new Date(product.data().created_at.seconds * 1000),
       id: product.id as string,
     };
   });

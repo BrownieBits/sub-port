@@ -13,7 +13,7 @@ export default function StoreCard(props: Props) {
     <>
       <Link
         href={`/store/${props.id}`}
-        className="group flex w-full flex-col items-center justify-center gap-4"
+        className="group flex w-full flex-col items-center justify-center gap-2"
       >
         <section className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-full">
           <Avatar className="aspect-square h-full w-full">
@@ -26,7 +26,7 @@ export default function StoreCard(props: Props) {
           </Avatar>
         </section>
         <section className="flex w-full flex-col items-center justify-center">
-          <p className="text-lg font-bold">{props.name}</p>
+          <p className="font-bold">{props.name}</p>
           <p className="text-muted-foreground">
             {props.subscription_count} subscriber
             {props.subscription_count > 1 ? <>s</> : <></>}

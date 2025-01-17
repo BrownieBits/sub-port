@@ -77,25 +77,25 @@ export default function CommentLikes(props: {
   }
   if (comment_likes.includes(props.id)) {
     return (
-      <Button variant="link" className="p-0" onClick={unlikeComment}>
+      <Button variant="outline" size="xs" onClick={unlikeComment}>
         <p className="text-md">
           <FontAwesomeIcon
-            className="icon mr-4 h-5 w-5"
+            className="mr-2 !h-3 border-r pr-2"
             icon={faThumbsUpSolid}
           />
-          {likeCount > 0 && <span>{likeCount}</span>}
+          {likeCount} Like{likeCount > 1 || likeCount === 0 ? 's' : ''}
         </p>
       </Button>
     );
   }
   return (
-    <Button variant="link" className="p-0" onClick={likeComment}>
+    <Button variant="outline" size="xs" onClick={likeComment}>
       <p className="text-md">
         <FontAwesomeIcon
-          className="icon mr-4 h-5 w-5"
+          className="mr-2 !h-3 border-r pr-2"
           icon={faThumbsUpRegular}
         />
-        {likeCount > 0 && <span>{likeCount}</span>}
+        {likeCount} Like{likeCount > 1 || likeCount === 0 ? 's' : ''}
       </p>
     </Button>
   );

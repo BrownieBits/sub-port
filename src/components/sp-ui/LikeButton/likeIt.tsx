@@ -125,7 +125,8 @@ export const LikeIt = (props: Props) => {
             className="mr-2 !h-3 border-r pr-2"
             icon={faThumbsUpRegular}
           />
-          {props.like_count} Like{props.like_count > 1 ? 's' : ''}
+          {props.like_count} Like
+          {props.like_count > 1 || props.like_count === 0 ? 's' : ''}
         </section>
       </Button>
     );
@@ -142,7 +143,8 @@ export const LikeIt = (props: Props) => {
           className="mr-2 !h-3 border-r pr-2"
           icon={faThumbsUp}
         />
-        {props.like_count} Like{props.like_count > 1 ? 's' : ''}
+        {props.like_count} Like
+        {props.like_count > 1 || props.like_count === 0 ? 's' : ''}
       </section>
     </Button>
   );

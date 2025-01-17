@@ -114,7 +114,7 @@ export function ProductFeed() {
               currency: product.data().currency,
               like_count: product.data().like_count,
               store_id: product.data().store_id,
-              created_at: product.data().created_at,
+              created_at: new Date(product.data().created_at.seconds * 1000),
               id: product.id,
               revenue: product.data().revenue,
               view_count: product.data().view_count,

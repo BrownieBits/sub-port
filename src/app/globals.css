@@ -211,6 +211,7 @@ h3 {
   @apply font-bold;
 }
 h4 {
+  @apply text-base;
   @apply font-bold;
 }
 img {

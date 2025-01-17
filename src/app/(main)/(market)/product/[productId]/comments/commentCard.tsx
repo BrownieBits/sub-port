@@ -185,7 +185,7 @@ export default function CommentCard(props: {
         href={`/store/${props.store_id}`}
         title={`@${props.store_id} store`}
       >
-        <Avatar className="h-[50px] w-[50px]">
+        <Avatar className="h-[32px] w-[32px]">
           <AvatarImage src={props.avatar_url} alt="Avatar" />
           <AvatarFallback className="border-background bg-primary text-primary-foreground">
             <b>{props.store_name.slice(0, 1).toUpperCase()}</b>
@@ -193,19 +193,19 @@ export default function CommentCard(props: {
         </Avatar>
       </Link>
       <section className="flex flex-1 gap-4">
-        <section className="flex flex-1 flex-col items-start gap-1">
-          <section className="jusitfy-start flex w-full items-center gap-2">
+        <section className="flex flex-1 flex-col items-start gap-2">
+          <section className="jusitfy-start flex w-full items-start gap-2">
             <Link
               href={`/store/${props.store_id}`}
               title={`@${props.store_id} store`}
             >
-              <p className="text-sm font-bold">@{props.store_id}</p>
+              <p className="font-bold">@{props.store_id}</p>
             </Link>
-            <p className="text-sm text-muted-foreground">{timeDifference()}</p>
+            <p className="text-muted-foreground">{timeDifference()}</p>
             {props.is_pinned && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground">
                 <FontAwesomeIcon
-                  className="icon text-muted-foreground"
+                  className="icon !h-3 !w-3 text-muted-foreground"
                   icon={faThumbTack}
                 />
               </p>
@@ -219,35 +219,37 @@ export default function CommentCard(props: {
           >
             {props.comment}
           </p>
-          {props.comment.length > 256 && clamp && (
-            <Button
-              variant="link"
-              className="w-auto px-0 py-0 text-sm text-muted-foreground"
-              onClick={() => setClamp(false)}
-            >
-              More
-            </Button>
-          )}
-          {props.comment.length > 256 && !clamp && (
-            <Button
-              variant="link"
-              className="w-auto px-0 py-0 text-sm text-muted-foreground"
-              onClick={() => setClamp(true)}
-            >
-              Less
-            </Button>
-          )}
+          <section className="flex items-center justify-start gap-2">
+            {props.comment.length > 256 && clamp && (
+              <Button
+                variant="outline"
+                size="xs"
+                onClick={() => setClamp(false)}
+              >
+                More
+              </Button>
+            )}
+            {props.comment.length > 256 && !clamp && (
+              <Button
+                variant="outline"
+                size="xs"
+                onClick={() => setClamp(true)}
+              >
+                Less
+              </Button>
+            )}
 
-          <CommentLikes
-            id={props.id}
-            product_id={props.product_id}
-            like_count={props.like_count}
-          />
+            <CommentLikes
+              id={props.id}
+              product_id={props.product_id}
+              like_count={props.like_count}
+            />
+          </section>
         </section>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost">
+            <Button variant="link" size="xs" className="p-0">
               <FontAwesomeIcon className="icon" icon={faEllipsisV} />
             </Button>
           </DropdownMenuTrigger>

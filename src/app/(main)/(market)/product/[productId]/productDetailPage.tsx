@@ -1,5 +1,6 @@
 'use client';
 import { LikeButton } from '@/components/sp-ui/LikeButton';
+import { ShowAvatar } from '@/components/sp-ui/ShowAvatar';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -17,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useSidebar } from '@/components/ui/sidebar';
 import { analytics, db } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
 import cartStore from '@/stores/cartStore';
@@ -108,6 +110,7 @@ export default function ProductDetailPage(props: Props) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
   });
+  const { setOpen } = useSidebar();
   async function onSubmit() {
     setThinking(true);
     try {
@@ -214,6 +217,7 @@ export default function ProductDetailPage(props: Props) {
   }
 
   React.useEffect(() => {
+    setOpen(false);
     if (analytics !== null) {
       logEvent(analytics, 'product_viewed', {
         product_id: props.product_id,
@@ -260,9 +264,10 @@ export default function ProductDetailPage(props: Props) {
               <h1 className="text-xl">{props.product_name}</h1>
               <Link
                 href={`/store/${props.store_id}`}
-                className="flex items-center gap-4"
+                className="flex items-center gap-2"
               >
-                <p className="text-sm">
+                <ShowAvatar store_id={props.store_id} size="sm" />
+                <p className="">
                   <b>{props.store_name}</b>{' '}
                   <span className="text-muted-foreground">&bull;</span>{' '}
                   <span className="text-muted-foreground">
@@ -465,7 +470,7 @@ export default function ProductDetailPage(props: Props) {
             store_id={props.store_id}
           />
         </section>
-        <section className="flex w-full flex-col md:w-[350px] xl:w-[400px]">
+        <section className="flex w-full flex-col md:w-[275px] xl:w-[400px]">
           <RelatedProducts
             product_id={props.product_id}
             store_id={props.store_id}

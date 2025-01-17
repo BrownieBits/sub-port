@@ -29,8 +29,7 @@ import { _FooterNavItem } from './types';
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { state, open } = useSidebar();
-
+  const { state, open, isMobile } = useSidebar();
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -43,7 +42,7 @@ export function AppSidebar() {
               <Link
                 href="/"
                 className={cn('w-10', {
-                  'w-full': !open,
+                  'w-full': !open && !isMobile,
                 })}
               >
                 <IconLogo />
@@ -52,7 +51,7 @@ export function AppSidebar() {
                 href="/"
                 className={cn('w-16', {
                   block: open,
-                  hidden: !open,
+                  hidden: !open && !isMobile,
                 })}
               >
                 <WordLogo />

@@ -14,7 +14,6 @@ import {
   query,
   QuerySnapshot,
   startAfter,
-  Timestamp,
   where,
 } from 'firebase/firestore';
 import React from 'react';
@@ -70,7 +69,7 @@ export default function MyLikesPage() {
             currency: product.data().currency as string,
             like_count: product.data().like_count as number,
             store_id: product.data().store_id as string,
-            created_at: product.data().created_at as Timestamp,
+            created_at: new Date(product.data().created_at.seconds * 1000),
             id: product.id as string,
           });
         });

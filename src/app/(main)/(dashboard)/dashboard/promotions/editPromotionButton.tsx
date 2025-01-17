@@ -316,7 +316,7 @@ export const EditPromotionButton = (props: {
           <DrawerTitle className="flex items-center justify-between">
             Edit Promotion
             <DrawerClose asChild>
-              <Button variant="outline">
+              <Button variant="outline" size="sm">
                 <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
               </Button>
             </DrawerClose>

@@ -52,19 +52,20 @@ export const ShowDetails = (props: {
   if (isDesktop) {
     return (
       <Card className="w-full">
-        <CardContent>
+        <CardContent className="flex flex-col items-start gap-2">
           <h4>Product Details</h4>
-          <p className="text-sm font-bold text-foreground">
-            {props.product_type}
+          <p className="text-muted-foreground">
+            Product Type: {props.product_type}
           </p>
-          <p className="line-clamp-2 whitespace-pre-wrap pt-[5px] text-sm text-muted-foreground">
+          <p className="line-clamp-2 whitespace-pre-wrap text-muted-foreground">
             {props.text.replaceAll('\\n', '\n')}
           </p>
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
               <Button
                 variant="outline"
-                className="mt-2 h-auto p-0 px-3 text-foreground hover:no-underline"
+                size="xs"
+                className="text-foreground hover:no-underline"
               >
                 More
               </Button>
@@ -72,16 +73,16 @@ export const ShowDetails = (props: {
             <DialogContent className="sm:max-w-[425px]">
               <DialogHeader>
                 <DialogTitle>Product Details</DialogTitle>
-                <DialogDescription className="flex flex-col" asChild>
-                  <section>
-                    <p className="pb-1 text-sm font-bold text-foreground">
-                      {props.product_type}
+                <DialogDescription asChild>
+                  <section className="flex flex-col gap-4">
+                    <p className="pt-4 font-bold text-foreground">
+                      Product Type: {props.product_type}
                     </p>
-                    <span className="whitespace-pre-wrap pb-4 text-foreground">
+                    <span className="whitespace-pre-wrap text-foreground">
                       {props.text.replaceAll('\\n', '\n')}
                     </span>
 
-                    <span className="flex w-full justify-start gap-0 pb-4 text-foreground">
+                    <span className="flex w-full justify-start gap-0 text-foreground">
                       <FontAwesomeIcon
                         className="icon mr-2 h-4 w-4"
                         icon={faGlobe}
@@ -89,7 +90,7 @@ export const ShowDetails = (props: {
                       htttps://{process.env.NEXT_PUBLIC_BASE_URL}/product/
                       {props.product_id}
                     </span>
-                    <span className="flex w-full justify-start gap-0 pb-4 text-foreground">
+                    <span className="flex w-full justify-start gap-0 text-foreground">
                       <FontAwesomeIcon
                         className="icon mr-2 h-4 w-4"
                         icon={faStore}
@@ -97,7 +98,7 @@ export const ShowDetails = (props: {
                       htttps://{process.env.NEXT_PUBLIC_BASE_URL}/store/
                       {props.store_name}
                     </span>
-                    <span className="pb-4 text-foreground">
+                    <span className="text-foreground">
                       <FontAwesomeIcon
                         className="icon mr-2 h-4 w-4"
                         icon={faThumbsUp}
@@ -105,14 +106,14 @@ export const ShowDetails = (props: {
                       {props.like_count} like
                       {props.like_count > 1 ? 's' : ''}
                     </span>
-                    <span className="pb-4 text-foreground">
+                    <span className="text-foreground">
                       <FontAwesomeIcon
                         className="icon mr-2 h-4 w-4"
                         icon={faBinoculars}
                       />
                       {props.view_count} view{props.view_count > 1 ? 's' : ''}
                     </span>
-                    <span className="pb-4 text-foreground">
+                    <span className="text-foreground">
                       <FontAwesomeIcon
                         className="icon mr-2 h-4 w-4"
                         icon={faInfoCircle}
@@ -147,19 +148,20 @@ export const ShowDetails = (props: {
 
   return (
     <Card className="w-full">
-      <CardContent>
+      <CardContent className="flex flex-col items-start gap-2">
         <h4>Product Details</h4>
-        <p className="text-sm font-bold text-foreground">
-          {props.product_type}
+        <p className="text-muted-foreground">
+          Product Type: {props.product_type}
         </p>
-        <p className="line-clamp-2 whitespace-pre-wrap pt-[5px] text-sm text-muted-foreground">
+        <p className="line-clamp-2 whitespace-pre-wrap text-muted-foreground">
           {props.text.replaceAll('\\n', '\n')}
         </p>
         <Drawer open={open} onOpenChange={setOpen}>
           <DrawerTrigger asChild>
             <Button
               variant="outline"
-              className="mt-2 h-auto p-0 px-3 text-foreground hover:no-underline"
+              size="xs"
+              className="text-foreground hover:no-underline"
             >
               More
             </Button>
@@ -174,18 +176,15 @@ export const ShowDetails = (props: {
                   </Button>
                 </DrawerClose>
               </DrawerTitle>
-              <DrawerDescription
-                className="flex w-full flex-col items-start text-left"
-                asChild
-              >
-                <section>
-                  <p className="pb-1 text-sm font-bold text-foreground">
-                    {props.product_type}
+              <DrawerDescription asChild>
+                <section className="flex w-full flex-col items-start gap-4 text-left">
+                  <p className="font-bold text-foreground">
+                    Product Type: {props.product_type}
                   </p>
-                  <span className="whitespace-pre-wrap pb-4 text-foreground">
+                  <span className="whitespace-pre-wrap text-foreground">
                     {props.text.replaceAll('\\n', '\n')}
                   </span>
-                  <span className="flex w-full justify-start gap-0 pb-4 text-foreground">
+                  <span className="flex w-full justify-start gap-0 text-foreground">
                     <FontAwesomeIcon
                       className="icon mr-2 h-4 w-4"
                       icon={faGlobe}
@@ -193,7 +192,7 @@ export const ShowDetails = (props: {
                     htttps://{process.env.NEXT_PUBLIC_BASE_URL}/product/
                     {props.product_id}
                   </span>
-                  <span className="flex w-full justify-start gap-0 pb-4 text-foreground">
+                  <span className="flex w-full justify-start gap-0 text-foreground">
                     <FontAwesomeIcon
                       className="icon mr-2 h-4 w-4"
                       icon={faStore}
@@ -201,7 +200,7 @@ export const ShowDetails = (props: {
                     htttps://{process.env.NEXT_PUBLIC_BASE_URL}/store/
                     {props.store_name}
                   </span>
-                  <span className="pb-4 text-foreground">
+                  <span className="text-foreground">
                     <FontAwesomeIcon
                       className="icon mr-2 h-4 w-4"
                       icon={faThumbsUp}
@@ -209,14 +208,14 @@ export const ShowDetails = (props: {
                     {props.like_count} like
                     {props.like_count > 1 ? 's' : ''}
                   </span>
-                  <span className="pb-4 text-foreground">
+                  <span className="text-foreground">
                     <FontAwesomeIcon
                       className="icon mr-2 h-4 w-4"
                       icon={faBinoculars}
                     />
                     {props.view_count} view{props.view_count > 1 ? 's' : ''}
                   </span>
-                  <span className="pb-4 text-foreground">
+                  <span className="text-foreground">
                     <FontAwesomeIcon
                       className="icon mr-2 h-4 w-4"
                       icon={faInfoCircle}

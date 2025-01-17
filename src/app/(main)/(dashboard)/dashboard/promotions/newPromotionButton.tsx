@@ -344,7 +344,7 @@ export const NewPromotionButton = (props: {
           <DrawerTitle className="flex justify-between">
             <h3>Add Promotion</h3>
             <DrawerClose>
-              <Button variant="outline">
+              <Button variant="outline" size="sm">
                 <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
               </Button>
             </DrawerClose>
