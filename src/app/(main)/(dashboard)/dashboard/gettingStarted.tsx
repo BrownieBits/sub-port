@@ -8,7 +8,6 @@ import { GridProduct } from '@/lib/types';
 import { Unsubscribe } from 'firebase/auth';
 import {
   CollectionReference,
-  Timestamp,
   collection,
   limit,
   onSnapshot,
@@ -46,7 +45,9 @@ export const GettingStartedGuide = (props: {}) => {
             currency: snapshot.docs[0].data().currency as string,
             like_count: snapshot.docs[0].data().like_count as number,
             store_id: snapshot.docs[0].data().store_id as string,
-            created_at: snapshot.docs[0].data().created_at as Timestamp,
+            created_at: new Date(
+              snapshot.docs[0].data().created_at.seconds * 1000
+            ),
             id: snapshot.docs[0].id as string,
             view_count: snapshot.docs[0].data().view_count as number,
             revenue: snapshot.docs[0].data().revenue as number,
