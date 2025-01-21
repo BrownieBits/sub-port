@@ -13,7 +13,7 @@ import { db } from '@/lib/firebase';
 import { cn } from '@/lib/utils';
 import {
   _Address,
-  _CartFullItem,
+  _Item,
   _Promotions,
   _Shipments,
 } from '@/stores/cartStore.types';
@@ -31,7 +31,7 @@ type Order = {
   name: string;
   status: string;
   shipments: _Shipments;
-  items: _CartFullItem[];
+  items: _Item[];
   order_date: Date;
   order_total: number;
   promotions: _Promotions;
