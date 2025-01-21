@@ -132,7 +132,7 @@ export default async function Store({ params }: { params: Params }) {
             <></>
           ) : (
             <section
-              className="flex aspect-[6/1] items-center justify-start overflow-hidden rounded md:aspect-[128/15]"
+              className="flex aspect-[6/1] items-center justify-start overflow-hidden rounded"
               style={{
                 background: `url(${data.store.data().banner_url})`,
                 backgroundSize: 'cover',

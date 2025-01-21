@@ -24,7 +24,6 @@ export type Order = {
   status: string;
   order_date: Date;
   item_count: number;
-  delivery_methods: string[];
   store_id: string;
   filter: string;
 };
@@ -41,22 +40,6 @@ export const StoreOrdersPage = () => {
     );
     const orderDocs = await getDocs(q);
     const orderData: Order[] = orderDocs.docs.map((order) => {
-      const deliveryMethods: string[] = [];
-      order.data().shipments.map((shipment: any) => {
-        if (shipment.name === 'digital') {
-          deliveryMethods.push('digital');
-        } else {
-          if (shipment.rate.service_code.includes('usps')) {
-            deliveryMethods.push('usps');
-          }
-          if (shipment.rate.service_code.includes('fedex')) {
-            deliveryMethods.push('fedex');
-          }
-          if (shipment.rate.service_code.includes('ups')) {
-            deliveryMethods.push('ups');
-          }
-        }
-      });
       return {
         id: order.id,
         order_id: order.id,
@@ -65,7 +48,6 @@ export const StoreOrdersPage = () => {
         status: order.data().status,
         order_date: new Date(order.data().created_at.seconds * 1000),
         item_count: order.data().items.length,
-        delivery_methods: deliveryMethods,
         store_id: user_store,
         filter: `${order.id}_${order.data().address.name}`,
       };
