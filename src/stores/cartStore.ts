@@ -1,23 +1,23 @@
 
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 import { create } from 'zustand';
-import { _Actions, _Cart, _Promotions, _RemovedItem, _SetCartProps, _SetItemsProps, _Shipments, _StoreItemBreakdown } from './cartStore.types';
+import { _Actions, _Cart, _Items, _Promotions, _RemovedItem, _SetCartProps, _SetItemsProps, _Shipments } from './cartStore.types';
 
 const cartStore = create<_Cart & _Actions>(set => ({
     cart_id: '',
-    address: undefined,
-    billing_address: undefined,
+    address: null,
+    billing_address: null,
     email: '',
     item_count: 0,
-    items: [],
-    owner_email: undefined,
-    owner_id: undefined,
-    payment_intent: undefined,
-    shipments: undefined,
-    store_item_breakdown: undefined,
-    cart_loaded: false,
+    items: new Map(),
+    cart_items: [],
+    owner_email: null,
+    owner_id: null,
+    payment_intent: null,
+    shipments: new Map(),
+    promotions: new Map(),
     removed_items: [],
-    promotions: {},
+    cart_loaded: false,
     shipments_ready: false,
     order_complete: false,
     setCart: (props: _SetCartProps) => set((state) => ({
@@ -32,27 +32,33 @@ const cartStore = create<_Cart & _Actions>(set => ({
         shipments: props.shipments ? props.shipments : undefined,
         shipments_ready: props.shipments_ready
     })),
-    setItems: (props: _SetItemsProps) => set((state) => ({
+    setCartItems: (props: _SetItemsProps) => set((state) => ({
         ...state,
         item_count: props.item_count,
-        items: props.items,
+        cart_items: props.cart_items,
     })),
-    setStoreItemBreakdown: (props: _StoreItemBreakdown) => set((state) => ({
+    setItems: (props: _Items) => set((state) => ({
         ...state,
-        store_item_breakdown: props
+        items: props,
     })),
     clearCart: () => {
         set(() => ({
             cart_id: '',
-            address: undefined,
-            billing_address: undefined,
-            email: undefined,
+            address: null,
+            billing_address: null,
+            email: '',
             item_count: 0,
-            items: [],
-            owner_email: undefined,
-            owner_id: undefined,
-            payment_intent: undefined,
-            shipments: undefined,
+            items: new Map(),
+            cart_items: [],
+            owner_email: null,
+            owner_id: null,
+            payment_intent: null,
+            shipments: new Map(),
+            promotions: new Map(),
+            removed_items: [],
+            cart_loaded: false,
+            shipments_ready: false,
+            order_complete: false,
         }))
     },
     setCartID: (cart_id: string) => {

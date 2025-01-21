@@ -104,13 +104,6 @@ export default function ItemDetails(props: Props) {
     }
     setSelectableQuantity(selectable);
   }, []);
-  console.log(
-    props.item.compare_at,
-    props.item.price,
-    props.item.compare_at < props.item.price,
-    typeof props.item.compare_at,
-    typeof props.item.price
-  );
   return (
     <section className="flex w-full flex-col gap-4 md:flex-row">
       <section className="flex w-full flex-1 gap-4">

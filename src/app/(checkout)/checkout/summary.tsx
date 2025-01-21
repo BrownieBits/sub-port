@@ -12,15 +12,14 @@ import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import cartStore from '@/stores/cartStore';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Timestamp } from 'firebase/firestore';
 import React from 'react';
 import ItemDetails from './itemDetails';
 
 export default function CheckoutSummary() {
   const cart_loaded = cartStore((state) => state.cart_loaded);
-  const cart_items = cartStore((state) => state.store_item_breakdown);
-  const cart_promotions = cartStore((state) => state.promotions);
-  const cart_shipments = cartStore((state) => state.shipments);
+  const items = cartStore((state) => state.items);
+  const promotions = cartStore((state) => state.promotions);
+  const shipments = cartStore((state) => state.shipments);
 
   const [open, setOpen] = React.useState('');
   const [itemsTotal, setItemsTotal] = React.useState<number>(0);
@@ -32,13 +31,13 @@ export default function CheckoutSummary() {
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
   React.useEffect(() => {
-    if (cart_items !== null && cart_items !== undefined) {
+    if (items.size > 0) {
       let item_total = 0;
       let service_total = 0;
       let discounts_total = 0;
-      Object.keys(cart_items).map((store: string) => {
+      [...items.keys()].map((store: string) => {
         let store_total = 0;
-        cart_items[store].map((item) => {
+        items.get(store)!.map((item) => {
           if (
             parseFloat(item.compare_at.toString()) > 0 &&
             parseFloat(item.compare_at.toString()) <
@@ -62,30 +61,28 @@ export default function CheckoutSummary() {
           }
         });
 
-        if (cart_promotions.hasOwnProperty(store)) {
-          const expiration = cart_promotions[store]
-            .expiration_date as Timestamp;
+        if (promotions.has(store)) {
+          const expiration = promotions.get(store)!.expiration_date;
           let expiration_good = true;
           if (expiration !== null) {
-            const expiration_date = new Date(expiration.seconds * 1000);
             const today = new Date();
-            if (today.getTime() > expiration_date.getTime()) {
+            if (today.getTime() > expiration.getTime()) {
               expiration_good = false;
             }
           }
           let minimum_good = true;
           if (
-            cart_promotions[store].minimum_order_value > 0 &&
-            cart_promotions[store].minimum_order_value > store_total
+            promotions.get(store)!.minimum_order_value > 0 &&
+            promotions.get(store)!.minimum_order_value > store_total
           ) {
             minimum_good = false;
           }
           if (minimum_good && expiration_good) {
-            if (cart_promotions[store].type === 'Flat Amount') {
-              discounts_total += cart_promotions[store].amount;
-            } else if (cart_promotions[store].type === 'Percentage') {
+            if (promotions.get(store)!.type === 'Flat Amount') {
+              discounts_total += promotions.get(store)!.amount;
+            } else if (promotions.get(store)!.type === 'Percentage') {
               const discount_amount =
-                store_total * (cart_promotions[store].amount / 100);
+                store_total * (promotions.get(store)!.amount / 100);
               discounts_total += discount_amount;
             }
           }
@@ -95,17 +92,17 @@ export default function CheckoutSummary() {
       setServiceTotal(service_total);
       setDiscountsTotal(discounts_total);
     }
-  }, [cart_items, cart_promotions]);
+  }, [items, promotions]);
 
   React.useEffect(() => {
-    if (cart_shipments !== undefined) {
+    if (shipments !== null && shipments !== undefined && shipments.size > 0) {
       let hasNulls = false;
       let total = 0;
-      Object.keys(cart_shipments).map((shipment) => {
-        if (cart_shipments[shipment].rate === undefined) {
+      [...shipments.keys()].map((shipment) => {
+        if (shipments.get(shipment)!.rate === null) {
           hasNulls = true;
         } else {
-          total += cart_shipments[shipment].rate?.rate! as number;
+          total += shipments.get(shipment)!.rate?.rate! as number;
         }
       });
       if (!hasNulls) {
@@ -114,7 +111,7 @@ export default function CheckoutSummary() {
         setShippingTotal(null);
       }
     }
-  }, [cart_shipments]);
+  }, [shipments]);
 
   React.useEffect(() => {
     let total = itemsTotal + serviceTotal - discountsTotal;
@@ -127,7 +124,7 @@ export default function CheckoutSummary() {
     setCartTotal(total);
   }, [itemsTotal, serviceTotal, discountsTotal, shippingTotal, taxesTotal]);
 
-  if (!cart_loaded || cart_items === null || cart_items === undefined) {
+  if (!cart_loaded) {
     return (
       <aside className="flex w-full flex-col gap-4 md:w-[350px] xl:w-[400px]">
         <Skeleton className="h-[200px] w-full rounded" />
@@ -161,10 +158,10 @@ export default function CheckoutSummary() {
   if (isDesktop) {
     return (
       <aside className="flex w-full flex-col gap-4 md:w-[350px] xl:w-[400px]">
-        {Object.keys(cart_items).map((store) => {
+        {[...items.keys()].map((store) => {
           return (
             <ItemDetails
-              items={cart_items[store]}
+              items={items.get(store)!}
               store_id={store}
               key={`item-breakdown-${store}`}
             />
@@ -278,10 +275,10 @@ export default function CheckoutSummary() {
         </AccordionTrigger>
         <AccordionContent>
           <aside className="flex w-full flex-col gap-4 md:w-[350px] xl:w-[400px]">
-            {Object.keys(cart_items).map((store) => {
+            {[...items.keys()].map((store) => {
               return (
                 <ItemDetails
-                  items={cart_items[store]}
+                  items={items.get(store)!}
                   store_id={store}
                   key={`item-breakdown-${store}`}
                 />

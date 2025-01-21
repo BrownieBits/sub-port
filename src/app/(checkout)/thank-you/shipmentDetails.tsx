@@ -1,0 +1,215 @@
+'use client';
+
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { db } from '@/lib/firebase';
+import { _Shipment } from '@/stores/cartStore.types';
+import { faDownload } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  doc,
+  DocumentData,
+  DocumentReference,
+  getDoc,
+} from 'firebase/firestore';
+import Image from 'next/image';
+import Link from 'next/link';
+import React from 'react';
+
+type StoreInfo = {
+  store_name: string;
+  store_avatar: string;
+};
+type Props = {
+  shipment: _Shipment;
+};
+
+export default function ShipmentDetails(props: Props) {
+  const [storeInfo, setStoreInfo] = React.useState<StoreInfo | null>(null);
+  async function getStore(store_id: string) {
+    const storeRef: DocumentReference = doc(db, 'stores', store_id);
+    const storeDoc: DocumentData = await getDoc(storeRef);
+
+    if (storeDoc.exists()) {
+      setStoreInfo({
+        store_name: storeDoc.data().name,
+        store_avatar: storeDoc.data().avatar_url,
+      });
+    }
+  }
+  React.useEffect(() => {
+    console.log(props.shipment.name);
+    if (props.shipment.name?.startsWith('self-')) {
+      getStore(props.shipment.store_id);
+    } else if (props.shipment.name?.startsWith('printful-')) {
+      getStore(props.shipment.store_id);
+    }
+  }, []);
+  let badgeVariant:
+    | 'default'
+    | 'outline'
+    | 'destructive'
+    | 'secondary'
+    | null
+    | undefined = 'default';
+  if (props.shipment.status === 'Unfulfilled') {
+    badgeVariant = 'outline';
+  } else if (props.shipment.status === 'Cancelled') {
+    badgeVariant = 'destructive';
+  }
+  return (
+    <section className="flex w-full flex-col gap-4">
+      {props.shipment.name === 'digital' ? (
+        <section className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
+          <section className="flex w-full gap-4">
+            <FontAwesomeIcon className="icon" icon={faDownload} />
+            <p className="font-bold">Digital Delivery</p>
+          </section>
+        </section>
+      ) : (
+        <section className="flex w-full gap-4">
+          {storeInfo === null ? (
+            <section className="flex w-full items-center gap-4">
+              <Skeleton className="size-[32px] rounded-full" />
+              <Skeleton className="h-[24px] w-[150px] rounded-full" />
+            </section>
+          ) : (
+            <section className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
+              <section className="flex items-center gap-4">
+                <Avatar className="size-[32px]">
+                  <AvatarImage src={storeInfo.store_avatar} alt="Avatar" />
+                  <AvatarFallback className="border-background bg-primary text-primary-foreground">
+                    <b>{storeInfo.store_name.slice(0, 1).toUpperCase()}</b>
+                  </AvatarFallback>
+                </Avatar>
+                <p className="font-bold">
+                  {storeInfo.store_name}{' '}
+                  {props.shipment.name?.startsWith('printful-')
+                    ? 'POD Delivery'
+                    : 'Delivery'}
+                </p>
+              </section>
+              {props.shipment.tracking_number === '' ? (
+                <Button size="xs" variant="outline">
+                  Waiting for Tracking
+                </Button>
+              ) : (
+                <>
+                  {props.shipment.rate?.service_type.startsWith('USPS') && (
+                    <Button size="xs" asChild>
+                      <Link
+                        target="_blank"
+                        href={`https://tools.usps.com/go/TrackConfirmAction?tRef=fullpage&tLc=3&text28777=&tLabels=${props.shipment.tracking_number}%2C%2C&tABt=false`}
+                      >
+                        Track
+                      </Link>
+                    </Button>
+                  )}
+                  {props.shipment.rate?.service_type.startsWith('UPS') && (
+                    <Button size="xs" asChild>
+                      <Link
+                        target="_blank"
+                        href={`https://www.ups.com/track?loc=en_US&Requester=SBN&tracknum=${props.shipment.tracking_number}&AgreeToTermsAndConditions=yes/trackdetails`}
+                      >
+                        Track
+                      </Link>
+                    </Button>
+                  )}
+                  {props.shipment.rate?.service_type.startsWith('FEDEX') && (
+                    <Button size="xs" asChild>
+                      <Link
+                        target="_blank"
+                        href={`https://www.fedex.com/fedextrack/?trknbr=${props.shipment.tracking_number}`}
+                      >
+                        Track
+                      </Link>
+                    </Button>
+                  )}
+                </>
+              )}
+            </section>
+          )}
+        </section>
+      )}
+
+      <section className="flex w-full flex-col justify-center gap-4 md:flex-row">
+        <Card className="flex-1">
+          <CardHeader className="flex flex-row justify-between">
+            <CardTitle>Items</CardTitle>
+            <Badge variant={badgeVariant}>{props.shipment.status}</Badge>
+          </CardHeader>
+          <Separator />
+          <CardContent className="flex flex-col gap-2">
+            {props.shipment.items.map((item) => {
+              return (
+                <section
+                  className="flex w-full gap-4"
+                  key={`item-breakdown-item-${item.id}${item.options.join('')}`}
+                >
+                  <section className="flex w-full flex-1 gap-2 overflow-hidden whitespace-nowrap">
+                    {item.images.length > 0 && (
+                      <section className="group flex aspect-square w-[50px] items-center justify-center overflow-hidden rounded border md:w-[100px]">
+                        <Image
+                          src={item.images[0]}
+                          width="100"
+                          height="100"
+                          alt={item.name}
+                          className="flex w-full"
+                        />
+                      </section>
+                    )}
+                    <section className="flex w-full flex-1 flex-col truncate">
+                      <p className="truncate text-sm">
+                        <b>{item.name}</b>
+                      </p>
+                      <p className="truncate text-sm text-muted-foreground">
+                        {item.options.join(', ')} x {item.quantity}
+                      </p>
+                    </section>
+                  </section>
+                  <section className="flex">
+                    {parseFloat(item.compare_at.toString()) > 0 &&
+                    parseFloat(item.compare_at.toString()) <
+                      parseFloat(item.price.toString()) ? (
+                      <section className="flex flex-col items-end">
+                        <p className="text-sm text-destructive line-through">
+                          <b>
+                            {new Intl.NumberFormat('en-US', {
+                              style: 'currency',
+                              currency: item.currency,
+                            }).format(item.price * item.quantity)}
+                          </b>
+                        </p>
+                        <p className="text-sm">
+                          <b>
+                            {new Intl.NumberFormat('en-US', {
+                              style: 'currency',
+                              currency: item.currency,
+                            }).format(item.compare_at * item.quantity)}
+                          </b>
+                        </p>
+                      </section>
+                    ) : (
+                      <p className="text-sm">
+                        <b>
+                          {new Intl.NumberFormat('en-US', {
+                            style: 'currency',
+                            currency: item.currency,
+                          }).format(item.price * item.quantity)}
+                        </b>
+                      </p>
+                    )}
+                  </section>
+                </section>
+              );
+            })}
+          </CardContent>
+        </Card>
+      </section>
+    </section>
+  );
+}

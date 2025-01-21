@@ -3,11 +3,12 @@
 import { auth, db } from '@/lib/firebase';
 import cartStore from '@/stores/cartStore';
 import {
+  _CartItem,
   _Item,
+  _Items,
   _Promotions,
   _RemovedItem,
   _SetCartProps,
-  _StoreItemBreakdown,
 } from '@/stores/cartStore.types';
 import { deleteCookie, getCookie, setCookie } from 'cookies-next/client';
 import { User } from 'firebase/auth';
@@ -35,13 +36,14 @@ import React from 'react';
 export default function CartState() {
   const cart_cookie = getCookie('cart_id');
   const cart_id = cartStore((state) => state.cart_id);
-  const cart_items = cartStore((state) => state.items);
+  const cart_items = cartStore((state) => state.cart_items);
   const order_complete = cartStore((state) => state.order_complete);
   const setCart = cartStore((state) => state.setCart);
   const setItems = cartStore((state) => state.setItems);
-  const setStoreItemBreakdown = cartStore(
-    (state) => state.setStoreItemBreakdown
-  );
+  const setCartItems = cartStore((state) => state.setCartItems);
+  // const setStoreItemBreakdown = cartStore(
+  //   (state) => state.setStoreItemBreakdown
+  // );
   const setRemovedItems = cartStore((state) => state.setRemovedItems);
   const setCartID = cartStore((state) => state.setCartID);
   const setCartLoaded = cartStore((state) => state.setCartLoaded);
@@ -65,7 +67,11 @@ export default function CartState() {
       await setDoc(cartsDoc, {
         owner_id: user_id,
         owner_email: email,
-        items: 0,
+        address: null,
+        billing_address: null,
+        email: '',
+        payment_intent: null,
+        shipments: null,
         shipments_ready: false,
         created_at: Timestamp.fromDate(new Date()),
       });
@@ -73,7 +79,6 @@ export default function CartState() {
 
     setCartCookie(cartsDoc.id);
     setCartID(cartsDoc.id);
-    setCartLoaded(true);
   }
 
   async function updateCartToUserCart(email: string, user_id: string) {
@@ -89,13 +94,17 @@ export default function CartState() {
       await setDoc(cartRef, {
         owner_id: user_id,
         owner_email: email,
-        items: 0,
+        address: null,
+        billing_address: null,
+        email: '',
+        payment_intent: null,
+        shipments: null,
+        shipments_ready: false,
         created_at: Timestamp.fromDate(new Date()),
       });
     }
     setCartCookie(cart_cookie!);
     setCartID(cart_cookie!);
-    setCartLoaded(true);
   }
 
   async function checkUserCarts(user: User) {
@@ -117,11 +126,9 @@ export default function CartState() {
       if (cart_cookie === undefined) {
         setCartCookie(userCartsData.docs[0].id);
         setCartID(userCartsData.docs[0].id);
-        setCartLoaded(true);
       } else if (cart_cookie === userCartsData.docs[0].id) {
         setCartID(cart_cookie!);
         setCartCookie(cart_cookie!);
-        setCartLoaded(true);
       } else {
         const cartRef: DocumentReference = doc(db, 'carts', cart_cookie!);
         const cartDoc = await getDoc(cartRef);
@@ -135,12 +142,10 @@ export default function CartState() {
             await deleteDoc(deleteRef);
             setCartCookie(cartDoc.id);
             setCartID(cartDoc.id);
-            setCartLoaded(true);
           } else {
             await deleteDoc(cartRef);
             setCartCookie(userCartsData.docs[0].id);
             setCartID(userCartsData.docs[0].id);
-            setCartLoaded(true);
           }
         } else {
           setCartCookie(userCartsData.docs[0].id);
@@ -167,7 +172,13 @@ export default function CartState() {
 
   async function createCart(cartRef: DocumentReference) {
     await setDoc(cartRef, {
-      item_count: 0,
+      owner_id: null,
+      owner_email: null,
+      address: null,
+      billing_address: null,
+      email: '',
+      payment_intent: null,
+      shipments: null,
       shipments_ready: false,
       created_at: Timestamp.fromDate(new Date()),
       updated_at: Timestamp.fromDate(new Date()),
@@ -187,14 +198,13 @@ export default function CartState() {
             createNewCart();
           } else {
             setCartID(cart_cookie);
-            setCartLoaded(true);
           }
         }
       }
     });
   }, []);
   React.useEffect(() => {
-    const getLatest = async () => {
+    const getLatest = () => {
       const cartRef: DocumentReference = doc(db, `carts/`, cart_id);
       const itemsRef: CollectionReference = collection(
         db,
@@ -208,8 +218,12 @@ export default function CartState() {
         cart_id,
         'promotions'
       );
-      const unsubscribe = await onSnapshot(cartRef, (snapshot) => {
+      const cartUnsubscribe = onSnapshot(cartRef, (snapshot) => {
         if (snapshot.exists()) {
+          let newShipment = snapshot.data()?.shipments;
+          if (newShipment !== null) {
+            newShipment = new Map(Object.entries(newShipment));
+          }
           const cart: _SetCartProps = {
             cart_id: snapshot.id,
             address: snapshot.data()?.address,
@@ -218,7 +232,7 @@ export default function CartState() {
             owner_email: snapshot.data()?.owner_email,
             owner_id: snapshot.data()?.owner_id,
             payment_intent: snapshot.data()?.payment_intent,
-            shipments: snapshot.data()?.shipments,
+            shipments: newShipment,
             shipments_ready: snapshot.data()?.shipments_ready,
           };
           setCart(cart);
@@ -228,9 +242,9 @@ export default function CartState() {
           }
         }
       });
-      const itemsUnsubscribe = await onSnapshot(itemsRef, (snapshot) => {
+      const itemsUnsubscribe = onSnapshot(itemsRef, (snapshot) => {
         if (!snapshot.empty) {
-          const items: _Item[] = [];
+          const items: _CartItem[] = [];
           let item_count: number = 0;
           snapshot.docs.map((doc) => {
             items.push({
@@ -242,77 +256,80 @@ export default function CartState() {
             });
             item_count += parseInt(doc.data().quantity as string);
           });
-          setItems({ items: items, item_count: item_count });
+          setCartItems({ cart_items: items, item_count: item_count });
         } else {
-          setItems({ items: [], item_count: 0 });
+          setCartItems({ cart_items: [], item_count: 0 });
         }
       });
-      const promosUnsubscribe = await onSnapshot(
-        promosRef,
-        async (snapshot) => {
-          if (!snapshot.empty) {
-            const newPromotions: _Promotions = {};
-            await Promise.all(
-              snapshot.docs.map(async (promo) => {
-                const promotionRef: DocumentReference = doc(
-                  db,
-                  'stores',
-                  promo.id,
-                  'promotions',
-                  promo.data().id
-                );
-                const promotionDoc: DocumentData = await getDoc(promotionRef);
-                if (
-                  promotionDoc.exists() &&
-                  promotionDoc.data().status === 'Active'
-                ) {
-                  newPromotions[promo.id] = {
-                    promo_id: promotionDoc.id,
-                    amount: promotionDoc.data().amount,
-                    minimum_order_value:
-                      promotionDoc.data().minimum_order_value,
-                    expiration_date: promotionDoc.data().expiration_date,
-                    name: promotionDoc.data().name,
-                    status: promotionDoc.data().status,
-                    type: promotionDoc.data().type,
-                  };
-                }
-              })
-            );
-            setPromotions(newPromotions);
-          } else {
-            setPromotions({});
-          }
+      const promosUnsubscribe = onSnapshot(promosRef, async (snapshot) => {
+        if (!snapshot.empty) {
+          const newPromotions: _Promotions = new Map();
+          await Promise.all(
+            snapshot.docs.map(async (promo) => {
+              const promotionRef: DocumentReference = doc(
+                db,
+                'stores',
+                promo.id,
+                'promotions',
+                promo.data().id
+              );
+              const promotionDoc: DocumentData = await getDoc(promotionRef);
+              if (
+                promotionDoc.exists() &&
+                promotionDoc.data().status === 'Active'
+              ) {
+                newPromotions.set(promo.id, {
+                  promo_id: promotionDoc.id,
+                  amount: promotionDoc.data().amount,
+                  minimum_order_value: promotionDoc.data().minimum_order_value,
+                  expiration_date: new Date(
+                    promotionDoc.data().expiration_date.seconds * 1000
+                  ),
+                  name: promotionDoc.data().name,
+                  status: promotionDoc.data().status,
+                  type: promotionDoc.data().type,
+                });
+              }
+            })
+          );
+          setPromotions(newPromotions);
+        } else {
+          setPromotions(new Map());
         }
-      );
+      });
       return {
-        cartUnsub: unsubscribe,
+        cartUnsub: cartUnsubscribe,
         itemsUnsub: itemsUnsubscribe,
-        promosUnsubscribe: promosUnsubscribe,
+        promosUnsub: promosUnsubscribe,
       };
     };
     if (cart_id !== '') {
-      getLatest();
+      const { cartUnsub, itemsUnsub, promosUnsub } = getLatest();
+      return () => {
+        cartUnsub();
+        itemsUnsub();
+        promosUnsub();
+      };
     }
   }, [cart_id]);
 
   React.useEffect(() => {
-    const getLatest = async () => {
+    const getLatest = () => {
       const productIDs: string[] = [];
-      const cartItems: _StoreItemBreakdown = {};
+      const items: _Items = new Map();
       const removedItems: _RemovedItem[] = [];
       cart_items.map((item) => {
         productIDs.push(item.id);
-        if (!cartItems.hasOwnProperty(item.store_id)) {
-          cartItems[item.store_id] = [
+        if (!items.has(item.store_id)) {
+          items.set(item.store_id, [
             {
               cart_item_id: item.cart_item_id,
               id: item.id,
               options: item.options,
               quantity: item.quantity,
               store_id: item.store_id,
-              compare_at: 0.0,
-              price: 0.0,
+              compare_at: 0,
+              price: 0,
               currency: 'USD',
               images: [],
               inventory: 0,
@@ -320,12 +337,23 @@ export default function CartState() {
               product_type: '',
               name: '',
               vendor: '',
+              vendor_id: '',
               service_percent: 0,
               ship_from: null,
+              weight: {
+                units: 'lbs',
+                value: 0,
+              },
+              dimensions: {
+                height: 0,
+                length: 0,
+                units: 'in',
+                width: 0,
+              },
             },
-          ];
+          ]);
         } else {
-          cartItems[item.store_id].push({
+          items.get(item.store_id)?.push({
             cart_item_id: item.cart_item_id,
             id: item.id,
             options: item.options,
@@ -340,8 +368,19 @@ export default function CartState() {
             product_type: '',
             name: '',
             vendor: '',
+            vendor_id: '',
             service_percent: 0,
             ship_from: null,
+            weight: {
+              units: 'lbs',
+              value: 0,
+            },
+            dimensions: {
+              height: 0,
+              length: 0,
+              units: 'in',
+              width: 0,
+            },
           });
         }
       });
@@ -352,14 +391,14 @@ export default function CartState() {
         where('__name__', 'in', productIDs)
       );
 
-      const unsubscribe = await onSnapshot(productsQuery, async (snapshot) => {
+      const unsubscribe = onSnapshot(productsQuery, async (snapshot) => {
         if (!snapshot.empty) {
           const batch = writeBatch(db);
           await Promise.all(
             snapshot.docs.map(async (document) => {
               if (document.data().status === 'Private') {
                 let removeIndex = 0;
-                cartItems[document.data().store_id].map((item, index) => {
+                items.get(document.data().store_id)?.map((item, index) => {
                   if (item.id === document.id) {
                     removeIndex = index;
                     removedItems.push({
@@ -375,16 +414,16 @@ export default function CartState() {
                     batch.delete(removeDoc);
                   }
                 });
-                cartItems[document.data().store_id].splice(removeIndex, 1);
-                if (cartItems[document.data().store_id].length === 0) {
-                  delete cartItems[document.data().store_id];
+                items.get(document.data().store_id)?.splice(removeIndex, 1);
+                if (items.get(document.data().store_id)?.length === 0) {
+                  items.delete(document.data().store_id);
                 }
               } else if (
                 document.data().track_inventory &&
                 document.data().inventory === 0
               ) {
                 let removeIndex = 0;
-                cartItems[document.data().store_id].map((item, index) => {
+                items.get(document.data().store_id)?.map((item, index) => {
                   if (item.id === document.id) {
                     removeIndex = index;
                     removedItems.push({
@@ -400,77 +439,113 @@ export default function CartState() {
                     batch.delete(removeDoc);
                   }
                 });
-                cartItems[document.data().store_id].splice(removeIndex, 1);
-                if (cartItems[document.data().store_id].length === 0) {
-                  delete cartItems[document.data().store_id];
+                items.get(document.data().store_id)?.splice(removeIndex, 1);
+                if (items.get(document.data().store_id)?.length === 0) {
+                  items.delete(document.data().store_id);
                 }
               } else {
-                await Promise.all(
-                  cartItems[document.data().store_id].map(async (item) => {
-                    if (item.id === document.id) {
-                      item.compare_at = document.data().compare_at as number;
-                      item.price = document.data().price as number;
-                      item.currency = document.data().currency;
-                      item.images = document.data().images;
-                      item.inventory = document.data().inventory;
-                      item.track_inventory = document.data().track_inventory;
-                      item.product_type = document.data().product_type;
-                      item.name = document.data().name;
-                      item.ship_from = document.data().ship_from_address;
-                      (item.vendor = document.data().vendor),
-                        (item.service_percent =
-                          document.data().service_percent);
-                      if (item.options.length > 0) {
-                        const variantRef: DocumentReference = doc(
-                          db,
-                          'products',
-                          document.id,
-                          'variants',
-                          item.options.join('-')
-                        );
-                        const variantDoc: DocumentData =
-                          await getDoc(variantRef);
-                        if (variantDoc.exists()) {
-                          item.compare_at = variantDoc.data()
-                            .compare_at as number;
-                          item.price = variantDoc.data().price as number;
-                          item.inventory = variantDoc.data().inventory;
+                const storeItems = items.get(document.data().store_id);
+                if (storeItems !== undefined) {
+                  await Promise.all(
+                    storeItems.map(async (item: _Item) => {
+                      if (item.id === document.id) {
+                        item.compare_at = document.data().compare_at as number;
+                        item.price = document.data().price as number;
+                        item.currency = document.data().currency;
+                        item.images = document.data().images;
+                        item.inventory = document.data().inventory;
+                        item.track_inventory = document.data().track_inventory;
+                        item.product_type = document.data().product_type;
+                        item.name = document.data().name;
+                        if (
+                          document.data().ship_from_address !== undefined &&
+                          document.data().ship_from_address !== null
+                        ) {
+                          item.ship_from = document.data().ship_from_address;
+                        }
+
+                        (item.vendor = document.data().vendor),
+                          (item.service_percent =
+                            document.data().service_percent);
+                        if (item.options.length > 0) {
+                          const variantRef: DocumentReference = doc(
+                            db,
+                            'products',
+                            document.id,
+                            'variants',
+                            item.options.join('-')
+                          );
+                          const variantDoc: DocumentData =
+                            await getDoc(variantRef);
+                          if (variantDoc.exists()) {
+                            item.compare_at = variantDoc.data()
+                              .compare_at as number;
+                            item.price = variantDoc.data().price as number;
+                            item.inventory = variantDoc.data().inventory;
+                            if (document.data().vendor === 'printful') {
+                              item.vendor_id = variantDoc.data().vendor_id;
+                            }
+                          }
+                        }
+                        if (
+                          item.track_inventory &&
+                          item.inventory < item.quantity
+                        ) {
+                          item.quantity = item.inventory;
+                          removedItems.push({
+                            image_url: document.data().images[0],
+                            name: document.data().name,
+                            reason: `Only ${item.inventory} in stock.`,
+                          });
+                        }
+                        if (
+                          document.data().dimensions !== undefined &&
+                          document.data().dimensions !== null
+                        ) {
+                          item.dimensions = document.data().dimensions;
+                        }
+                        if (
+                          document.data().weight !== undefined &&
+                          document.data().weight !== null
+                        ) {
+                          item.weight = document.data().weight;
                         }
                       }
-                      if (
-                        item.track_inventory &&
-                        item.inventory < item.quantity
-                      ) {
-                        item.quantity = item.inventory;
-                        removedItems.push({
-                          image_url: document.data().images[0],
-                          name: document.data().name,
-                          reason: `Only ${item.inventory} in stock.`,
-                        });
-                      }
-                    }
-                  })
-                );
+                    })
+                    // items.get(document.data().store_id)?.map((item) => {
+                    // });
+                    // cartItems[document.data().store_id].map(async (item) => {
+                    //   if (item.id === document.id) {
+
+                    //   }
+                    // })
+                  );
+                }
               }
             })
           );
-          setStoreItemBreakdown(cartItems);
+          setItems(items);
           if (removedItems.length > 0) {
             setRemovedItems(removedItems);
           }
+          setCartLoaded(true);
           await batch.commit();
         } else {
-          setStoreItemBreakdown({});
+          setItems(new Map());
           setRemovedItems([]);
+          setCartLoaded(true);
         }
       });
+
       return unsubscribe;
     };
     if (cart_items.length > 0) {
-      getLatest();
+      const unsub = getLatest();
+      return unsub;
     } else if (cart_items.length === 0) {
-      setStoreItemBreakdown({});
+      setItems(new Map());
       setRemovedItems([]);
+      setCartLoaded(true);
     }
   }, [cart_items]);
 

@@ -25,7 +25,7 @@ export async function validateAddress(address: Address) {
     {
       body: JSON.stringify([address]),
       headers: {
-        'API-Key': process.env.USPS_API_KEY!,
+        'API-Key': process.env.USPS_ADDRESS_API_KEY!,
         'Content-Type': 'application/json',
       },
       method: 'POST',

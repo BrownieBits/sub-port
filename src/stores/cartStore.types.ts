@@ -1,7 +1,6 @@
-import { Timestamp } from "firebase/firestore";
 
 export type _Address = {
-    doc_id?: string;
+    id?: string;
     address_line1: string;
     address_line2: string;
     address_line3: string;
@@ -16,24 +15,17 @@ export type _Address = {
     postal_code: string;
     state_province: string;
 }
-export type _Item = {
-    options: string[];
-    quantity: number;
-    store_id: string;
-    cart_item_id: string;
-    id: string;
-}
 export type _Rate = {
     carrier_id: string;
     carrier_name: string;
     delivery_days: number;
-    estimated_delivery_date: Timestamp;
+    estimated_delivery_date: Date | null;
     rate: number;
     service_code: string;
     service_type: string;
     package_type: string | null;
 }
-export type _CartFullItem = {
+export type _Item = {
     cart_item_id: string;
     id: string;
     options: string[];
@@ -50,6 +42,7 @@ export type _CartFullItem = {
     service_percent: number;
     name: string;
     vendor: string;
+    vendor_id: string;
     ship_from: string | null;
     weight?: {
         units: string,
@@ -61,10 +54,14 @@ export type _CartFullItem = {
         units: string,
         width: number
     }
-};
-export type _StoreItemBreakdown = {
-    [key: string]: _CartFullItem[];
-};
+}
+export type _CartItem = {
+    options: string[];
+    quantity: number;
+    store_id: string;
+    cart_item_id: string;
+    id: string;
+}
 export type _RemovedItem = {
     image_url: string;
     name: string;
@@ -74,64 +71,66 @@ export type _Promotion = {
     promo_id: string;
     amount: number;
     minimum_order_value: number;
-    expiration_date: Timestamp | null;
+    expiration_date: Date | null;
     name: string;
     status: string;
     type: string;
 };
 export type _Shipment = {
-    error?: string;
+    error: string | null;
     items: _Item[];
-    full_items?: _CartFullItem[];
-    rate?: _Rate;
-    name?: string;
-    ship_from?: _Address;
-    ship_to?: _Address | string;
+    rate: _Rate | null;
+    name: string | null;
+    ship_from: _Address | string | null;
+    ship_to: _Address | string | null;
     store_id: string;
-    tracking_number?: string;
-    status?: string;
+    tracking_number: string | null;
+    status: string;
 }
-export type _Shipments = {
-    [key: string]: _Shipment;
-}
-export type _Promotions = { [key: string]: _Promotion };
+export type _Items = Map<string, _Item[]>;
+export type _Shipments = Map<string, _Shipment>;
+export type _Promotions = Map<string, _Promotion>;
 export type _Cart = {
     cart_id: string;
-    address?: _Address;
-    billing_address?: _Address;
-    email?: string;
+    address: _Address | null;
+    billing_address: _Address | null;
+    email: string;
     item_count: number;
-    items: _Item[];
-    owner_email?: string;
-    owner_id?: string;
-    payment_intent?: string;
-    store_item_breakdown?: _StoreItemBreakdown;
+    items: _Items;
+    cart_items: _CartItem[];
+    owner_email: string | null;
+    owner_id: string | null;
+    payment_intent: string | null;
     removed_items: _RemovedItem[];
-    promotions: _Promotions,
-    shipments?: _Shipments;
+    promotions: _Promotions;
+    shipments: _Shipments;
     cart_loaded: boolean;
     shipments_ready: boolean;
     order_complete: boolean;
 }
+
+
+
 export type _SetCartProps = {
     cart_id: string;
-    address?: _Address;
-    billing_address?: _Address;
-    email?: string;
-    owner_email?: string;
-    owner_id?: string;
-    payment_intent?: string;
-    shipments?: _Shipments;
+    address: _Address | null;
+    billing_address: _Address | null;
+    email: string;
+    owner_email: string | null;
+    owner_id: string | null;
+    payment_intent: string | null;
+    shipments: _Shipments | null;
     shipments_ready: boolean;
 }
 export type _SetItemsProps = {
-    items: _Item[];
+    cart_items: _CartItem[];
     item_count: number;
 }
+
 export type _Actions = {
     setCart: (props: _SetCartProps) => void;
-    setItems: (props: _SetItemsProps) => void;
-    setStoreItemBreakdown: (props: _StoreItemBreakdown) => void;
+    setCartItems: (props: _SetItemsProps) => void;
+    setItems: (props: _Items) => void;
     setCartID: (props: string) => void;
     setCartLoaded: (props: boolean) => void;
     clearCart: () => void;

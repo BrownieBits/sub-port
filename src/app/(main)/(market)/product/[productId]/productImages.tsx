@@ -55,7 +55,7 @@ export default function ProductImages(props: { images: string[] }) {
               return (
                 <CarouselItem
                   key={`carousel-image-${image}-${index}`}
-                  className="basis-7/12"
+                  className="basis-full md:basis-7/12"
                 >
                   <section className="flex aspect-square h-full items-center justify-center overflow-hidden rounded border">
                     <Image

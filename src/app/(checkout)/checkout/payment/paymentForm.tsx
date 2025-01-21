@@ -42,8 +42,8 @@ export default function PaymentForm(props: Props) {
   const cart_id = cartStore((state) => state.cart_id);
   const cart_address = cartStore((state) => state.address);
   const billing_address = cartStore((state) => state.billing_address);
-  const items_info = cartStore((state) => state.items);
-  const cart_items = cartStore((state) => state.store_item_breakdown);
+  const items_info = cartStore((state) => state.cart_items);
+  const cart_items = cartStore((state) => state.items);
   const cart_promotions = cartStore((state) => state.promotions);
   const cart_shipments = cartStore((state) => state.shipments);
   const shipments_ready = cartStore((state) => state.shipments_ready);
@@ -60,14 +60,14 @@ export default function PaymentForm(props: Props) {
     const customer = await CreateCustomer(cart_address!, billing_address!);
     const items = cart_items;
     items_info.map((item) => {
-      items![item.store_id].map((full_item) => {
+      items.get(item.store_id)?.map((full_item) => {
         if (full_item.cart_item_id === item.cart_item_id) {
           full_item.quantity = item.quantity;
           full_item.order_options = item.options;
         }
       });
     });
-    if (payment_intent !== undefined) {
+    if (payment_intent !== undefined && payment_intent !== null) {
       const result = await RetrievePaymentIntent(payment_intent);
       const newResult = await UpdatePaymentIntent(
         result.id,
@@ -76,8 +76,8 @@ export default function PaymentForm(props: Props) {
       );
       const cartDocRef: DocumentReference = doc(db, `carts`, cart_id);
       await updateDoc(cartDocRef, {
-        promotions: cart_promotions,
-        items: items,
+        promotions: Object.fromEntries(cart_promotions),
+        items: Object.fromEntries(items),
       });
       setClientSecret(newResult.client_secret);
       setDpmCheckerLink(
@@ -92,8 +92,8 @@ export default function PaymentForm(props: Props) {
       const cartDocRef: DocumentReference = doc(db, `carts`, cart_id);
       await updateDoc(cartDocRef, {
         payment_intent: result.id,
-        promotions: cart_promotions,
-        items: items,
+        promotions: Object.fromEntries(cart_promotions),
+        items: Object.fromEntries(items),
         updated_at: Timestamp.fromDate(new Date()),
       });
       setClientSecret(result.client_secret);
@@ -120,9 +120,9 @@ export default function PaymentForm(props: Props) {
       let service_total = 0;
       let discounts_total = 0;
       let shipping_total = 0;
-      Object.keys(cart_items!).map((store: string) => {
+      [...cart_items.keys()].map((store: string) => {
         let store_total = 0;
-        cart_items![store].map((item) => {
+        cart_items.get(store)?.map((item) => {
           if (
             parseFloat(item.compare_at.toString()) > 0 &&
             parseFloat(item.compare_at.toString()) <
@@ -147,37 +147,37 @@ export default function PaymentForm(props: Props) {
         });
 
         if (cart_promotions.hasOwnProperty(store)) {
-          const expiration = cart_promotions[store]
-            .expiration_date as Timestamp;
           let expiration_good = true;
-          if (expiration !== null) {
-            const expiration_date = new Date(expiration.seconds * 1000);
+          if (cart_promotions.get(store)?.expiration_date !== null) {
             const today = new Date();
-            if (today.getTime() > expiration_date.getTime()) {
+            if (
+              today.getTime() >
+              cart_promotions.get(store)!.expiration_date!.getTime()
+            ) {
               expiration_good = false;
             }
           }
           let minimum_good = true;
           if (
-            cart_promotions[store].minimum_order_value > 0 &&
-            cart_promotions[store].minimum_order_value > store_total
+            cart_promotions.get(store)?.minimum_order_value! > 0 &&
+            cart_promotions.get(store)?.minimum_order_value! > store_total
           ) {
             minimum_good = false;
           }
           if (minimum_good && expiration_good) {
-            if (cart_promotions[store].type === 'Flat Amount') {
-              discounts_total += cart_promotions[store].amount;
-            } else if (cart_promotions[store].type === 'Percentage') {
+            if (cart_promotions.get(store)?.type! === 'Flat Amount') {
+              discounts_total += cart_promotions.get(store)?.amount!;
+            } else if (cart_promotions.get(store)?.type! === 'Percentage') {
               const discount_amount =
-                store_total * (cart_promotions[store].amount / 100);
+                store_total * (cart_promotions.get(store)?.amount! / 100);
               discounts_total += discount_amount;
             }
           }
         }
       });
 
-      Object.keys(cart_shipments).map((shipment) => {
-        shipping_total += cart_shipments[shipment].rate?.rate! as number;
+      [...cart_shipments.keys()].map((shipment) => {
+        shipping_total += cart_shipments.get(shipment)?.rate?.rate! as number;
       });
       const total =
         item_total + service_total + shipping_total - discounts_total;

@@ -20,7 +20,8 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
-import { Item, Promotion } from '@/lib/types';
+import { Item } from '@/lib/types';
+import cartStore from '@/stores/cartStore';
 import { faClose, faTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -46,23 +47,27 @@ type Store = {
   avatar_url?: string;
 };
 type Props = {
-  cart_id: string;
   store_id: string;
-  items: Item[];
-  promotion: Promotion | null;
 };
 const formSchema = z.object({
   code: z.string(),
 });
 
 export default function StoreItems(props: Props) {
+  const cart_id = cartStore((state) => state.cart_id);
+  const items = cartStore((state) => state.items);
+  const promotions = cartStore((state) => state.promotions);
+
   const [store, setStore] = React.useState<Store | null>(null);
   const [showPromoCode, setShowPromoCode] = React.useState<boolean>(false);
   const [promotionError, setPromotionError] = React.useState<string>('');
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      code: props.promotion !== null ? props.promotion.name : '',
+      code:
+        promotions.size !== 0 && promotions.get(props.store_id) !== undefined
+          ? promotions.get(props.store_id)?.name!
+          : '',
     },
   });
 
@@ -97,7 +102,7 @@ export default function StoreItems(props: Props) {
     const promoRef: DocumentReference = doc(
       db,
       'carts',
-      props.cart_id,
+      cart_id,
       'promotions',
       props.store_id
     );
@@ -105,23 +110,23 @@ export default function StoreItems(props: Props) {
       id: promo,
     });
     toast.success('Promotion Added', {
-      description: `You removed ${document.data().name} promotion`,
+      description: `You added ${document.data().name} promotion`,
     });
     revalidate();
   }
 
-  async function removePromo() {
+  async function removePromo(name: string) {
     try {
       const cartRef: DocumentReference = doc(
         db,
         'carts',
-        props.cart_id,
+        cart_id,
         'promotions',
         props.store_id
       );
       await deleteDoc(cartRef);
       toast.success('Promotion Removed', {
-        description: `You added ${props.promotion?.name} promotion`,
+        description: `You removed ${name} promotion`,
       });
       revalidate();
     } catch (error) {
@@ -130,19 +135,6 @@ export default function StoreItems(props: Props) {
   }
 
   React.useEffect(() => {
-    if (props.promotion !== null) {
-      setShowPromoCode(true);
-      if (props.promotion.status !== 'Active') {
-        setPromotionError('Code is not active.');
-      }
-      const today = new Date();
-      if (
-        props.promotion.expiration_date !== null &&
-        props.promotion.expiration_date < Timestamp.fromDate(today)
-      ) {
-        setPromotionError('Code is expired.');
-      }
-    }
     const getStore = async () => {
       const storeRef: DocumentReference = doc(db, 'stores', props.store_id);
       const storeDoc: DocumentData = await getDoc(storeRef);
@@ -156,44 +148,65 @@ export default function StoreItems(props: Props) {
     getStore();
   }, []);
 
-  if (store === null) {
-    return <Skeleton className="h-[200px] w-full rounded" />;
-  }
+  React.useEffect(() => {
+    if (promotions.size > 0 && promotions.get(props.store_id) !== undefined) {
+      setShowPromoCode(true);
+      if (promotions.get(props.store_id)?.status !== 'Active') {
+        setPromotionError('Code is not active.');
+      }
+      const today = new Date();
+      if (
+        promotions.get(props.store_id)?.expiration_date !== null &&
+        promotions.get(props.store_id)?.expiration_date! < today
+      ) {
+        setPromotionError('Code is expired.');
+      }
+    }
+  }, [promotions]);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          <Link
-            href={`/store/${props.store_id}`}
-            className="flex w-full items-center gap-4"
-          >
-            <Avatar className="h-[40px] w-[40px]">
-              <AvatarImage src={store.avatar_url} alt="Avatar" />
-            </Avatar>
-            <p>
-              <b>{store.name}</b>
-            </p>
-          </Link>
+          {store !== null ? (
+            <Link
+              href={`/store/${props.store_id}`}
+              className="flex w-full items-center gap-4"
+            >
+              <Avatar className="size-8">
+                <AvatarImage src={store.avatar_url} alt="Avatar" />
+              </Avatar>
+              <p>
+                <b>{store.name}</b>
+              </p>
+            </Link>
+          ) : (
+            <section className="flex w-full items-center gap-4">
+              <Skeleton className="size-8 rounded-full"></Skeleton>
+              <Skeleton className="h-4 w-20 rounded-full"></Skeleton>
+            </section>
+          )}
         </CardTitle>
       </CardHeader>
       <Separator />
       <CardContent>
         <section className="flex w-full flex-col gap-4">
-          {props.items.map((item: Item, index: number) => (
-            <ItemDetails
-              item={item}
-              cart_id={props.cart_id}
-              index={index}
-              key={`item-${item.id}${item.options.join('')}`}
-            />
-          ))}
+          {items
+            .get(props.store_id)
+            ?.map((item: Item, index: number) => (
+              <ItemDetails
+                item={item}
+                cart_id={cart_id}
+                index={index}
+                key={`item-${item.id}${item.options.join('')}`}
+              />
+            ))}
         </section>
       </CardContent>
       <Separator />
       <CardFooter>
         <section className="flex w-full flex-col items-start gap-4">
-          {!showPromoCode && props.promotion === null && (
+          {!showPromoCode && promotions.get(props.store_id) === undefined && (
             <Button
               variant="outline"
               size="sm"
@@ -205,7 +218,7 @@ export default function StoreItems(props: Props) {
             </Button>
           )}
 
-          {showPromoCode && props.promotion === null && (
+          {showPromoCode && promotions.get(props.store_id) === undefined && (
             <section className="flex items-start gap-4">
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -231,12 +244,19 @@ export default function StoreItems(props: Props) {
               <Button onClick={form.handleSubmit(onSubmit)}>Apply</Button>
             </section>
           )}
-          {props.promotion !== null && (
+          {promotions.get(props.store_id) !== undefined && (
             <section className="flex items-center gap-4">
               <p>Promotion: </p>
-              <Button variant="outline" size="sm" asChild onClick={removePromo}>
+              <Button
+                variant="outline"
+                size="sm"
+                asChild
+                onClick={() =>
+                  removePromo(promotions.get(props.store_id)?.name!)
+                }
+              >
                 <span className="flex gap-4 rounded border px-2 py-0.5 text-xs text-foreground">
-                  <b>{props.promotion?.name}</b>
+                  <b>{promotions.get(props.store_id)?.name}</b>
                   <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
                 </span>
               </Button>

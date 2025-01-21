@@ -38,7 +38,6 @@ export default function DraggableImages(props: Props) {
         enabled: true,
       });
       swapy.onSwap((data) => {
-        console.log('boop');
         const newImageOrder: ProductImage[] = data.newSlotItemMap.asArray.map(
           (item, index) => {
             return {
@@ -49,9 +48,6 @@ export default function DraggableImages(props: Props) {
         );
         props.reOrderImages(newImageOrder.slice(0));
         setProductImages([]);
-      });
-      swapy.onSwapStart(() => {
-        console.log('beep');
       });
 
       return () => {

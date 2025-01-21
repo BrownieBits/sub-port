@@ -1,11 +1,10 @@
 'use server';
 
 import { ShippingCarrier } from '@/lib/types';
-import { _Address, _CartFullItem, _Rate } from '@/stores/cartStore.types';
-import { Timestamp } from 'firebase/firestore';
+import { _Address, _Item, _Rate } from '@/stores/cartStore.types';
 
 export async function getSelfShipping(
-  items: _CartFullItem[],
+  items: _Item[],
   ship_to: _Address,
   ship_from: _Address,
   carriers: ShippingCarrier[]
@@ -26,19 +25,24 @@ export async function getSelfShipping(
     unit: 'inch'
   }
 
-  items.map((item) => {
-    if (item.dimensions !== null && item.dimensions !== undefined) {
-      dimensions.height = item.dimensions?.height;
-      dimensions.length = item.dimensions?.length;
-      dimensions.width = item.dimensions?.width;
-      dimensions.unit = item.dimensions?.units;
+  items.map((product) => {
+    if (product.dimensions !== null && product.dimensions !== undefined) {
+      if (parseFloat(product.dimensions.length as unknown as string) > parseFloat(dimensions.length as unknown as string)) {
+        dimensions.length = product.dimensions?.length;
+      }
+      if (parseFloat(product.dimensions.height as unknown as string) > parseFloat(dimensions.height as unknown as string)) {
+        dimensions.height = product.dimensions?.height;
+      }
+      if (parseFloat(product.dimensions.width as unknown as string) > parseFloat(dimensions.width as unknown as string)) {
+        dimensions.width = product.dimensions?.width;
+      }
+      dimensions.unit = product.dimensions?.units;
     }
-    if (item.weight !== null && item.weight !== undefined) {
-      weight.value += item.weight?.value;
-      weight.unit = item.weight?.units;
+    if (product.weight !== null && product.weight !== undefined) {
+      weight.value += product.weight?.value;
+      weight.unit = product.weight?.units;
     }
   })
-
 
   const result = await fetch('https://api.shipengine.com/v1/rates/estimate', {
     body: JSON.stringify({
@@ -68,13 +72,14 @@ export async function getSelfShipping(
     method: 'POST',
   });
   const resultJSON = await result.json();
+
   const rates: _Rate[] = resultJSON.map((rate: any) => {
     if (rate.shipping_amount !== null) {
       return {
         carrier_name: rate.carrier_friendly_name,
         carrier_id: rate.carrier_id,
         delivery_days: rate.delivery_days,
-        estimated_delivery_date: Timestamp.fromDate(new Date(rate.estimated_delivery_date)),
+        estimated_delivery_date: new Date(rate.estimated_delivery_date),
         rate:
           parseFloat(rate.confirmation_amount.amount) +
           parseFloat(rate.insurance_amount.amount) +
@@ -99,4 +104,57 @@ export async function getCarriers() {
   });
   const resultJSON = await result.json();
   return resultJSON;
+}
+
+export async function getPrintfulRates(token: string, items: _Item[],
+  ship_to: _Address,) {
+  const shipment_items = items.map((item) => {
+    return {
+      variant_id: item.vendor_id,
+      quantity: item.quantity
+    }
+  })
+  const response = await fetch(`https://api.printful.com/shipping/rates`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        "recipient": {
+          "address1": ship_to.address_line1,
+          "city": ship_to.city_locality,
+          "country_code": ship_to.country_code,
+          "state_code": ship_to.state_province,
+          "zip": ship_to.postal_code,
+          "phone": ship_to.phone
+        },
+        "items": shipment_items,
+        "locale": "en_US"
+      }),
+    }
+  );
+  const responseJson = await response.json();
+
+  if (responseJson.code !== 200) {
+    console.log('RESP JSON ERROR', responseJson)
+    return [];
+  }
+  const rates: _Rate[] = responseJson.result.map((rate: any) => {
+    if (rate.shipping_amount !== null) {
+      return {
+        carrier_name: 'Printful',
+        carrier_id: rate.id,
+        delivery_days: rate.maxDeliveryDays,
+        estimated_delivery_date: new Date(rate.maxDeliveryDate),
+        rate: parseFloat(rate.rate),
+        service_code: rate.name,
+        service_type: rate.name,
+        package_type: '',
+      };
+    }
+  });
+  return rates;
+
 }

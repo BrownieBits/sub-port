@@ -21,9 +21,8 @@ type Props = {
 };
 
 export default function CartDetailPage(props: Props) {
-  const cart_id = cartStore((state) => state.cart_id);
-  const cart_items = cartStore((state) => state.store_item_breakdown);
-  const promotions = cartStore((state) => state.promotions);
+  const cart_loaded = cartStore((state) => state.cart_loaded);
+  const items = cartStore((state) => state.items);
 
   React.useEffect(() => {
     if (analytics !== null) {
@@ -33,7 +32,7 @@ export default function CartDetailPage(props: Props) {
     }
   }, []);
 
-  if (cart_items === null || cart_items === undefined) {
+  if (!cart_loaded) {
     return (
       <>
         <section className="mx-auto w-full max-w-[1754px]">
@@ -81,7 +80,7 @@ export default function CartDetailPage(props: Props) {
       </>
     );
   }
-  if (Object.keys(cart_items!).length === 0) {
+  if (items.size === 0) {
     return (
       <>
         <section className="mx-auto w-full max-w-[1754px]">
@@ -129,20 +128,8 @@ export default function CartDetailPage(props: Props) {
       <section className="mx-auto flex w-full max-w-[1754px] flex-col gap-8 px-4 py-8">
         <section className="flex w-full flex-col gap-8 md:flex-row">
           <section className="flex w-full flex-1 flex-col gap-4">
-            {Object.keys(cart_items).map((store) => {
-              let promo = null;
-              if (promotions?.hasOwnProperty(store)) {
-                promo = promotions[store];
-              }
-              return (
-                <StoreItems
-                  cart_id={cart_id}
-                  store_id={store}
-                  items={cart_items[store]}
-                  promotion={promo}
-                  key={`store-${store}`}
-                />
-              );
+            {[...items.keys()].map((store) => {
+              return <StoreItems store_id={store} key={`store-${store}`} />;
             })}
           </section>
           <section className="flex w-full flex-col gap-4 md:w-[350px] xl:w-[400px]">

@@ -18,7 +18,7 @@ export default function DigitalShipment(props: Props) {
           <b>Digital Delivery</b>
         </p>
         <section className="flex flex-col gap-1">
-          {props.items.full_items!.map((item) => {
+          {props.items.items!.map((item) => {
             return (
               <section
                 className="flex w-full items-center"

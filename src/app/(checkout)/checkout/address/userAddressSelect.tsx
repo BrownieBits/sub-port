@@ -88,12 +88,12 @@ export default function UserAddressSelect(props: Props) {
       }
     );
     let default_address = props.default_address;
-    const addresses = props.addresses.map((addressDoc) => addressDoc.doc_id);
+    const addresses = props.addresses.map((addressDoc) => addressDoc.id);
     if (props.default_address === '') {
       default_address = newDoc.id;
     }
     addresses.push(newDoc.id);
-    address.doc_id = newDoc.id;
+    address.id = newDoc.id;
     const newAddresses = addressesData.splice(0);
     newAddresses.push(address);
     await updateDoc(docRef, {
@@ -122,7 +122,7 @@ export default function UserAddressSelect(props: Props) {
       form.setError('address', { message: 'You must select an address.' });
     } else {
       const address = addressesData.filter(
-        (doc) => doc.doc_id === form.getValues('address')
+        (doc) => doc.id === form.getValues('address')
       );
       if (address.length > 0) {
         const cartDocRef: DocumentReference = doc(db, `carts`, cart_id);
@@ -179,16 +179,16 @@ export default function UserAddressSelect(props: Props) {
                             return (
                               <FormItem
                                 className="flex items-center gap-2"
-                                key={`address-${doc.doc_id!}`}
+                                key={`address-${doc.id!}`}
                               >
                                 <FormControl>
                                   <RadioGroupItem
-                                    value={doc.doc_id!}
-                                    id={doc.doc_id!}
+                                    value={doc.id!}
+                                    id={doc.id!}
                                     defaultChecked={
-                                      doc.doc_id === props.default_address
+                                      doc.id === props.default_address
                                     }
-                                    checked={doc.doc_id === field.value}
+                                    checked={doc.id === field.value}
                                   />
                                 </FormControl>
                                 <FormLabel>

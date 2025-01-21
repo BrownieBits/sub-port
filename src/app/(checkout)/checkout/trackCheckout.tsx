@@ -26,11 +26,11 @@ export default function TrackCheckout(props: {
 }) {
   const user_loaded = userStore((state) => state.user_loaded);
   const user_id = userStore((state) => state.user_id);
-  const store_item_breakdown = cartStore((state) => state.store_item_breakdown);
+  const items = cartStore((state) => state.items);
 
   async function getAndSetAnalytics() {
     const batch = writeBatch(db);
-    const store_ids = Object.keys(store_item_breakdown!);
+    const store_ids = [...items.keys()];
     await Promise.all(
       store_ids.map(async (store) => {
         const analyticsColRef: CollectionReference = collection(
@@ -71,14 +71,14 @@ export default function TrackCheckout(props: {
         });
       }
     }
-    if (store_item_breakdown !== undefined) {
+    if (items.size > 0) {
       getAndSetAnalytics();
     }
   }, [user_loaded]);
   React.useEffect(() => {
-    if (store_item_breakdown !== undefined) {
+    if (items.size > 0) {
       getAndSetAnalytics();
     }
-  }, [store_item_breakdown]);
+  }, [items]);
   return <></>;
 }

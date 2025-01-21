@@ -42,10 +42,12 @@ export default function AddressForm(props: Props) {
           );
           const addressesData: QuerySnapshot<DocumentData, DocumentData> =
             await getDocs(q);
-
+          if (addressesData.empty) {
+          } else {
+          }
           const addresses: _Address[] = addressesData.docs.map((item) => {
             return {
-              doc_id: item.id,
+              id: item.id,
               address_line1: item.data().address_line1,
               address_line2: item.data().address_line2,
               address_line3: item.data().address_line3,
@@ -62,20 +64,22 @@ export default function AddressForm(props: Props) {
               owner_id: item.data().owner_id,
             };
           });
-
-          setAddressData(addresses);
+          setAddressData([...addresses]);
           setDefaultAddress(userDoc.data()?.default_address);
         }
       };
       getData();
     }
-  }, [props.user_id]);
+  }, []);
 
   if (cart_address !== undefined) {
     return <></>;
   }
   if (props.user_id === 'guest') {
     return <GuestAddress />;
+  }
+  if (addressData.length === 0) {
+    return <></>;
   }
   return (
     <UserAddressSelect

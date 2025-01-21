@@ -3,12 +3,11 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import cartStore from '@/stores/cartStore';
-import { Timestamp } from 'firebase/firestore';
 import Link from 'next/link';
 import React from 'react';
 
 export default function Summary() {
-  const cart_items = cartStore((state) => state.store_item_breakdown);
+  const items = cartStore((state) => state.items);
   const promotions = cartStore((state) => state.promotions);
   const [itemsTotal, setItemsTotal] = React.useState<number>(0);
   const [serviceTotal, setServiceTotal] = React.useState<number>(0);
@@ -16,14 +15,13 @@ export default function Summary() {
   const [discountsTotal, setDiscountsTotal] = React.useState<number>(0);
 
   React.useEffect(() => {
-    if (cart_items !== null && cart_items !== undefined) {
+    if (items.size > 0) {
       let item_total = 0;
       let service_total = 0;
       let discounts_total = 0;
-
-      Object.keys(cart_items).map((store) => {
+      for (let store of items.keys()) {
         let store_total = 0;
-        cart_items[store].map((item) => {
+        items.get(store)?.map((item) => {
           if (
             parseFloat(item.compare_at.toString()) > 0 &&
             parseFloat(item.compare_at.toString()) <
@@ -46,43 +44,42 @@ export default function Summary() {
               parseFloat(item.service_percent.toString());
           }
         });
-        if (promotions?.hasOwnProperty(store)) {
-          const expiration = promotions[store].expiration_date as Timestamp;
+        if (promotions?.has(store) && promotions.get(store) !== undefined) {
+          const expiration = promotions.get(store)?.expiration_date!;
           let expiration_good = true;
           if (expiration !== null) {
-            const expiration_date = new Date(expiration.seconds * 1000);
             const today = new Date();
-            if (today.getTime() > expiration_date.getTime()) {
+            if (today.getTime() > expiration.getTime()) {
               expiration_good = false;
             }
           }
           let minimum_good = true;
           if (
-            promotions[store].minimum_order_value > 0 &&
-            promotions[store].minimum_order_value > store_total
+            promotions.get(store)?.minimum_order_value! > 0 &&
+            promotions.get(store)?.minimum_order_value! > store_total
           ) {
             minimum_good = false;
           }
           if (minimum_good && expiration_good) {
-            if (promotions[store].type === 'Flat Amount') {
-              discounts_total += promotions[store].amount;
-            } else if (promotions[store].type === 'Percentage') {
+            if (promotions.get(store)?.type === 'Flat Amount') {
+              discounts_total += promotions.get(store)?.amount!;
+            } else if (promotions.get(store)?.type === 'Percentage') {
               const discount_amount =
-                store_total * (promotions[store].amount / 100);
+                store_total * (promotions.get(store)?.amount! / 100);
               discounts_total += discount_amount;
             }
           }
         }
-      });
+      }
 
       setDiscountsTotal(discounts_total);
       setItemsTotal(item_total);
       setServiceTotal(service_total);
       setCartTotal(item_total + service_total - discounts_total);
     }
-  }, [cart_items, promotions]);
+  }, [items, promotions]);
 
-  if (cart_items === null || Object.keys(cart_items!).length === 0) {
+  if (items.size === 0) {
     return (
       <>
         <section className="mx-auto w-full max-w-[1754px]">

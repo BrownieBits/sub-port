@@ -58,14 +58,14 @@ export default function SelfShipment(props: Props) {
     );
 
     form.clearErrors('option');
-    const newShipments = { ...shipments };
-    newShipments[props.shipment_id].rate = selected![0];
+    const newShipments = new Map(shipments);
+    newShipments.get(props.shipment_id)!.rate = selected![0];
     updateShipments(newShipments);
   }
 
   async function getRates() {
     const rates: _Rate[] = await getSelfShipping(
-      props.items.full_items!,
+      props.items.items!,
       props.items.ship_to as _Address,
       props.items.ship_from as _Address,
       props.carriers
@@ -104,7 +104,7 @@ export default function SelfShipment(props: Props) {
   }
   React.useEffect(() => {
     if (props.items.error !== undefined) {
-      form.setError('option', { message: props.items.error });
+      form.setError('option', { message: props.items.error! });
     }
   }, [props.items.error]);
   React.useEffect(() => {
@@ -139,7 +139,7 @@ export default function SelfShipment(props: Props) {
         )}
 
         <section className="flex flex-col gap-1">
-          {props.items.full_items!.map((item) => {
+          {props.items.items!.map((item) => {
             return (
               <section
                 className="flex w-full items-center"
@@ -171,9 +171,6 @@ export default function SelfShipment(props: Props) {
                       className="flex flex-col gap-4"
                     >
                       {shippingRates.map((rate) => {
-                        const shipping_Date = new Date(
-                          rate.estimated_delivery_date.seconds * 1000
-                        );
                         return (
                           <FormItem
                             className="flex w-full items-center gap-2"
@@ -205,7 +202,10 @@ export default function SelfShipment(props: Props) {
                                     <p>{rate.service_type}</p>
                                     <p className="text-xs text-muted-foreground">
                                       Est. Delivery Date:{' '}
-                                      {format(shipping_Date, 'LLL dd')}
+                                      {format(
+                                        rate.estimated_delivery_date!,
+                                        'LLL dd'
+                                      )}
                                     </p>
                                   </section>
                                 </section>
