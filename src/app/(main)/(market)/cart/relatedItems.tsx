@@ -18,7 +18,7 @@ import {
 import React from 'react';
 
 export default function RelatedItems() {
-  const cart_items = cartStore((state) => state.store_item_breakdown);
+  const cart_items = cartStore((state) => state.items);
   const [related, setRelated] = React.useState<GridProduct[]>([]);
 
   const getItems = async () => {
