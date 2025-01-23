@@ -1,5 +1,6 @@
 import { Separator } from '@/components/ui/separator';
 import { Metadata } from 'next';
+import SendEmail from './sendButton';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -37,6 +38,7 @@ export default async function Admin() {
       </section>
       <Separator />
       <section className="mx-auto flex w-full max-w-[2428px] flex-col gap-8 px-4 py-8 md:flex-row"></section>
+      <SendEmail />
     </>
   );
 }

@@ -30,9 +30,18 @@ import {
 } from 'firebase/firestore';
 import { redirect, useSearchParams } from 'next/navigation';
 import React from 'react';
+import { Resend } from 'resend';
 import { RetrievePaymentIntent } from './actions';
 import ShipmentDetails from './shipmentDetails';
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+type Email = {
+  from: string;
+  to: string[];
+  subject: string;
+  html: string;
+};
 type Order = {
   id?: string;
   address: _Address;
@@ -72,6 +81,41 @@ export default function ThankYouPage(props: Props) {
   const [showError, setShowError] = React.useState<boolean>(false);
   const setOrderComplete = cartStore((state) => state.setOrderComplete);
 
+  async function buildEmails(
+    email: string,
+    items: any,
+    shipments: _Shipment[],
+    order_id: string
+  ): Promise<Email[]> {
+    const emails: Email[] = [];
+    emails.push({
+      from: 'SubPort <no-reply@sub-port.com>',
+      to: [email],
+      subject: `Order Confirmation: ${order_id}`,
+      html: '<h1>it works!</h1>',
+    });
+    await Promise.all(
+      Object.keys(items).map(async (store) => {
+        emails.push({
+          from: 'SubPort <no-reply@sub-port.com>',
+          to: [email],
+          subject: `New Order: ${order_id}`,
+          html: '<h1>it works!</h1>',
+        });
+      })
+    );
+    await Promise.all(
+      shipments.map((shipment) => {
+        emails.push({
+          from: 'SubPort <no-reply@sub-port.com>',
+          to: [email],
+          subject: `Your digital downloads for order ${order_id}`,
+          html: '<h1>it works!</h1>',
+        });
+      })
+    );
+    return [];
+  }
   async function getCart(
     payment_intent: string | null,
     order_id: string | null
@@ -293,6 +337,15 @@ export default function ThankYouPage(props: Props) {
           })
         );
         await batch.commit();
+        const emails: Email[] = await buildEmails(
+          orderData.email,
+          orderData.items,
+          shipments,
+          payment_intent.replace('pi_', '')
+        );
+        if (emails.length > 0) {
+          await resend.batch.send(emails);
+        }
         setOrderComplete(true);
       }
       redirect(`/thank-you?order_id=${payment_intent.replace('pi_', '')}`);
