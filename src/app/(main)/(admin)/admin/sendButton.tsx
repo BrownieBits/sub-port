@@ -32,10 +32,10 @@ export default function SendEmail() {
               currency: 'USD',
               products: [
                 {
-                  image_url: `https://www.subport.com/images/SubPort.jpg`,
+                  image_url: `https://www.sub-port.com/images/SubPort.jpg`,
                   name: "International Lamp Lighter Society Women's Relaxed T-Shirt",
                   type: 'T-shirt',
-                  url: `https://www.subport.com/product/E4rMVIWMcE1drHGiCO8k`,
+                  url: `https://www.sub-port.com/product/E4rMVIWMcE1drHGiCO8k`,
                   options: 'SM - Black',
                   quantity: 1,
                   price: 1900,
@@ -61,10 +61,10 @@ export default function SendEmail() {
               currency: 'USD',
               products: [
                 {
-                  image_url: `https://www.subport.com/images/SubPort.jpg`,
+                  image_url: `https://www.sub-port.com/images/SubPort.jpg`,
                   name: "International Lamp Lighter Society Women's Relaxed T-Shirt",
                   type: 'T-shirt',
-                  url: `https://www.subport.com/product/E4rMVIWMcE1drHGiCO8k`,
+                  url: `https://www.sub-port.com/product/E4rMVIWMcE1drHGiCO8k`,
                   options: 'SM - Black',
                   quantity: 1,
                   price: 1900,
