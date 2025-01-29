@@ -1,5 +1,5 @@
 
-import { WelcomeEmail } from '@/components/sp-ui/EmailTemplates/User/welcome';
+import { DigitalDownloadEmail } from '@/components/sp-ui/EmailTemplates/Order/digitalDownload';
 import { NextRequest } from "next/server";
 import { Resend } from "resend";
 
@@ -11,8 +11,10 @@ export async function POST(request: NextRequest) {
     await resend.emails.send({
         from: 'SubPort <no-reply@sub-port.com>',
         to: data.send_to,
-        subject: `Welcome to SubPort`,
-        react: WelcomeEmail({ order_id: data.order_id }),
+        subject: `Your downloads are ready: ${data.order_id}`,
+        react: DigitalDownloadEmail({
+            order_id: data.order_id,
+        }),
     });
 
     return new Response('Success!', {
