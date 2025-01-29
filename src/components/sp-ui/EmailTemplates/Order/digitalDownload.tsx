@@ -180,7 +180,7 @@ export function DigitalDownloadEmail({
           <Hr style={global.hr} />
           <Section style={paddingY}>
             <Row>
-              <Text style={global.heading}>SubPort.com</Text>
+              <Text style={global.heading}>Sub-Port.com</Text>
             </Row>
             <Row style={categories.container}>
               <Column align="center">

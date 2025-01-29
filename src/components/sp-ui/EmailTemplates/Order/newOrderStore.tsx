@@ -84,7 +84,7 @@ export function NewOrderStore({
                 src={`${baseUrl}/images/SubPortLogoVertical.png`}
                 width="100"
                 height="auto"
-                alt="SubPort.com"
+                alt="Sub-Port.com"
                 style={{ margin: 'auto' }}
               />
             </Link>
@@ -98,7 +98,7 @@ export function NewOrderStore({
               Zap! Your payment for those awesome SubPort goodies just went
               through like a bolt of lightning. ⚡ We&apos;ve cleared your
               &quot;hold&quot; for a &quot;sold&quot; and you&apos;re good to
-              go. See all the juicy details on your SubPort.com Orders page!
+              go. See all the juicy details on your Sub-Port.com Orders page!
             </Text>
           </Section>
           <Hr style={global.hr} />
@@ -224,7 +224,7 @@ export function NewOrderStore({
           <Hr style={global.hr} />
           <Section style={paddingY}>
             <Row>
-              <Text style={global.heading}>SubPort.com</Text>
+              <Text style={global.heading}>Sub-Port.com</Text>
             </Row>
             <Row style={categories.container}>
               <Column align="center">
