@@ -12,7 +12,7 @@ export async function POST(request: NextRequest) {
         from: 'SubPort <no-reply@sub-port.com>',
         to: 'ian.scot.brown@gmail.com',
         subject: `New Order: ${data.order_id}`,
-        react: NikeReceiptEmail(data.order_id),
+        react: NikeReceiptEmail({ order_id: data.order_id }),
     });
 
     return new Response('Success!', {
