@@ -15,11 +15,11 @@ export default function SendEmail() {
           });
         }}
       >
-        Send Digital Download Email
+        Send Welcome Email
       </Button>
       <Button
         onClick={async () => {
-          await fetch('/api/welcome_email', {
+          await fetch('/api/new_order_store_email', {
             method: 'POST',
             body: JSON.stringify({
               send_to: 'ian.scot.brown@gmail.com',
@@ -48,7 +48,7 @@ export default function SendEmail() {
       </Button>
       <Button
         onClick={async () => {
-          await fetch('/api/welcome_email', {
+          await fetch('/api/new_order_customer_email', {
             method: 'POST',
             body: JSON.stringify({
               send_to: 'ian.scot.brown@gmail.com',
