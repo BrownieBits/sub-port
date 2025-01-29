@@ -23,6 +23,7 @@ interface EmailProps {
   order_id: string;
 }
 export function NikeReceiptEmail({ order_id }: EmailProps) {
+  console.log('PROPS', baseUrl, order_id);
   return (
     <Html>
       <Head />
@@ -300,7 +301,7 @@ export function NikeReceiptEmail({ order_id }: EmailProps) {
   );
 }
 NikeReceiptEmail.PreviewProps = {
-  ordeR_id: '9999999999abcdefg',
+  order_id: '9999999999abcdefg',
 };
 export default NikeReceiptEmail;
 
