@@ -23,6 +23,7 @@ export default function SendEmail() {
             method: 'POST',
             body: JSON.stringify({
               send_to: 'ian.scot.brown@gmail.com',
+              store_id: 'dvsn-rvls',
               order_id: '1234567890abcdefg',
               order_date: 'Oct 5, 2025',
               tracking_id: '85837465903484857',

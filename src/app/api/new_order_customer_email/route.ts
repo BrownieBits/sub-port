@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     await resend.emails.send({
         from: 'SubPort <no-reply@sub-port.com>',
         to: data.send_to,
-        subject: `New Order: ${data.order_id}`,
+        subject: `Your SubPort Order is Confirmed! 🎉`,
         react: NewOrderCustomer({
             order_id: data.order_id,
             order_date: data.order_date,
