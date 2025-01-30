@@ -19,177 +19,131 @@ const baseUrl = process.env.BASE_URL
   ? `https://${process.env.BASE_URL}`
   : 'https://localhost:3000';
 
-interface EmailProps {
-  order_id: string;
-}
-export function WelcomeEmail({ order_id }: EmailProps) {
+export function WelcomeEmail() {
   return (
     <Html>
       <Head />
-      <Preview>
-        Get your order summary, estimated delivery date and more
-      </Preview>
+      <Preview>Welcome to SubPort</Preview>
       <Body style={main}>
         <Container style={container}>
-          <Section style={track.container}>
-            <Row>
-              <Column>
-                <Text style={global.paragraphWithBold}>Tracking Number</Text>
-                <Text style={track.number}>{order_id}</Text>
-              </Column>
-              <Column align="right">
-                <Link style={global.button}>Track Package</Link>
-              </Column>
-            </Row>
-          </Section>
-          <Hr style={global.hr} />
           <Section style={message}>
-            <Img
-              src={`${baseUrl}/images/SubPortLogoVertical.png`}
-              width="100"
-              height="auto"
-              alt="Nike"
-              style={{ margin: 'auto' }}
-            />
-            <Heading style={global.heading}>It&apos;s On Its Way.</Heading>
+            <Link href={baseUrl}>
+              <Img
+                src={`${baseUrl}/images/SubPortLogoVertical.png`}
+                width="100"
+                height="auto"
+                alt="Sub-Port.com"
+                style={{ margin: 'auto' }}
+              />
+            </Link>
+            <Heading style={global.heading}>
+              Hey SubPorter! Let&apos;s Explore!
+            </Heading>
             <Text style={global.text}>
-              You order&apos;s is on its way. Use the link above to track its
-              progress.
-              {baseUrl}
-            </Text>
-            <Text style={{ ...global.text, marginTop: 24 }}>
-              We´ve also charged your payment method for the cost of your order
-              and will be removing any authorization holds. For payment details,
-              please visit your Orders page on Nike.com or in the Nike app.
+              Welcome to SubPort! We&apos;re thrilled you&apos;ve joined our
+              community of creators, makers, and artists.
             </Text>
           </Section>
-          <Hr style={global.hr} />
-          <Section style={global.defaultPadding}>
-            <Text style={adressTitle}>Shipping to: Alan Turing</Text>
-            <Text style={{ ...global.text, fontSize: 14 }}>
-              2125 Chestnut St, San Francisco, CA 94123
-            </Text>
-          </Section>
-          <Hr style={global.hr} />
-          <Section
-            style={{ ...paddingX, paddingTop: '24px', paddingBottom: '24px' }}
-          >
+          <Section style={{ ...paddingY, ...paddingX }}>
+            <Row>
+              <Text
+                style={{
+                  ...global.paragraphWithBold,
+                  marginTop: '0px',
+                  marginBottom: '0px',
+                }}
+              >
+                Here&apos;s how to get started:
+              </Text>
+            </Row>
             <Row>
               <Column>
-                <Img
-                  src={`${baseUrl}/images/SubPort.jpg`}
-                  alt="Brazil 2022/23 Stadium Away Women's Nike Dri-FIT Soccer Jersey"
-                  style={{ float: 'left' }}
-                  width="260px"
-                />
-              </Column>
-              <Column style={{ verticalAlign: 'top', paddingLeft: '12px' }}>
-                <Text style={{ ...paragraph, fontWeight: '500' }}>
-                  Brazil 2022/23 Stadium Away Women&apos;s Nike Dri-FIT Soccer
-                  Jersey
+                <Text style={{ margin: '8px 0 8px 0' }}>
+                  <strong>Showcase your talent:</strong> Build a stunning online
+                  store to showcase your handmade goods, digital art, and more.{' '}
+                  <Link href={`${baseUrl}/dashboard/preferences`}>
+                    Edit Store
+                  </Link>
+                  .
                 </Text>
-                <Text style={global.text}>Size L (12–14)</Text>
+              </Column>
+            </Row>
+            <Row>
+              <Column>
+                <Text style={{ margin: '8px 0 8px 0' }}>
+                  <strong>Connect with your audience:</strong> Share your
+                  creative process, engage with fans, and build a loyal
+                  following.{' '}
+                  <Link href={`${baseUrl}/dashboard/integrations`}>
+                    Connect Social Accounts to Share
+                  </Link>
+                  .
+                </Text>
+              </Column>
+            </Row>
+            <Row>
+              <Column>
+                <Text style={{ margin: '8px 0 8px 0' }}>
+                  <strong>Sell directly to your supporters:</strong> Offer
+                  exclusive products and experiences to your fans, and grow your
+                  business.{' '}
+                  <Link href={`${baseUrl}/dashboard/products`}>
+                    Manage Products
+                  </Link>
+                  .
+                </Text>
               </Column>
             </Row>
           </Section>
-          <Hr style={global.hr} />
           <Section style={global.defaultPadding}>
-            <Row style={{ display: 'inline-flex', marginBottom: '40px' }}>
-              <Column style={{ width: '170px' }}>
-                <Text style={global.paragraphWithBold}>Order Number</Text>
-                <Text style={track.number}>C0106373851</Text>
-              </Column>
-              <Column>
-                <Text style={global.paragraphWithBold}>Order Date</Text>
-                <Text style={track.number}>Sep 22, 2022</Text>
-              </Column>
-            </Row>
             <Row>
               <Column align="center">
-                <Link style={global.button}>Order Status</Link>
+                <Link href={`${baseUrl}/dashboard`} style={global.button}>
+                  Go to your Dashboard
+                </Link>
               </Column>
             </Row>
           </Section>
 
           <Hr style={global.hr} />
-          <Section style={menu.container}>
-            <Row>
-              <Text style={menu.title}>Get Help</Text>
-            </Row>
-            <Row style={menu.content}>
-              <Column style={{ width: '33%' }} colSpan={1}>
-                <Link href="/help" style={menu.text}>
-                  Shipping Status
-                </Link>
-              </Column>
-              <Column style={{ width: '33%' }} colSpan={1}>
-                <Link href="/help" style={menu.text}>
-                  Shipping & Delivery
-                </Link>
-              </Column>
-              <Column style={{ width: '33%' }} colSpan={1}>
-                <Link href="/help" style={menu.text}>
-                  Returns & Exchanges
-                </Link>
-              </Column>
-            </Row>
-            <Row style={{ ...menu.content, paddingTop: '0' }}>
-              <Column style={{ width: '33%' }} colSpan={1}>
-                <Link href="/help" style={menu.text}>
-                  How to Return
-                </Link>
-              </Column>
-              <Column style={{ width: '66%' }} colSpan={2}>
-                <Link href="/send-feedback" style={menu.text}>
-                  Contact Us
-                </Link>
-              </Column>
-            </Row>
-          </Section>
-          <Hr style={global.hr} />
           <Section style={paddingY}>
             <Row>
-              <Text style={global.heading}>Sub-Port.com</Text>
+              <Column align="center">
+                <Link href={baseUrl} style={global.heading}>
+                  Sub-Port.com
+                </Link>
+              </Column>
             </Row>
             <Row style={categories.container}>
               <Column align="center">
-                <Link href="/" style={categories.text}>
+                <Link href={`${baseUrl}/market/men`} style={categories.text}>
                   Men
                 </Link>
               </Column>
               <Column align="center">
-                <Link href="/" style={categories.text}>
+                <Link href={`${baseUrl}/market/women`} style={categories.text}>
                   Women
                 </Link>
               </Column>
               <Column align="center">
-                <Link href="/" style={categories.text}>
-                  Kids
+                <Link href={`${baseUrl}/market/new`} style={categories.text}>
+                  New
                 </Link>
               </Column>
               <Column align="center">
-                <Link href="/" style={categories.text}>
-                  Customize
+                <Link
+                  href={`${baseUrl}/market/staff-picks`}
+                  style={categories.text}
+                >
+                  Staff Picks
                 </Link>
               </Column>
             </Row>
           </Section>
           <Hr style={{ ...global.hr, marginTop: '12px' }} />
           <Section style={paddingY}>
-            <Row style={footer.policy}>
-              <Column>
-                <Text style={footer.text}>Web Version</Text>
-              </Column>
-              <Column>
-                <Link href="/privacy-policy" style={footer.text}>
-                  Privacy Policy
-                </Link>
-              </Column>
-            </Row>
             <Row>
-              <Text
-                style={{ ...footer.text, paddingTop: 30, paddingBottom: 30 }}
-              >
+              <Text style={{ ...footer.text, paddingBottom: '16px' }}>
                 Please contact us if you have any questions. (If you reply to
                 this email, we won&apos;t be able to see it.)
               </Text>
@@ -230,7 +184,7 @@ const paragraph = {
   lineHeight: '2',
 };
 const button = {
-  fontSize: '16px',
+  fontSize: '12px',
   textDecoration: 'none',
   padding: '8px 16px',
   display: 'block',
@@ -254,6 +208,7 @@ const global = {
     fontWeight: '700',
     textAlign: 'center',
     letterSpacing: '-1px',
+    color: '#000000',
   } as React.CSSProperties,
   text: {
     ...paragraph,
@@ -326,6 +281,22 @@ const recomendationsText = {
   paddingRight: '8px',
 };
 
+const productStyle = {
+  name: {
+    margin: '0',
+    color: '#000000',
+    fontWeight: '700',
+  },
+  price: {
+    margin: '0',
+    color: '#4D4D4D',
+    fontWeight: '700',
+  },
+  otherText: {
+    margin: '0',
+    color: '#4D4D4D',
+  },
+};
 const recomendations = {
   container: {
     width: '600px',
@@ -338,11 +309,16 @@ const recomendations = {
     paddingLeft: '4px',
     paddingRight: '4px',
   },
-  title: { ...recomendationsText, paddingTop: '8px', fontWeight: '500' },
+  title: {
+    ...recomendationsText,
+    paddingTop: '8px',
+    fontWeight: '500',
+    color: '#000000',
+  },
   text: {
     ...recomendationsText,
     paddingTop: '4px',
-    color: '#71717A',
+    color: '#4D4D4D',
   },
 };
 
@@ -396,7 +372,7 @@ const footer = {
   },
   text: {
     margin: '0',
-    color: '#71717A',
+    color: '#4D4D4D',
     fontSize: '12px',
     textAlign: 'center',
   } as React.CSSProperties,

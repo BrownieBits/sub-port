@@ -103,7 +103,7 @@ export default function AddOptionDrawer(props: Props) {
       <DrawerContent>
         <DrawerHeader className="mx-auto flex w-full max-w-[1754px] flex-col items-start justify-start">
           <DrawerTitle>Add Option</DrawerTitle>
-          <DrawerDescription className="w-full">
+          <DrawerDescription className="w-full" asChild>
             <Form {...addForm}>
               <form
                 onSubmit={addForm.handleSubmit(onAdd)}
@@ -152,7 +152,7 @@ export default function AddOptionDrawer(props: Props) {
         </DrawerHeader>
         <DrawerFooter className="mx-auto w-full max-w-[1754px]">
           <section className="flex w-full justify-end gap-8">
-            <DrawerClose>
+            <DrawerClose asChild>
               <Button variant="outline">Cancel</Button>
             </DrawerClose>
             {props.index !== undefined ? (

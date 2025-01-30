@@ -6,19 +6,6 @@ export default function SendEmail() {
     <>
       <Button
         onClick={async () => {
-          await fetch('/api/welcome_email', {
-            method: 'POST',
-            body: JSON.stringify({
-              send_to: 'ian.scot.brown@gmail.com',
-              order_id: '1234567890abcdefg',
-            }),
-          });
-        }}
-      >
-        Send Welcome Email
-      </Button>
-      <Button
-        onClick={async () => {
           await fetch('/api/new_order_store_email', {
             method: 'POST',
             body: JSON.stringify({

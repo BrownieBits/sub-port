@@ -322,8 +322,8 @@ export default function SelfEditForm(props: Props) {
       product_type: props.product_type || '',
       product_images: undefined,
       prices: {
-        price: props.price || 0.0,
-        compare_at: props.compare_at || 0.0,
+        price: props.price ? props.price / 100 : 0,
+        compare_at: props.compare_at ? props.compare_at / 100 : 0,
       },
       tags: props.tags || [],
       currency: props.currency || 'USD',
@@ -401,12 +401,14 @@ export default function SelfEditForm(props: Props) {
         });
         has_errors = true;
       }
-
       if (compare_at === '') {
-        form.setValue('prices.compare_at', 0.0);
-        compare_at = 0.0;
+        form.setValue('prices.compare_at', 0);
+        compare_at = 0;
       }
-      if ((price! as number) <= compare_at!) {
+      if (
+        (compare_at as number) != 0 &&
+        (price! as number) <= (compare_at! as number)
+      ) {
         form.setError('prices.compare_at', {
           message: 'Compare At must be a less than Price',
         });
@@ -434,8 +436,8 @@ export default function SelfEditForm(props: Props) {
           variant_compare_at = 0;
         }
         if (
-          parseFloat(variant_price!.toString()) <=
-          parseFloat(variant_compare_at!.toString())!
+          (variant_compare_at as number) != 0 &&
+          (variant_price! as number) <= (variant_compare_at! as number)
         ) {
           form.setError(`variant.${index}.prices.compare_at`, {
             message: 'Compare At must be a less than Price',
@@ -446,15 +448,13 @@ export default function SelfEditForm(props: Props) {
           price == 0 ||
           (variant_price !== undefined &&
             variant_price !== '' &&
-            parseFloat(variant_price!.toString()) <
-              parseFloat(price!.toString()))
+            (variant_price! as number) < (price! as number))
         ) {
           price = variant_price;
         }
         if (
           variant_compare_at !== undefined &&
-          parseFloat(variant_compare_at!.toString()) >
-            parseFloat(compare_at!.toString())
+          (variant_compare_at! as number) > (compare_at! as number)
         ) {
           compare_at = variant_compare_at;
         }
@@ -525,10 +525,8 @@ export default function SelfEditForm(props: Props) {
           images: imageFileUrls,
           description: form.getValues('description') || '',
           product_type: form.getValues('product_type'),
-          price: parseFloat(price! as string).toFixed(2) as unknown as number,
-          compare_at: parseFloat(compare_at! as string).toFixed(
-            2
-          ) as unknown as number,
+          price: parseFloat(price! as string) * 100,
+          compare_at: parseFloat(compare_at! as string) * 100,
           currency: form.getValues('currency'),
           tags: form.getValues('tags'),
           inventory: form.getValues('inventory') as number,
@@ -575,12 +573,9 @@ export default function SelfEditForm(props: Props) {
               );
               batch.set(variantRef, {
                 name: variant.name,
-                price: parseFloat(variant.price.toString()).toFixed(
-                  2
-                ) as unknown as number,
-                compare_at: parseFloat(variant.compare_at.toString()).toFixed(
-                  2
-                ) as unknown as number,
+                price: parseFloat(variant.price! as unknown as string) * 100,
+                compare_at:
+                  parseFloat(variant.compare_at! as unknown as string) * 100,
                 inventory: variant.inventory as number,
                 index: index as number,
                 owner_id: props.userID,
@@ -594,12 +589,9 @@ export default function SelfEditForm(props: Props) {
                 variant.name
               );
               batch.update(variantRef, {
-                price: parseFloat(variant.price.toString()).toFixed(
-                  2
-                ) as unknown as number,
-                compare_at: parseFloat(variant.compare_at.toString()).toFixed(
-                  2
-                ) as unknown as number,
+                price: parseFloat(variant.price! as unknown as string) * 100,
+                compare_at:
+                  parseFloat(variant.compare_at! as unknown as string) * 100,
                 inventory: variant.inventory as number,
                 index: index as number,
                 updated_at: Timestamp.fromDate(new Date()),
@@ -660,10 +652,8 @@ export default function SelfEditForm(props: Props) {
           vendor: 'self',
           vendor_id: '',
           description: form.getValues('description') || '',
-          price: parseFloat(price! as string).toFixed(2) as unknown as number,
-          compare_at: parseFloat(compare_at! as string).toFixed(
-            2
-          ) as unknown as number,
+          price: parseFloat(price! as string) * 100,
+          compare_at: parseFloat(compare_at! as string) * 100,
           currency: form.getValues('currency'),
           inventory: form.getValues('inventory') as number,
           track_inventory: trackInventory,
@@ -714,12 +704,9 @@ export default function SelfEditForm(props: Props) {
             );
             batch.set(variantRef, {
               name: variant.name,
-              price: parseFloat(variant.price.toString()).toFixed(
-                2
-              ) as unknown as number,
-              compare_at: parseFloat(variant.compare_at.toString()).toFixed(
-                2
-              ) as unknown as number,
+              price: parseFloat(variant.price! as unknown as string) * 100,
+              compare_at:
+                parseFloat(variant.compare_at! as unknown as string) * 100,
               inventory: variant.inventory as number,
               index: index as number,
               owner_id: props.userID,

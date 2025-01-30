@@ -138,22 +138,21 @@ export default function ItemDetails(props: Props) {
       </section>
       <section className="flex w-full flex-row-reverse items-end justify-between gap-4 md:w-auto md:flex-col">
         <section className="flex flex-col items-end">
-          {parseFloat(props.item.compare_at.toString()) > 0 &&
-          parseFloat(props.item.compare_at.toString()) <
-            parseFloat(props.item.price.toString()) ? (
+          {props.item.compare_at > 0 &&
+          props.item.compare_at < props.item.price ? (
             <section className="flex flex-col items-end">
               <p className="text-destructive line-through">
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: props.item.currency,
-                }).format(props.item.price)}
+                }).format(props.item.price / 100)}
               </p>
               <p>
                 <b>
                   {new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: props.item.currency,
-                  }).format(props.item.compare_at)}
+                  }).format(props.item.compare_at / 100)}
                 </b>
               </p>
             </section>
@@ -163,7 +162,7 @@ export default function ItemDetails(props: Props) {
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: props.item.currency,
-                }).format(props.item.price)}
+                }).format(props.item.price / 100)}
               </b>
             </p>
           )}

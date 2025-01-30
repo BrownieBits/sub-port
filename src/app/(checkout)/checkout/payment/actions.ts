@@ -7,7 +7,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY!);
 export async function CreatePaymentIntent(customerID: string, cart_total: number, cart_id: string) {
     'use server';
     const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(cart_total * 100),
+        amount: Math.round(cart_total),
         currency: "USD",
         customer: customerID,
         metadata: {
@@ -30,7 +30,7 @@ export async function UpdatePaymentIntent(intentID: string, cart_total: number, 
     const paymentIntent = await stripe.paymentIntents.update(
         intentID,
         {
-            amount: Math.round(cart_total * 100),
+            amount: Math.round(cart_total),
             metadata: {
                 order_id: cart_id,
             },

@@ -73,7 +73,10 @@ export const AiDescriptionWriter = (props: {}) => {
           <Button
             variant="outline"
             size="sm"
-            onClick={(event) => event.preventDefault()}
+            onClick={(event) => {
+              event.preventDefault();
+              setOpen(true);
+            }}
             className="h-auto p-[0] px-4 text-foreground hover:no-underline"
           >
             Click Here
@@ -142,7 +145,7 @@ export const AiDescriptionWriter = (props: {}) => {
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger>
+      <DrawerTrigger asChild>
         <Button
           variant="outline"
           size="sm"

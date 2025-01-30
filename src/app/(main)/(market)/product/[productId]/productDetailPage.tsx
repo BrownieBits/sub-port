@@ -145,15 +145,17 @@ export default function ProductDetailPage(props: Props) {
         const cartItemDoc = await transaction.get(cartRef);
         if (!cartItemDoc.exists()) {
           transaction.set(cartRef, {
-            items: quantity,
+            address: null,
+            billing_address: null,
+            email: '',
+            payment_intent: null,
+            shipments: null,
+            shipments_ready: false,
             created_at: Timestamp.fromDate(new Date()),
             updated_at: Timestamp.fromDate(new Date()),
           });
         } else {
-          const newItems = (parseInt(cartItemDoc.data()?.items) +
-            quantity) as number;
           await transaction.update(cartRef, {
-            items: newItems,
             updated_at: Timestamp.fromDate(new Date()),
           });
         }
@@ -278,20 +280,20 @@ export default function ProductDetailPage(props: Props) {
               </Link>
             </section>
             <section className="flex flex-col items-end gap-1">
-              {compareAt > 0 && price != compareAt ? (
+              {compareAt > 0 && price > compareAt ? (
                 <>
                   <p className="text-destructive line-through">
                     {new Intl.NumberFormat('en-US', {
                       style: 'currency',
                       currency: props.currency,
-                    }).format(price)}
+                    }).format(price / 100)}
                   </p>
                   <p className="text-xl">
                     <b>
                       {new Intl.NumberFormat('en-US', {
                         style: 'currency',
                         currency: props.currency,
-                      }).format(compareAt)}
+                      }).format(compareAt / 100)}
                     </b>
                   </p>
                 </>
@@ -300,7 +302,7 @@ export default function ProductDetailPage(props: Props) {
                   {new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: props.currency,
-                  }).format(price)}
+                  }).format(price / 100)}
                 </p>
               )}
             </section>

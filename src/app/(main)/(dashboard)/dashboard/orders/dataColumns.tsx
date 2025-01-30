@@ -249,7 +249,7 @@ export const columns: ColumnDef<Order>[] = [
           {new Intl.NumberFormat('en-US', {
             style: 'currency',
             currency: 'USD',
-          }).format(row.getValue('amount'))}
+          }).format((row.getValue('amount') as number) / 100)}
         </p>
       );
     },

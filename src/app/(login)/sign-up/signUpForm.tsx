@@ -181,6 +181,12 @@ export function SignUpForm({
       created_at: Timestamp.fromDate(new Date()),
     });
     await batch.commit();
+    await fetch('/api/welcome_email', {
+      method: 'POST',
+      body: JSON.stringify({
+        send_to: form.getValues('email'),
+      }),
+    });
     router.push('/dashboard');
   }
 

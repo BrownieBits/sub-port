@@ -180,47 +180,42 @@ export function DigitalDownloadEmail({
           <Hr style={global.hr} />
           <Section style={paddingY}>
             <Row>
-              <Text style={global.heading}>Sub-Port.com</Text>
+              <Column align="center">
+                <Link href={baseUrl} style={global.heading}>
+                  Sub-Port.com
+                </Link>
+              </Column>
             </Row>
             <Row style={categories.container}>
               <Column align="center">
-                <Link href="/" style={categories.text}>
+                <Link href={`${baseUrl}/market/men`} style={categories.text}>
                   Men
                 </Link>
               </Column>
               <Column align="center">
-                <Link href="/" style={categories.text}>
+                <Link href={`${baseUrl}/market/women`} style={categories.text}>
                   Women
                 </Link>
               </Column>
               <Column align="center">
-                <Link href="/" style={categories.text}>
-                  Kids
+                <Link href={`${baseUrl}/market/new`} style={categories.text}>
+                  New
                 </Link>
               </Column>
               <Column align="center">
-                <Link href="/" style={categories.text}>
-                  Customize
+                <Link
+                  href={`${baseUrl}/market/staff-picks`}
+                  style={categories.text}
+                >
+                  Staff Picks
                 </Link>
               </Column>
             </Row>
           </Section>
           <Hr style={{ ...global.hr, marginTop: '12px' }} />
           <Section style={paddingY}>
-            <Row style={footer.policy}>
-              <Column>
-                <Text style={footer.text}>Web Version</Text>
-              </Column>
-              <Column>
-                <Link href="/privacy-policy" style={footer.text}>
-                  Privacy Policy
-                </Link>
-              </Column>
-            </Row>
             <Row>
-              <Text
-                style={{ ...footer.text, paddingTop: 30, paddingBottom: 30 }}
-              >
+              <Text style={{ ...footer.text, paddingBottom: '16px' }}>
                 Please contact us if you have any questions. (If you reply to
                 this email, we won&apos;t be able to see it.)
               </Text>
@@ -267,7 +262,7 @@ const paragraph = {
   lineHeight: '2',
 };
 const button = {
-  fontSize: '16px',
+  fontSize: '12px',
   textDecoration: 'none',
   padding: '8px 16px',
   display: 'block',
@@ -291,6 +286,7 @@ const global = {
     fontWeight: '700',
     textAlign: 'center',
     letterSpacing: '-1px',
+    color: '#000000',
   } as React.CSSProperties,
   text: {
     ...paragraph,
@@ -363,6 +359,22 @@ const recomendationsText = {
   paddingRight: '8px',
 };
 
+const productStyle = {
+  name: {
+    margin: '0',
+    color: '#000000',
+    fontWeight: '700',
+  },
+  price: {
+    margin: '0',
+    color: '#4D4D4D',
+    fontWeight: '700',
+  },
+  otherText: {
+    margin: '0',
+    color: '#4D4D4D',
+  },
+};
 const recomendations = {
   container: {
     width: '600px',
@@ -375,11 +387,16 @@ const recomendations = {
     paddingLeft: '4px',
     paddingRight: '4px',
   },
-  title: { ...recomendationsText, paddingTop: '8px', fontWeight: '500' },
+  title: {
+    ...recomendationsText,
+    paddingTop: '8px',
+    fontWeight: '500',
+    color: '#000000',
+  },
   text: {
     ...recomendationsText,
     paddingTop: '4px',
-    color: '#71717A',
+    color: '#4D4D4D',
   },
 };
 
@@ -433,7 +450,7 @@ const footer = {
   },
   text: {
     margin: '0',
-    color: '#71717A',
+    color: '#4D4D4D',
     fontSize: '12px',
     textAlign: 'center',
   } as React.CSSProperties,

@@ -21,7 +21,13 @@ import userStore from '@/stores/userStore';
 import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format } from 'date-fns';
-import { DocumentReference, doc, getDoc } from 'firebase/firestore';
+import {
+  CollectionReference,
+  collection,
+  getDocs,
+  query,
+  where,
+} from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
@@ -42,20 +48,27 @@ export const OrderDetails = ({ id }: { id: string }) => {
   const user_store = userStore((state) => state.user_store);
 
   async function getOrder() {
-    const orderRef: DocumentReference = doc(db, 'orders', id);
-    const orderDoc = await getDoc(orderRef);
-    if (!orderDoc.exists) {
+    const ordersRef: CollectionReference = collection(db, 'orders');
+    let q = query(
+      ordersRef,
+      where('store_id', '==', user_store),
+      where('payment_intent', '==', `pi_${id}`)
+    );
+    const orderDocs = await getDocs(q);
+    if (orderDocs.empty) {
       goTo();
     } else {
       setOrder({
-        name: orderDoc.data()?.address.name,
-        status: orderDoc.data()?.status,
-        shipments: orderDoc.data()?.shipments,
-        items: orderDoc.data()?.items,
-        order_date: new Date(orderDoc.data()?.created_at.seconds * 1000),
-        order_total: orderDoc.data()?.order_total,
-        promotions: orderDoc.data()?.promotions,
-        address: orderDoc.data()?.address,
+        name: orderDocs.docs[0].data()?.address.name,
+        status: orderDocs.docs[0].data()?.status,
+        shipments: orderDocs.docs[0].data()?.shipments,
+        items: orderDocs.docs[0].data()?.items,
+        order_date: new Date(
+          orderDocs.docs[0].data()?.created_at.seconds * 1000
+        ),
+        order_total: orderDocs.docs[0].data()?.order_total,
+        promotions: orderDocs.docs[0].data()?.promotions,
+        address: orderDocs.docs[0].data()?.address,
       });
     }
   }
@@ -138,7 +151,7 @@ export const OrderDetails = ({ id }: { id: string }) => {
                         {new Intl.NumberFormat('en-US', {
                           style: 'currency',
                           currency: 'USD',
-                        }).format(order.order_total)}
+                        }).format(order.order_total / 100)}
                       </b>
                     </p>
                   </section>
@@ -215,16 +228,14 @@ export const OrderDetails = ({ id }: { id: string }) => {
                         </section>
                       </section>
                       <section className="flex">
-                        {parseFloat(item.compare_at.toString()) > 0 &&
-                        parseFloat(item.compare_at.toString()) <
-                          parseFloat(item.price.toString()) ? (
+                        {item.compare_at > 0 && item.compare_at < item.price ? (
                           <section className="flex flex-col items-end">
                             <p className="text-sm text-destructive line-through">
                               <b>
                                 {new Intl.NumberFormat('en-US', {
                                   style: 'currency',
                                   currency: item.currency,
-                                }).format(item.price * item.quantity)}
+                                }).format((item.price * item.quantity) / 100)}
                               </b>
                             </p>
                             <p className="text-sm">
@@ -232,7 +243,9 @@ export const OrderDetails = ({ id }: { id: string }) => {
                                 {new Intl.NumberFormat('en-US', {
                                   style: 'currency',
                                   currency: item.currency,
-                                }).format(item.compare_at * item.quantity)}
+                                }).format(
+                                  (item.compare_at * item.quantity) / 100
+                                )}
                               </b>
                             </p>
                           </section>
@@ -242,7 +255,7 @@ export const OrderDetails = ({ id }: { id: string }) => {
                               {new Intl.NumberFormat('en-US', {
                                 style: 'currency',
                                 currency: item.currency,
-                              }).format(item.price * item.quantity)}
+                              }).format((item.price * item.quantity) / 100)}
                             </b>
                           </p>
                         )}

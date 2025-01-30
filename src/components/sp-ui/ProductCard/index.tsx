@@ -92,20 +92,20 @@ export default function ProductCard({
               href={`/product/${product.id}`}
               className="flex w-full flex-col items-end gap-1"
             >
-              {product.compare_at > 0 && product.price != product.compare_at ? (
+              {product.compare_at > 0 && product.price > product.compare_at ? (
                 <>
                   <p className="text-destructive line-through">
                     {new Intl.NumberFormat('en-US', {
                       style: 'currency',
                       currency: product.currency,
-                    }).format(product.price)}
+                    }).format(product.price / 100)}
                   </p>
                   <p>
                     <b>
                       {new Intl.NumberFormat('en-US', {
                         style: 'currency',
                         currency: product.currency,
-                      }).format(product.compare_at)}
+                      }).format(product.compare_at / 100)}
                     </b>
                   </p>
                 </>
@@ -115,7 +115,7 @@ export default function ProductCard({
                     {new Intl.NumberFormat('en-US', {
                       style: 'currency',
                       currency: product.currency,
-                    }).format(product.price)}
+                    }).format(product.price / 100)}
                   </b>
                 </p>
               )}

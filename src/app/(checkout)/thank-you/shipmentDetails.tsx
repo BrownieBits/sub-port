@@ -172,16 +172,14 @@ export default function ShipmentDetails(props: Props) {
                     </section>
                   </section>
                   <section className="flex">
-                    {parseFloat(item.compare_at.toString()) > 0 &&
-                    parseFloat(item.compare_at.toString()) <
-                      parseFloat(item.price.toString()) ? (
+                    {item.compare_at > 0 && item.compare_at < item.price ? (
                       <section className="flex flex-col items-end">
                         <p className="text-sm text-destructive line-through">
                           <b>
                             {new Intl.NumberFormat('en-US', {
                               style: 'currency',
                               currency: item.currency,
-                            }).format(item.price * item.quantity)}
+                            }).format((item.price * item.quantity) / 100)}
                           </b>
                         </p>
                         <p className="text-sm">
@@ -189,7 +187,7 @@ export default function ShipmentDetails(props: Props) {
                             {new Intl.NumberFormat('en-US', {
                               style: 'currency',
                               currency: item.currency,
-                            }).format(item.compare_at * item.quantity)}
+                            }).format((item.compare_at * item.quantity) / 100)}
                           </b>
                         </p>
                       </section>
@@ -199,7 +197,7 @@ export default function ShipmentDetails(props: Props) {
                           {new Intl.NumberFormat('en-US', {
                             style: 'currency',
                             currency: item.currency,
-                          }).format(item.price * item.quantity)}
+                          }).format((item.price * item.quantity) / 100)}
                         </b>
                       </p>
                     )}

@@ -38,26 +38,15 @@ export default function CheckoutSummary() {
       [...items.keys()].map((store: string) => {
         let store_total = 0;
         items.get(store)!.map((item) => {
-          if (
-            parseFloat(item.compare_at.toString()) > 0 &&
-            parseFloat(item.compare_at.toString()) <
-              parseFloat(item.price.toString())
-          ) {
-            store_total +=
-              parseFloat(item.compare_at.toString()) * item.quantity;
-            item_total +=
-              parseFloat(item.compare_at.toString()) * item.quantity;
+          if (item.compare_at > 0 && item.compare_at < item.price) {
+            store_total += item.compare_at * item.quantity;
+            item_total += item.compare_at * item.quantity;
             service_total +=
-              parseFloat(item.compare_at.toString()) *
-              item.quantity *
-              parseFloat(item.service_percent.toString());
+              item.compare_at * item.quantity * item.service_percent;
           } else {
-            store_total += parseFloat(item.price.toString()) * item.quantity;
-            item_total += parseFloat(item.price.toString()) * item.quantity;
-            service_total +=
-              parseFloat(item.price.toString()) *
-              item.quantity *
-              parseFloat(item.service_percent.toString());
+            store_total += item.price * item.quantity;
+            item_total += item.price * item.quantity;
+            service_total += item.price * item.quantity * item.service_percent;
           }
         });
 
@@ -174,7 +163,7 @@ export default function CheckoutSummary() {
               {new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
-              }).format(itemsTotal)}
+              }).format(itemsTotal / 100)}
             </p>
           </section>
           <section className="flex w-full justify-between">
@@ -183,7 +172,7 @@ export default function CheckoutSummary() {
               {new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
-              }).format(serviceTotal)}
+              }).format(serviceTotal / 100)}
             </p>
           </section>
           {discountsTotal > 0 && (
@@ -194,7 +183,7 @@ export default function CheckoutSummary() {
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: 'USD',
-                }).format(discountsTotal)}
+                }).format(discountsTotal / 100)}
               </p>
             </section>
           )}
@@ -209,7 +198,7 @@ export default function CheckoutSummary() {
                     {new Intl.NumberFormat('en-US', {
                       style: 'currency',
                       currency: 'USD',
-                    }).format(shippingTotal)}
+                    }).format(shippingTotal / 100)}
                   </p>
                 ) : (
                   <p>Free</p>
@@ -226,7 +215,7 @@ export default function CheckoutSummary() {
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: 'USD',
-                }).format(taxesTotal)}
+                }).format(taxesTotal / 100)}
               </p>
             )}
           </section>
@@ -239,7 +228,7 @@ export default function CheckoutSummary() {
               {new Intl.NumberFormat('en-US', {
                 style: 'currency',
                 currency: 'USD',
-              }).format(cartTotal)}
+              }).format(cartTotal / 100)}
             </p>
           </section>
         </section>
@@ -270,7 +259,7 @@ export default function CheckoutSummary() {
             {new Intl.NumberFormat('en-US', {
               style: 'currency',
               currency: 'USD',
-            }).format(cartTotal)}
+            }).format(cartTotal / 100)}
           </span>
         </AccordionTrigger>
         <AccordionContent>
@@ -291,7 +280,7 @@ export default function CheckoutSummary() {
                   {new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
-                  }).format(itemsTotal)}
+                  }).format(itemsTotal / 100)}
                 </p>
               </section>
               <section className="flex w-full justify-between">
@@ -300,7 +289,7 @@ export default function CheckoutSummary() {
                   {new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
-                  }).format(serviceTotal)}
+                  }).format(serviceTotal / 100)}
                 </p>
               </section>
               {discountsTotal > 0 && (
@@ -311,7 +300,7 @@ export default function CheckoutSummary() {
                     {new Intl.NumberFormat('en-US', {
                       style: 'currency',
                       currency: 'USD',
-                    }).format(discountsTotal)}
+                    }).format(discountsTotal / 100)}
                   </p>
                 </section>
               )}
@@ -327,7 +316,7 @@ export default function CheckoutSummary() {
                         {new Intl.NumberFormat('en-US', {
                           style: 'currency',
                           currency: 'USD',
-                        }).format(shippingTotal)}
+                        }).format(shippingTotal / 100)}
                       </p>
                     ) : (
                       <p>Free</p>
@@ -344,7 +333,7 @@ export default function CheckoutSummary() {
                     {new Intl.NumberFormat('en-US', {
                       style: 'currency',
                       currency: 'USD',
-                    }).format(taxesTotal)}
+                    }).format(taxesTotal / 100)}
                   </p>
                 )}
               </section>
@@ -357,7 +346,7 @@ export default function CheckoutSummary() {
                   {new Intl.NumberFormat('en-US', {
                     style: 'currency',
                     currency: 'USD',
-                  }).format(cartTotal)}
+                  }).format(cartTotal / 100)}
                 </p>
               </section>
             </section>

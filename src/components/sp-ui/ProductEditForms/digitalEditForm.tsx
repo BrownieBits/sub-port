@@ -215,8 +215,8 @@ export default function DigitalEditForm(props: Props) {
       product_images: undefined,
       digital_file: undefined,
       prices: {
-        price: props.price || 0.0,
-        compare_at: props.compare_at || 0.0,
+        price: props.price ? props.price / 100 : 0,
+        compare_at: props.compare_at ? props.compare_at / 100 : 0,
       },
       currency: props.currency || 'USD',
       tags: props.tags || [],
@@ -301,10 +301,58 @@ export default function DigitalEditForm(props: Props) {
     form.resetField('product_images');
     return pi;
   }
+  function validatePrices() {
+    let price = form.getValues('prices.price');
+    let compare_at = form.getValues('prices.compare_at');
+    let has_errors = false;
+    if (price === '' || (price as number) <= 0) {
+      form.setError('prices.price', {
+        message: 'Price must be a positive number',
+      });
+      has_errors = true;
+    }
+    if (compare_at === '') {
+      form.setValue('prices.compare_at', 0);
+      compare_at = 0;
+    }
+    if (
+      (compare_at as number) != 0 &&
+      (price! as number) <= (compare_at! as number)
+    ) {
+      form.setError('prices.compare_at', {
+        message: 'Compare At must be a less than Price',
+      });
+      has_errors = true;
+    }
+
+    if (has_errors) {
+      return {
+        price: price,
+        compare_at: compare_at as number,
+        error: has_errors,
+      };
+    }
+    form.clearErrors('prices.price');
+    form.clearErrors('prices.compare_at');
+    return {
+      price: price,
+      compare_at: compare_at as number,
+      error: false,
+    };
+  }
 
   async function onSubmit() {
     setDisabled(true);
     try {
+      const { price, compare_at, error } = validatePrices();
+      if (error) {
+        setDisabled(false);
+        toast.error('Error Saving', {
+          description:
+            'There was an error saving your product. Please try again.',
+        });
+        return;
+      }
       if (digitalFile === '') {
         form.setError('digital_file', { message: 'This is required.' });
         return;
@@ -322,17 +370,13 @@ export default function DigitalEditForm(props: Props) {
       const digitalFileUrl = await uploadDigitalFile(docRef.id);
       const imageFileUrls: string[] = await uploadImages(docRef.id);
 
-      const price = parseFloat(form.getValues('prices.price') as string);
-      const compare_at = parseFloat(
-        form.getValues('prices.compare_at') as string
-      );
       if (props.docID !== undefined) {
         await updateDoc(docRef, {
           name: form.getValues('name'),
           images: imageFileUrls,
           description: form.getValues('description') || '',
-          price: price.toFixed(2) as unknown as number,
-          compare_at: compare_at.toFixed(2) as unknown as number,
+          price: parseFloat(price! as string) * 100,
+          compare_at: parseFloat(compare_at! as unknown as string) * 100,
           currency: form.getValues('currency'),
           tags: form.getValues('tags'),
           digital_file: digitalFileUrl,
@@ -349,8 +393,8 @@ export default function DigitalEditForm(props: Props) {
           vendor: 'digital',
           vendor_id: '',
           description: form.getValues('description') || '',
-          price: price.toFixed(2) as unknown as number,
-          compare_at: compare_at.toFixed(2) as unknown as number,
+          price: parseFloat(price! as string) * 100,
+          compare_at: parseFloat(compare_at! as unknown as string) * 100,
           currency: form.getValues('currency'),
           inventory: 1,
           track_inventory: false,
@@ -656,50 +700,48 @@ export default function DigitalEditForm(props: Props) {
                   control={form.control}
                   name="product_images"
                   render={({ field: { onChange, value, ...rest } }) => (
-                    <>
-                      <FormItem>
-                        <FormLabel>Circle Image</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="file"
-                            accept={ALLOWED_IMAGE_TYPES.join(',')}
-                            hidden={true}
-                            className="hidden"
-                            {...rest}
-                            ref={productImagesRef}
-                            onChange={(event) => {
-                              const dataTransfer = new DataTransfer();
+                    <FormItem>
+                      <FormLabel>Circle Image</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept={ALLOWED_IMAGE_TYPES.join(',')}
+                          hidden={true}
+                          className="hidden"
+                          {...rest}
+                          ref={productImagesRef}
+                          onChange={(event) => {
+                            const dataTransfer = new DataTransfer();
 
-                              // Add newly uploaded images
-                              Array.from(event.target.files!).forEach((image) =>
-                                dataTransfer.items.add(image)
-                              );
+                            // Add newly uploaded images
+                            Array.from(event.target.files!).forEach((image) =>
+                              dataTransfer.items.add(image)
+                            );
 
-                              const files = dataTransfer.files;
-                              const displayUrl = URL.createObjectURL(
-                                event.target.files![0]
-                              );
+                            const files = dataTransfer.files;
+                            const displayUrl = URL.createObjectURL(
+                              event.target.files![0]
+                            );
 
-                              if (files.length > 0) {
-                                setProductImages([
-                                  ...productImages,
-                                  {
-                                    id: productImages.length,
-                                    image: displayUrl,
-                                  },
-                                ]);
-                              }
-                              onChange(files);
-                            }}
-                          />
-                        </FormControl>
-                        <FormDescription>
-                          For best results we suggest an image that is 1000x1000
-                          pixels.
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    </>
+                            if (files.length > 0) {
+                              setProductImages([
+                                ...productImages,
+                                {
+                                  id: productImages.length,
+                                  image: displayUrl,
+                                },
+                              ]);
+                            }
+                            onChange(files);
+                          }}
+                        />
+                      </FormControl>
+                      <FormDescription>
+                        For best results we suggest an image that is 1000x1000
+                        pixels.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
                   )}
                 />
               </aside>
@@ -822,43 +864,41 @@ export default function DigitalEditForm(props: Props) {
                   control={form.control}
                   name="digital_file"
                   render={({ field: { onChange, value, ...rest } }) => (
-                    <>
-                      <FormItem>
-                        <FormControl>
-                          {digitalFile === '' ? (
-                            <Input
-                              type="file"
-                              hidden={true}
-                              className="hidden"
-                              {...rest}
-                              ref={digitalFileRef}
-                              onChange={(event) => {
-                                const dataTransfer = new DataTransfer();
+                    <FormItem>
+                      <FormControl>
+                        {digitalFile === '' ? (
+                          <Input
+                            type="file"
+                            hidden={true}
+                            className="hidden"
+                            {...rest}
+                            ref={digitalFileRef}
+                            onChange={(event) => {
+                              const dataTransfer = new DataTransfer();
 
-                                // Add newly uploaded images
-                                Array.from(event.target.files!).forEach(
-                                  (image) => dataTransfer.items.add(image)
-                                );
+                              // Add newly uploaded images
+                              Array.from(event.target.files!).forEach((image) =>
+                                dataTransfer.items.add(image)
+                              );
 
-                                const files = dataTransfer.files;
-                                const displayUrl = URL.createObjectURL(
-                                  event.target.files![0]
-                                );
+                              const files = dataTransfer.files;
+                              const displayUrl = URL.createObjectURL(
+                                event.target.files![0]
+                              );
 
-                                if (files.length > 0) {
-                                  setDigitalFile(files[0].name);
-                                  setDigitalFileName(files[0].name);
-                                }
-                                onChange(files);
-                              }}
-                            />
-                          ) : (
-                            <></>
-                          )}
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    </>
+                              if (files.length > 0) {
+                                setDigitalFile(files[0].name);
+                                setDigitalFileName(files[0].name);
+                              }
+                              onChange(files);
+                            }}
+                          />
+                        ) : (
+                          <></>
+                        )}
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
                   )}
                 />
               </aside>

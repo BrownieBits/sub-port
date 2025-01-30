@@ -41,15 +41,15 @@ export const StoreOrdersPage = () => {
     const orderDocs = await getDocs(q);
     const orderData: Order[] = orderDocs.docs.map((order) => {
       return {
-        id: order.id,
-        order_id: order.id,
+        id: order.data().payment_intent.replace('pi_', ''),
+        order_id: order.data().payment_intent.replace('pi_', ''),
         name: order.data().address.name,
         amount: order.data().order_total,
         status: order.data().status,
         order_date: new Date(order.data().created_at.seconds * 1000),
         item_count: order.data().items.length,
         store_id: user_store,
-        filter: `${order.id}_${order.data().address.name}`,
+        filter: `${order.data().payment_intent.replace('pi_', '')}_${order.data().address.name}`,
       };
     });
 

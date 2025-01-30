@@ -84,7 +84,7 @@ export async function getSelfShipping(
           parseFloat(rate.confirmation_amount.amount) +
           parseFloat(rate.insurance_amount.amount) +
           parseFloat(rate.requested_comparison_amount.amount) +
-          parseFloat(rate.shipping_amount.amount),
+          parseFloat(rate.shipping_amount.amount) * 100,
         service_code: rate.service_code,
         service_type: rate.service_type,
         package_type: rate.package_type,
@@ -148,7 +148,7 @@ export async function getPrintfulRates(token: string, items: _Item[],
         carrier_id: rate.id,
         delivery_days: rate.maxDeliveryDays,
         estimated_delivery_date: new Date(rate.maxDeliveryDate),
-        rate: parseFloat(rate.rate),
+        rate: parseFloat(rate.rate) * 100,
         service_code: rate.name,
         service_type: rate.name,
         package_type: '',

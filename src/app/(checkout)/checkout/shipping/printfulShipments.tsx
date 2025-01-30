@@ -209,7 +209,7 @@ export default function PrintfulShipment(props: Props) {
                                     {new Intl.NumberFormat('en-US', {
                                       style: 'currency',
                                       currency: 'USD',
-                                    }).format(rate.rate)}
+                                    }).format(rate.rate / 100)}
                                   </p>
                                 </section>
                               </FormLabel>

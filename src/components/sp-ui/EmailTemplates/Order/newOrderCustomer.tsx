@@ -30,7 +30,7 @@ interface Product {
   url: string;
   name: string;
   type: string;
-  options?: string;
+  options?: string[];
   price: number;
   quantity: number;
 }
@@ -58,7 +58,9 @@ export function NewOrderCustomer({
     <Html>
       <Head />
       <Preview>
-        Get your order summary, estimated delivery date and more
+        {tracking_id !== ''
+          ? 'Your order is officially on the move!'
+          : 'Get ready to welcome your new goodies soon.'}
       </Preview>
       <Body style={main}>
         <Container style={container}>
@@ -88,11 +90,13 @@ export function NewOrderCustomer({
                 style={{ margin: 'auto' }}
               />
             </Link>
-            <Heading style={global.heading}>Your Order is Shipping!</Heading>
+            <Heading style={global.heading}>
+              Get Ready! Your Order is Confirmed.
+            </Heading>
             <Text style={global.text}>
               {tracking_id !== ''
                 ? "Your order is officially on the move! 🚀 Track its journey to you using the link above – it's about to get exciting!"
-                : "Your order is officially on the move! 🎉 Get ready to welcome your new goodies soon. We'll send you a tracking number shortly so you can follow along on their exciting adventure."}
+                : "Get ready to welcome your new goodies soon. We'll send you a tracking number shortly so you can follow along on their exciting adventure."}
             </Text>
             <Text style={{ ...global.text, marginTop: 24 }}>
               Zap! Your payment for those awesome SubPort goodies just went
@@ -104,7 +108,7 @@ export function NewOrderCustomer({
           <Hr style={global.hr} />
           <Section style={global.defaultPadding}>
             <Text style={adressTitle}>Shipping to: {order_name}</Text>
-            <Text style={{ ...global.text, fontSize: 14 }}>
+            <Text style={{ ...global.text, fontSize: 12 }}>
               {order_address}
             </Text>
           </Section>
@@ -142,7 +146,7 @@ export function NewOrderCustomer({
           </Section>
           <Hr style={global.hr} />
           <Section style={global.defaultPadding}>
-            <Row style={{ marginBottom: '40px' }}>
+            <Row style={{ marginBottom: '24px' }}>
               <Column style={{ width: '50%' }}>
                 <Text style={global.paragraphWithBold}>Order Number</Text>
                 <Text style={track.number}>{order_id}</Text>
@@ -154,7 +158,12 @@ export function NewOrderCustomer({
             </Row>
             <Row>
               <Column align="center">
-                <Link style={global.button}>Order Status</Link>
+                <Link
+                  href={`${baseUrl}/thank-you?order_id=${order_id}`}
+                  style={global.button}
+                >
+                  Order Status
+                </Link>
               </Column>
             </Row>
           </Section>
@@ -234,47 +243,42 @@ export function NewOrderCustomer({
           <Hr style={global.hr} />
           <Section style={paddingY}>
             <Row>
-              <Text style={global.heading}>Sub-Port.com</Text>
+              <Column align="center">
+                <Link href={baseUrl} style={global.heading}>
+                  Sub-Port.com
+                </Link>
+              </Column>
             </Row>
             <Row style={categories.container}>
               <Column align="center">
-                <Link href="/" style={categories.text}>
+                <Link href={`${baseUrl}/market/men`} style={categories.text}>
                   Men
                 </Link>
               </Column>
               <Column align="center">
-                <Link href="/" style={categories.text}>
+                <Link href={`${baseUrl}/market/women`} style={categories.text}>
                   Women
                 </Link>
               </Column>
               <Column align="center">
-                <Link href="/" style={categories.text}>
-                  Kids
+                <Link href={`${baseUrl}/market/new`} style={categories.text}>
+                  New
                 </Link>
               </Column>
               <Column align="center">
-                <Link href="/" style={categories.text}>
-                  Customize
+                <Link
+                  href={`${baseUrl}/market/staff-picks`}
+                  style={categories.text}
+                >
+                  Staff Picks
                 </Link>
               </Column>
             </Row>
           </Section>
           <Hr style={{ ...global.hr, marginTop: '12px' }} />
           <Section style={paddingY}>
-            <Row style={footer.policy}>
-              <Column>
-                <Text style={footer.text}>Web Version</Text>
-              </Column>
-              <Column>
-                <Link href="/privacy-policy" style={footer.text}>
-                  Privacy Policy
-                </Link>
-              </Column>
-            </Row>
             <Row>
-              <Text
-                style={{ ...footer.text, paddingTop: 30, paddingBottom: 30 }}
-              >
+              <Text style={{ ...footer.text, paddingBottom: '16px' }}>
                 Please contact us if you have any questions. (If you reply to
                 this email, we won&apos;t be able to see it.)
               </Text>
@@ -388,6 +392,7 @@ const global = {
     fontWeight: '700',
     textAlign: 'center',
     letterSpacing: '-1px',
+    color: '#000000',
   } as React.CSSProperties,
   text: {
     ...paragraph,

@@ -30,12 +30,18 @@ import {
 } from 'firebase/firestore';
 import { redirect, useSearchParams } from 'next/navigation';
 import React from 'react';
-import { Resend } from 'resend';
 import { RetrievePaymentIntent } from './actions';
 import ShipmentDetails from './shipmentDetails';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
+type EmailProduct = {
+  image_url: string;
+  url: string;
+  name: string;
+  type: string;
+  options?: string[];
+  price: number;
+  quantity: number;
+};
 type Email = {
   from: string;
   to: string[];
@@ -81,41 +87,6 @@ export default function ThankYouPage(props: Props) {
   const [showError, setShowError] = React.useState<boolean>(false);
   const setOrderComplete = cartStore((state) => state.setOrderComplete);
 
-  async function buildEmails(
-    email: string,
-    items: any,
-    shipments: _Shipment[],
-    order_id: string
-  ): Promise<Email[]> {
-    const emails: Email[] = [];
-    emails.push({
-      from: 'SubPort <no-reply@sub-port.com>',
-      to: [email],
-      subject: `Order Confirmation: ${order_id}`,
-      html: '<h1>it works!</h1>',
-    });
-    await Promise.all(
-      Object.keys(items).map(async (store) => {
-        emails.push({
-          from: 'SubPort <no-reply@sub-port.com>',
-          to: [email],
-          subject: `New Order: ${order_id}`,
-          html: '<h1>it works!</h1>',
-        });
-      })
-    );
-    await Promise.all(
-      shipments.map((shipment) => {
-        emails.push({
-          from: 'SubPort <no-reply@sub-port.com>',
-          to: [email],
-          subject: `Your digital downloads for order ${order_id}`,
-          html: '<h1>it works!</h1>',
-        });
-      })
-    );
-    return [];
-  }
   async function getCart(
     payment_intent: string | null,
     order_id: string | null
@@ -133,45 +104,67 @@ export default function ThankYouPage(props: Props) {
         const batch = writeBatch(db);
         const orderData = cartDoc.data();
         orderData.created_at = Timestamp.fromDate(new Date());
-
+        const today = new Date();
         let order_total = 0;
         let items_total = 0;
         let shipments_total = 0;
         let discounts_total = 0;
         const orders: Orders = {};
         const shipments: _Shipment[] = [];
+        const email_products: EmailProduct[] = [];
         await Promise.all(
           Object.keys(orderData.items).map(async (store) => {
             let item_total = 0;
             let service_total = 0;
             let store_discounts_total = 0;
             let store_shipping_total = 0;
+            const store_email_products: EmailProduct[] = [];
             const orderColRef: CollectionReference = collection(db, `orders`);
             const orderDoc: DocumentReference = doc(orderColRef);
             orderData.items[store].map((product: _Item) => {
+              let email_price = 0;
               if (
-                parseFloat(product.compare_at.toString()) > 0 &&
-                parseFloat(product.compare_at.toString()) <
-                  parseFloat(product.price.toString())
+                product.compare_at > 0 &&
+                product.compare_at < product.price
               ) {
-                order_total +=
-                  parseFloat(product.compare_at.toString()) * product.quantity;
-                item_total +=
-                  parseFloat(product.compare_at.toString()) * product.quantity;
+                order_total += product.compare_at * product.quantity;
+                item_total += product.compare_at * product.quantity;
                 service_total +=
-                  parseFloat(product.compare_at.toString()) *
+                  product.compare_at *
                   product.quantity *
-                  parseFloat(product.service_percent.toString());
+                  product.service_percent;
+                email_price = product.compare_at;
               } else {
-                order_total +=
-                  parseFloat(product.price.toString()) * product.quantity;
-                item_total +=
-                  parseFloat(product.price.toString()) * product.quantity;
+                order_total += product.price * product.quantity;
+                item_total += product.price * product.quantity;
                 service_total +=
-                  parseFloat(product.price.toString()) *
-                  product.quantity *
-                  parseFloat(product.service_percent.toString());
+                  product.price * product.quantity * product.service_percent;
+                email_price = product.price;
               }
+              email_products.push({
+                image_url: product.images[0],
+                url: `${process.env.BASEURL}/product/${product.id}`,
+                name: product.name,
+                type: product.product_type,
+                options:
+                  product.order_options !== undefined
+                    ? product.order_options
+                    : [''],
+                price: email_price,
+                quantity: product.quantity,
+              });
+              store_email_products.push({
+                image_url: product.images[0],
+                url: `${process.env.BASEURL}/product/${product.id}`,
+                name: product.name,
+                type: product.product_type,
+                options:
+                  product.order_options !== undefined
+                    ? product.order_options
+                    : [''],
+                price: email_price,
+                quantity: product.quantity,
+              });
             });
 
             if (orderData.promotions.hasOwnProperty(store)) {
@@ -289,7 +282,7 @@ export default function ThankYouPage(props: Props) {
             const uploadOrder = {
               address: orderData.address,
               billing_address: orderData.billing_address,
-              created_at: Timestamp.fromDate(new Date()),
+              created_at: Timestamp.fromDate(today),
               email: orderData.email,
               items: orderData.items[store],
               item_count: orderData.items[store].length,
@@ -304,7 +297,7 @@ export default function ThankYouPage(props: Props) {
             const order: Order = {
               address: orderData.address,
               billing_address: orderData.billing_address,
-              created_at: new Date(),
+              created_at: today,
               email: orderData.email,
               items: orderData.items[store],
               status: 'Unfulfilled',
@@ -317,6 +310,20 @@ export default function ThankYouPage(props: Props) {
             };
             await setDoc(orderDoc, uploadOrder);
             orders[orderDoc.id] = order;
+            await fetch('/api/new_order_store_email', {
+              method: 'POST',
+              body: JSON.stringify({
+                send_to: orderData.email,
+                store_id: store,
+                order_id: payment_intent.replace('pi_', ''),
+                order_date: format(today, 'LLL dd, yyyy'),
+                order_address: `${orderData.address.address_line1}, ${orderData.address.city_locality}, ${orderData.address.state_province} ${orderData.address.postal_code}`,
+                order_name: orderData.address.name,
+                currency: 'USD',
+                products: store_email_products,
+              }),
+            });
+
             const analyticsColRef: CollectionReference = collection(
               db,
               `stores/${store}/analytics`
@@ -337,15 +344,18 @@ export default function ThankYouPage(props: Props) {
           })
         );
         await batch.commit();
-        const emails: Email[] = await buildEmails(
-          orderData.email,
-          orderData.items,
-          shipments,
-          payment_intent.replace('pi_', '')
-        );
-        if (emails.length > 0) {
-          await resend.batch.send(emails);
-        }
+        await fetch('/api/new_order_customer_email', {
+          method: 'POST',
+          body: JSON.stringify({
+            send_to: orderData.email,
+            order_id: payment_intent.replace('pi_', ''),
+            order_date: format(today, 'LLL dd, yyyy'),
+            order_address: `${orderData.address.address_line1}, ${orderData.address.city_locality}, ${orderData.address.state_province} ${orderData.address.postal_code}`,
+            order_name: orderData.address.name,
+            currency: 'USD',
+            products: email_products,
+          }),
+        });
         setOrderComplete(true);
       }
       redirect(`/thank-you?order_id=${payment_intent.replace('pi_', '')}`);
@@ -377,17 +387,13 @@ export default function ThankYouPage(props: Props) {
               promotions: doc.data().promotions,
               store_id: doc.data().store_id,
             };
-            order_total += doc.data().order_total as number;
+            order_total += doc.data().order_total;
 
             doc.data().items.map((item: _Item) => {
-              if (
-                parseFloat(item.compare_at as unknown as string) > 0 &&
-                parseFloat(item.compare_at as unknown as string) <
-                  parseFloat(item.price as unknown as string)
-              ) {
-                item_total += parseFloat(item.compare_at as unknown as string);
+              if (item.compare_at > 0 && item.compare_at < item.price) {
+                item_total += item.compare_at;
               } else {
-                item_total += parseFloat(item.price as unknown as string);
+                item_total += item.price;
               }
             });
             const shipmentsRef: CollectionReference = collection(
@@ -502,7 +508,7 @@ export default function ThankYouPage(props: Props) {
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: 'USD',
-                }).format(orderInfo!.item_total)}
+                }).format(orderInfo!.item_total / 100)}
               </p>
             </section>
             <section className="flex items-center justify-between">
@@ -511,7 +517,7 @@ export default function ThankYouPage(props: Props) {
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: 'USD',
-                }).format(orderInfo!.shipments_total)}
+                }).format(orderInfo!.shipments_total / 100)}
               </p>
             </section>
             <section className="flex items-center justify-between">
@@ -520,7 +526,7 @@ export default function ThankYouPage(props: Props) {
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: 'USD',
-                }).format(orderInfo!.discounts_total)}
+                }).format(orderInfo!.discounts_total / 100)}
               </p>
             </section>
             <section className="flex items-center justify-between">
@@ -529,7 +535,7 @@ export default function ThankYouPage(props: Props) {
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: 'USD',
-                }).format(orderInfo!.service_fee_total)}
+                }).format(orderInfo!.service_fee_total / 100)}
               </p>
             </section>
             <section className="flex items-center justify-between">
@@ -538,7 +544,7 @@ export default function ThankYouPage(props: Props) {
                 {new Intl.NumberFormat('en-US', {
                   style: 'currency',
                   currency: 'USD',
-                }).format(orderInfo!.order_total)}
+                }).format(orderInfo!.order_total / 100)}
               </p>
             </section>
           </CardContent>
