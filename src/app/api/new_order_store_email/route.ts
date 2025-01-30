@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
         react: NewOrderStore({
             order_id: data.order_id,
             order_date: data.order_date,
-            tracking_id: data.tracking_id,
+            store_id: data.store_id,
             order_address: data.order_address,
             order_name: data.order_name,
             currency: data.currency,
