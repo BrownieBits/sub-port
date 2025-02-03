@@ -59,7 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
     publisher: 'SubPort',
     creator: 'SubPort',
     robots: 'index, follow',
-    icons: ['/favicon.svg'],
+    icons: ['/favicon3.svg'],
   };
 }
 
@@ -72,7 +72,7 @@ export default function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body
-        className={`min-h-screen bg-background ${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`bg-background min-h-screen ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider
           attribute="class"

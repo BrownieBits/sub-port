@@ -41,7 +41,7 @@ export function AppSidebar() {
             >
               <Link
                 href="/"
-                className={cn('w-10', {
+                className={cn('w-8', {
                   'w-full': !open && !isMobile,
                 })}
               >
@@ -49,7 +49,7 @@ export function AppSidebar() {
               </Link>
               <Link
                 href="/"
-                className={cn('w-16', {
+                className={cn('w-24', {
                   block: open,
                   hidden: !open && !isMobile,
                 })}
