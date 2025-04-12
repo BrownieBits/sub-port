@@ -13,7 +13,7 @@ export const ShowAvatar = ({
   size?: 'sm' | 'md' | 'lg' | undefined;
 }) => {
   const docRef = doc(db, 'stores', store_id!);
-  const [value, loadingDoc, docError] = useDocument(docRef); // TODO REMOVE
+  const [value, loadingDoc] = useDocument(docRef); // TODO REMOVE
   if (
     loadingDoc ||
     (value?.exists() &&

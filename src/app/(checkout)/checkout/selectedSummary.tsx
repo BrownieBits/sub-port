@@ -23,7 +23,7 @@ export default function SelectedSummary() {
     <Card>
       <CardContent className="p-0">
         <section className="flex items-center gap-4 p-4">
-          <p className="w-[75px] text-sm text-muted-foreground">Contact</p>
+          <p className="text-muted-foreground w-[75px] text-sm">Contact</p>
           <p className="flex-1 truncate">
             {cart_address?.email?.toUpperCase()}
           </p>
@@ -31,7 +31,7 @@ export default function SelectedSummary() {
         </section>
         <Separator />
         <section className="flex items-center gap-4 p-4">
-          <p className="w-[75px] text-sm text-muted-foreground">Ship Address</p>
+          <p className="text-muted-foreground w-[75px] text-sm">Ship Address</p>
           <p className="flex-1 truncate">
             {cart_address?.address_line1} {cart_address?.address_line2}{' '}
             {cart_address?.city_locality}, {cart_address?.state_province}{' '}
@@ -41,7 +41,7 @@ export default function SelectedSummary() {
         </section>
         <Separator />
         <section className="flex items-center gap-4 p-4">
-          <p className="w-[75px] text-sm text-muted-foreground">
+          <p className="text-muted-foreground w-[75px] text-sm">
             Billing Address
           </p>
           <p className="flex-1 truncate">
@@ -60,7 +60,7 @@ export default function SelectedSummary() {
             <>
               <Separator />
               <section className="flex items-center gap-4 p-4">
-                <p className="w-[75px] text-sm text-muted-foreground">
+                <p className="text-muted-foreground w-[75px] text-sm">
                   Shipment
                   {shipments.size > 1 ? 's' : ''}
                 </p>
@@ -85,7 +85,7 @@ export default function SelectedSummary() {
                               ?.rate?.service_type.toUpperCase()}
                           </p>
 
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-muted-foreground text-sm">
                             Estimated Delivery - {format(date, 'LLL dd')}
                           </p>
                         </aside>

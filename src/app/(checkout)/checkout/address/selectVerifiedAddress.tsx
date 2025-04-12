@@ -24,9 +24,9 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import { useMediaQuery } from '@/hooks/use-media-query';
+import { _Address } from '@/lib/types';
 import cartStore from '@/stores/cartStore';
-import { _Address } from '@/stores/cartStore.types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -131,7 +131,7 @@ export default function SelectVerifiedAddress(props: Props) {
                               <FormControl>
                                 <RadioGroupItem value="matched" />
                               </FormControl>
-                              <FormLabel className="flex flex-col gap-1 text-foreground">
+                              <FormLabel className="text-foreground flex flex-col gap-1">
                                 <p>
                                   <b>Verified Address:</b>
                                 </p>
@@ -152,7 +152,7 @@ export default function SelectVerifiedAddress(props: Props) {
                               <FormControl>
                                 <RadioGroupItem value="original" />
                               </FormControl>
-                              <FormLabel className="flex flex-col gap-1 text-foreground">
+                              <FormLabel className="text-foreground flex flex-col gap-1">
                                 <p>
                                   <b>Original Address:</b>
                                 </p>
@@ -212,7 +212,7 @@ export default function SelectVerifiedAddress(props: Props) {
                             <FormControl>
                               <RadioGroupItem value="matched" />
                             </FormControl>
-                            <FormLabel className="flex flex-col gap-1 text-foreground">
+                            <FormLabel className="text-foreground flex flex-col gap-1">
                               <p>
                                 <b>Verified Address:</b>
                               </p>
@@ -233,7 +233,7 @@ export default function SelectVerifiedAddress(props: Props) {
                             <FormControl>
                               <RadioGroupItem value="original" />
                             </FormControl>
-                            <FormLabel className="flex flex-col gap-1 text-foreground">
+                            <FormLabel className="text-foreground flex flex-col gap-1">
                               <p>
                                 <b>Original Address:</b>
                               </p>

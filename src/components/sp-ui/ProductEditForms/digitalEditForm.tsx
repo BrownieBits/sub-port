@@ -36,7 +36,7 @@ import {
 } from '@/components/ui/tooltip';
 import { currency_list } from '@/lib/currencyList';
 import { db, storage } from '@/lib/firebase';
-import { ProductImage } from '@/lib/types';
+import { _ProductImage } from '@/lib/types';
 import { faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import {
   faCaretLeft,
@@ -169,7 +169,7 @@ const formSchema = z.object({
   }),
   tags: z.array(z.string()),
   sku: z.string().optional(),
-  is_featured: z.boolean().default(false),
+  is_featured: z.boolean().default(false).optional(),
 });
 type Props = {
   storeID: string;
@@ -177,7 +177,7 @@ type Props = {
   docID?: string;
   name?: string;
   description?: string;
-  product_images?: ProductImage[];
+  product_images?: _ProductImage[];
   digital_file?: string;
   digital_file_name?: string;
   tags?: string[];
@@ -195,7 +195,7 @@ export default function DigitalEditForm(props: Props) {
   const [disabled, setDisabled] = React.useState<boolean>(false);
   const productImagesRef = React.useRef<HTMLInputElement>(null);
   const digitalFileRef = React.useRef<HTMLInputElement>(null);
-  const [productImages, setProductImages] = React.useState<ProductImage[]>([]);
+  const [productImages, setProductImages] = React.useState<_ProductImage[]>([]);
   const [productImageRemovals, setProductImageRemovals] = React.useState<
     string[]
   >([]);
@@ -565,7 +565,7 @@ export default function DigitalEditForm(props: Props) {
                         size="sm"
                         title="View Product"
                         asChild
-                        className="flex h-auto w-full justify-start py-0 text-foreground"
+                        className="text-foreground flex h-auto w-full justify-start py-0"
                       >
                         <Link href={`/product/${props.docID}`}>
                           <FontAwesomeIcon
@@ -585,7 +585,7 @@ export default function DigitalEditForm(props: Props) {
                           size="sm"
                           title="Make Private"
                           onClick={() => ChangeStatus('Private')}
-                          className="flex h-auto w-full justify-start py-0 text-foreground"
+                          className="text-foreground flex h-auto w-full justify-start py-0"
                         >
                           <FontAwesomeIcon
                             className="icon mr-4"
@@ -601,7 +601,7 @@ export default function DigitalEditForm(props: Props) {
                           size="sm"
                           title="Make Publix"
                           onClick={() => ChangeStatus('Public')}
-                          className="flex h-auto w-full justify-start py-0 text-foreground"
+                          className="text-foreground flex h-auto w-full justify-start py-0"
                         >
                           <FontAwesomeIcon className="icon mr-4" icon={faEye} />
                           Make Public
@@ -615,7 +615,7 @@ export default function DigitalEditForm(props: Props) {
                         size="sm"
                         title="Delete"
                         onClick={() => ChangeStatus('Delete')}
-                        className="flex h-auto w-full justify-start py-0 text-foreground"
+                        className="text-foreground flex h-auto w-full justify-start py-0"
                       >
                         <FontAwesomeIcon className="icon mr-4" icon={faTrash} />
                         Delete
@@ -756,7 +756,7 @@ export default function DigitalEditForm(props: Props) {
                               event.preventDefault();
                               productImagesRef.current?.click();
                             }}
-                            className="hover: h-full w-full rounded text-foreground"
+                            className="hover: text-foreground h-full w-full rounded"
                           >
                             <p className="text-4xl">
                               <FontAwesomeIcon
@@ -773,14 +773,14 @@ export default function DigitalEditForm(props: Props) {
                     <section className="grid grid-cols-2 grid-rows-3 gap-4 md:grid-cols-5 md:grid-rows-2">
                       <section className="col-span-2 row-span-2 aspect-square w-full">
                         <section className="relative flex aspect-square items-center justify-center overflow-hidden rounded">
-                          <section className="absolute right-[2px] top-[2px]">
+                          <section className="absolute top-[2px] right-[2px]">
                             <Button
                               size="sm"
                               onClick={(event) => {
                                 event.preventDefault();
                                 removeImage(productImages[0].id);
                               }}
-                              className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+                              className="border-destructive bg-destructive text-destructive-foreground hover:bg-destructive h-auto p-2"
                             >
                               <FontAwesomeIcon
                                 className="icon"
@@ -806,7 +806,7 @@ export default function DigitalEditForm(props: Props) {
                               event.preventDefault();
                               productImagesRef.current?.click();
                             }}
-                            className="hover: h-full w-full rounded text-foreground"
+                            className="hover: text-foreground h-full w-full rounded"
                           >
                             <p className="text-4xl">
                               <FontAwesomeIcon
@@ -1036,7 +1036,7 @@ export default function DigitalEditForm(props: Props) {
                         </FormControl>
                         <FormDescription>
                           Use{' '}
-                          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                          <kbd className="bg-muted text-muted-foreground pointer-events-none inline-flex h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none">
                             Enter
                           </kbd>{' '}
                           to add tags to list.
@@ -1066,7 +1066,7 @@ export default function DigitalEditForm(props: Props) {
                     control={form.control}
                     name="is_featured"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormItem className="flex flex-row items-start space-y-0 space-x-3">
                         <FormControl>
                           <Checkbox
                             checked={field.value}

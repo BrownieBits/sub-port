@@ -2,7 +2,7 @@
 
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { _Shipment } from '@/stores/cartStore.types';
+import { _Shipment } from '@/lib/types';
 import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
@@ -25,7 +25,7 @@ export default function DigitalShipment(props: Props) {
                 key={`shipping-item-${item.name!}${item.options.join('')}`}
               >
                 <section className="flex w-full flex-1 flex-col">
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm">
                     <b>{item.name!} - </b>
                     {item.options.join(', ')} x {item.quantity}
                   </p>

@@ -1,6 +1,6 @@
 'use server';
 
-import { _Address } from "@/stores/cartStore.types";
+import { _Address } from "@/lib/types";
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY!);
 

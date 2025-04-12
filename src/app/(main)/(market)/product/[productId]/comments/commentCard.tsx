@@ -8,8 +8,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { db } from '@/lib/firebase';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import { cn } from '@/lib/utils';
 import userStore from '@/stores/userStore';
 import {
@@ -205,7 +205,7 @@ export default function CommentCard(props: {
             {props.is_pinned && (
               <p className="text-muted-foreground">
                 <FontAwesomeIcon
-                  className="icon !h-3 !w-3 text-muted-foreground"
+                  className="icon text-muted-foreground !h-3 !w-3"
                   icon={faThumbTack}
                 />
               </p>

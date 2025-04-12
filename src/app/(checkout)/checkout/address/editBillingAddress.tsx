@@ -34,11 +34,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { country_list } from '@/lib/countryList';
 import { db } from '@/lib/firebase';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import { _Address } from '@/lib/types';
 import cartStore from '@/stores/cartStore';
-import { _Address } from '@/stores/cartStore.types';
 import { faClose, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -268,7 +268,7 @@ export default function EditBillingAddress(props: Props) {
                           <FormItem className="w-full">
                             <FormLabel>
                               Apt / Suite / Other{' '}
-                              <span className="text-xs text-muted-foreground">
+                              <span className="text-muted-foreground text-xs">
                                 (optional)
                               </span>
                             </FormLabel>
@@ -346,7 +346,7 @@ export default function EditBillingAddress(props: Props) {
                           <FormItem className="w-full">
                             <FormLabel>
                               Phone{' '}
-                              <span className="text-xs text-muted-foreground">
+                              <span className="text-muted-foreground text-xs">
                                 (optional)
                               </span>
                             </FormLabel>
@@ -510,7 +510,7 @@ export default function EditBillingAddress(props: Props) {
                         <FormItem className="w-full">
                           <FormLabel>
                             Apt / Suite / Other{' '}
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-muted-foreground text-xs">
                               (optional)
                             </span>
                           </FormLabel>
@@ -588,7 +588,7 @@ export default function EditBillingAddress(props: Props) {
                         <FormItem className="w-full">
                           <FormLabel>
                             Phone{' '}
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-muted-foreground text-xs">
                               (optional)
                             </span>
                           </FormLabel>

@@ -12,8 +12,8 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { db } from '@/lib/firebase';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import userStore from '@/stores/userStore';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -185,7 +185,7 @@ export default function ProductComments(props: {
       const storeSnapshot = await getDocs(storesQuery);
       const storeInfo: Stores = { ...stores };
       storeSnapshot.docs.map((store) => {
-        if (!storeInfo.hasOwnProperty(store.id)) {
+        if (!Object.prototype.hasOwnProperty.call(storeInfo, store.id)) {
           storeInfo[store.id] = {
             store_name: store.data().name,
             avatar_url: store.data().avatar_url,

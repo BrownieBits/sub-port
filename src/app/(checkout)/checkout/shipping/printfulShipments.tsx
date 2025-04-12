@@ -11,8 +11,8 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
+import { _Address, _Item, _Rate } from '@/lib/types';
 import cartStore from '@/stores/cartStore';
-import { _Address, _Item, _Rate } from '@/stores/cartStore.types';
 import { faUps, faUsps } from '@fortawesome/free-brands-svg-icons';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -83,7 +83,9 @@ export default function PrintfulShipment(props: Props) {
     });
     rates.map((rate) => {
       if (rate.delivery_days !== null) {
-        if (shipRates.hasOwnProperty(rate.service_code)) {
+        if (
+          Object.prototype.hasOwnProperty.call(shipRates, rate.service_code)
+        ) {
           if (rate.rate < shipRates[rate.service_code].rate) {
             shipRates[rate.service_code] = rate;
           }
@@ -142,7 +144,7 @@ export default function PrintfulShipment(props: Props) {
                   key={`shipping-item-${item.name}${item.options.join('')}`}
                 >
                   <section className="flex w-full flex-1 flex-col">
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       <b>{item.name} - </b>
                       {item.options.join(', ')} x {item.quantity}
                     </p>
@@ -196,7 +198,7 @@ export default function PrintfulShipment(props: Props) {
                                     </p>
                                     <section className="flex flex-col gap-1">
                                       <p>{rate.service_type}</p>
-                                      <p className="text-xs text-muted-foreground">
+                                      <p className="text-muted-foreground text-xs">
                                         Est. Delivery Date:{' '}
                                         {format(
                                           rate.estimated_delivery_date!,

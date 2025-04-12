@@ -1,6 +1,6 @@
 import { Timestamp } from "firebase/firestore";
 
-export type _DBAddress = {
+type _DBAddress = {
     address_line1: string;
     address_line2: string;
     address_line3: string;
@@ -17,3 +17,4 @@ export type _DBAddress = {
     created_at: Timestamp;
     updated_at: Timestamp
 }
+export type { _DBAddress };

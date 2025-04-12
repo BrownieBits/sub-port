@@ -3,7 +3,7 @@
 import ProductCard from '@/components/sp-ui/ProductCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
-import { GridProduct } from '@/lib/types';
+import { _GridProduct } from '@/lib/types';
 import {
   collection,
   CollectionReference,
@@ -20,12 +20,12 @@ import React from 'react';
 import { useInView } from 'react-intersection-observer';
 
 type Props = {
-  products: GridProduct[];
+  products: _GridProduct[];
   lastProduct?: DocumentData;
 };
 
 export function HomepageProducts(props: Props) {
-  const [moreProducts, setMoreProducts] = React.useState<GridProduct[]>([]);
+  const [moreProducts, setMoreProducts] = React.useState<_GridProduct[]>([]);
   const [lastProduct, setLastProduct] = React.useState<
     DocumentData | undefined
   >(undefined);
@@ -51,7 +51,7 @@ export function HomepageProducts(props: Props) {
     } else {
       setLastProduct(undefined);
     }
-    const gridProducts: GridProduct[] = productsDocs.docs.map((product) => {
+    const gridProducts: _GridProduct[] = productsDocs.docs.map((product) => {
       return {
         name: product.data().name,
         images: product.data().images,
@@ -120,7 +120,7 @@ export function HomepageProducts(props: Props) {
                     <Skeleton className="h-[28px] w-[250px]" />
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
-                  <section className="text-sm text-muted-foreground">
+                  <section className="text-muted-foreground text-sm">
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
                 </section>
@@ -141,7 +141,7 @@ export function HomepageProducts(props: Props) {
                     <Skeleton className="h-[28px] w-[250px]" />
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
-                  <section className="text-sm text-muted-foreground">
+                  <section className="text-muted-foreground text-sm">
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
                 </section>
@@ -162,7 +162,7 @@ export function HomepageProducts(props: Props) {
                     <Skeleton className="h-[28px] w-[250px]" />
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
-                  <section className="text-sm text-muted-foreground">
+                  <section className="text-muted-foreground text-sm">
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
                 </section>

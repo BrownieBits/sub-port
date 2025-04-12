@@ -1,8 +1,8 @@
 'use client';
 
 import { auth, db } from '@/lib/firebase';
+import { _SetUserProps } from '@/lib/types';
 import userStore from '@/stores/userStore';
-import { _SetUserProps } from '@/stores/userStore.types';
 import { deleteCookie, setCookie } from 'cookies-next/client';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import {

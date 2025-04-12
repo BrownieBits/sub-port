@@ -3,7 +3,7 @@
 import ProductCard from '@/components/sp-ui/ProductCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
-import { GridProduct } from '@/lib/types';
+import { _GridProduct } from '@/lib/types';
 import {
   collection,
   CollectionReference,
@@ -20,7 +20,7 @@ import React from 'react';
 import { useInView } from 'react-intersection-observer';
 
 export function ProductFeed(props: { store_id: string }) {
-  const [products, setproducts] = React.useState<GridProduct[] | undefined>(
+  const [products, setproducts] = React.useState<_GridProduct[] | undefined>(
     undefined
   );
   const [lastProduct, setLastProduct] = React.useState<
@@ -55,7 +55,7 @@ export function ProductFeed(props: { store_id: string }) {
         setproducts([]);
       }
     } else {
-      const gridProducts: GridProduct[] = productsDocs.docs.map((product) => {
+      const gridProducts: _GridProduct[] = productsDocs.docs.map((product) => {
         return {
           name: product.data().name,
           images: product.data().images,
@@ -100,7 +100,7 @@ export function ProductFeed(props: { store_id: string }) {
                     <Skeleton className="h-[28px] w-[250px]" />
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
-                  <section className="text-sm text-muted-foreground">
+                  <section className="text-muted-foreground text-sm">
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
                 </section>
@@ -121,7 +121,7 @@ export function ProductFeed(props: { store_id: string }) {
                     <Skeleton className="h-[28px] w-[250px]" />
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
-                  <section className="text-sm text-muted-foreground">
+                  <section className="text-muted-foreground text-sm">
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
                 </section>
@@ -142,7 +142,7 @@ export function ProductFeed(props: { store_id: string }) {
                     <Skeleton className="h-[28px] w-[250px]" />
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
-                  <section className="text-sm text-muted-foreground">
+                  <section className="text-muted-foreground text-sm">
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
                 </section>
@@ -192,7 +192,7 @@ export function ProductFeed(props: { store_id: string }) {
                     <Skeleton className="h-[28px] w-[250px]" />
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
-                  <section className="text-sm text-muted-foreground">
+                  <section className="text-muted-foreground text-sm">
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
                 </section>
@@ -213,7 +213,7 @@ export function ProductFeed(props: { store_id: string }) {
                     <Skeleton className="h-[28px] w-[250px]" />
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
-                  <section className="text-sm text-muted-foreground">
+                  <section className="text-muted-foreground text-sm">
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
                 </section>
@@ -234,7 +234,7 @@ export function ProductFeed(props: { store_id: string }) {
                     <Skeleton className="h-[28px] w-[250px]" />
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
-                  <section className="text-sm text-muted-foreground">
+                  <section className="text-muted-foreground text-sm">
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
                 </section>

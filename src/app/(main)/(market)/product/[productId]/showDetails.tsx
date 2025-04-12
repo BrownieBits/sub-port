@@ -19,7 +19,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import {
   faBinoculars,
   faClose,
@@ -57,7 +57,7 @@ export const ShowDetails = (props: {
           <p className="text-muted-foreground">
             Product Type: {props.product_type}
           </p>
-          <p className="line-clamp-2 whitespace-pre-wrap text-muted-foreground">
+          <p className="text-muted-foreground line-clamp-2 whitespace-pre-wrap">
             {props.text.replaceAll('\\n', '\n')}
           </p>
           <Dialog open={open} onOpenChange={setOpen}>
@@ -75,14 +75,14 @@ export const ShowDetails = (props: {
                 <DialogTitle>Product Details</DialogTitle>
                 <DialogDescription asChild>
                   <section className="flex flex-col gap-4">
-                    <p className="pt-4 font-bold text-foreground">
+                    <p className="text-foreground pt-4 font-bold">
                       Product Type: {props.product_type}
                     </p>
-                    <span className="whitespace-pre-wrap text-foreground">
+                    <span className="text-foreground whitespace-pre-wrap">
                       {props.text.replaceAll('\\n', '\n')}
                     </span>
 
-                    <span className="flex w-full justify-start gap-0 text-foreground">
+                    <span className="text-foreground flex w-full justify-start gap-0">
                       <FontAwesomeIcon
                         className="icon mr-2 h-4 w-4"
                         icon={faGlobe}
@@ -90,7 +90,7 @@ export const ShowDetails = (props: {
                       htttps://{process.env.NEXT_PUBLIC_BASE_URL}/product/
                       {props.product_id}
                     </span>
-                    <span className="flex w-full justify-start gap-0 text-foreground">
+                    <span className="text-foreground flex w-full justify-start gap-0">
                       <FontAwesomeIcon
                         className="icon mr-2 h-4 w-4"
                         icon={faStore}
@@ -153,7 +153,7 @@ export const ShowDetails = (props: {
         <p className="text-muted-foreground">
           Product Type: {props.product_type}
         </p>
-        <p className="line-clamp-2 whitespace-pre-wrap text-muted-foreground">
+        <p className="text-muted-foreground line-clamp-2 whitespace-pre-wrap">
           {props.text.replaceAll('\\n', '\n')}
         </p>
         <Drawer open={open} onOpenChange={setOpen}>
@@ -178,13 +178,13 @@ export const ShowDetails = (props: {
               </DrawerTitle>
               <DrawerDescription asChild>
                 <section className="flex w-full flex-col items-start gap-4 text-left">
-                  <p className="font-bold text-foreground">
+                  <p className="text-foreground font-bold">
                     Product Type: {props.product_type}
                   </p>
-                  <span className="whitespace-pre-wrap text-foreground">
+                  <span className="text-foreground whitespace-pre-wrap">
                     {props.text.replaceAll('\\n', '\n')}
                   </span>
-                  <span className="flex w-full justify-start gap-0 text-foreground">
+                  <span className="text-foreground flex w-full justify-start gap-0">
                     <FontAwesomeIcon
                       className="icon mr-2 h-4 w-4"
                       icon={faGlobe}
@@ -192,7 +192,7 @@ export const ShowDetails = (props: {
                     htttps://{process.env.NEXT_PUBLIC_BASE_URL}/product/
                     {props.product_id}
                   </span>
-                  <span className="flex w-full justify-start gap-0 text-foreground">
+                  <span className="text-foreground flex w-full justify-start gap-0">
                     <FontAwesomeIcon
                       className="icon mr-2 h-4 w-4"
                       icon={faStore}

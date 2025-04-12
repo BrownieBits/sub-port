@@ -8,8 +8,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { db } from '@/lib/firebase';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import {
   collection,
   CollectionReference,

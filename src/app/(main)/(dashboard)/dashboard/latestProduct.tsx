@@ -12,7 +12,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
-import { GridProduct } from '@/lib/types';
+import { _GridProduct } from '@/lib/types';
 import userStore from '@/stores/userStore';
 import { Unsubscribe } from 'firebase/auth';
 import {
@@ -32,7 +32,7 @@ export const LatestProduct = (props: { user_id: string }) => {
   const user_loaded = userStore((state) => state.user_loaded);
   const user_store = userStore((state) => state.user_store);
   const [latestProduct, setLatestProduct] = React.useState<
-    GridProduct | '' | null
+    _GridProduct | '' | null
   >(null);
   React.useEffect(() => {
     const getLatest: Unsubscribe = async () => {
@@ -47,7 +47,7 @@ export const LatestProduct = (props: { user_id: string }) => {
         if (snapshot.empty) {
           setLatestProduct('');
         } else {
-          const newProduct: GridProduct = {
+          const newProduct: _GridProduct = {
             name: snapshot.docs[0].data().name as string,
             images: snapshot.docs[0].data().images as string[],
             product_type: snapshot.docs[0].data().product_type as string,

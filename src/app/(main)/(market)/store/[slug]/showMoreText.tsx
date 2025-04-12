@@ -18,8 +18,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { country_list } from '@/lib/countryList';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import {
   faBinoculars,
   faClose,
@@ -52,7 +52,7 @@ export const ShowMoreText = (props: {
 
   if (isDesktop) {
     return (
-      <p className="whitespace-pre-wrap pt-[5px] text-sm text-muted-foreground">
+      <p className="text-muted-foreground pt-[5px] text-sm whitespace-pre-wrap">
         {props.text.length < props.howManyToShow
           ? props.text.replaceAll('\\n', '\n')
           : `${props.text.replaceAll('\\n', '\n').substring(0, props.howManyToShow)}...`}
@@ -60,7 +60,7 @@ export const ShowMoreText = (props: {
           <DialogTrigger asChild>
             <Button
               variant="link"
-              className="h-auto p-[0] px-4 text-foreground hover:no-underline"
+              className="text-foreground h-auto p-[0] px-4 hover:no-underline"
               asChild
             >
               <span>...more</span>
@@ -72,13 +72,13 @@ export const ShowMoreText = (props: {
                 <h3>About</h3>
               </DialogTitle>
               <DialogDescription className="flex flex-col">
-                <span className="whitespace-pre-wrap pb-4 text-foreground">
+                <span className="text-foreground pb-4 whitespace-pre-wrap">
                   {props.text.replaceAll('\\n', '\n')}
                 </span>
-                <span className="pb-2 text-xl font-bold text-foreground">
+                <span className="text-foreground pb-2 text-xl font-bold">
                   Store Details
                 </span>
-                <span className="flex w-full justify-start gap-0 pb-4 text-foreground">
+                <span className="text-foreground flex w-full justify-start gap-0 pb-4">
                   <FontAwesomeIcon
                     className="icon mr-2 h-4 w-4"
                     icon={faGlobe}
@@ -86,7 +86,7 @@ export const ShowMoreText = (props: {
                   htttps://{process.env.NEXT_PUBLIC_BASE_URL}/store/
                   {props.store_name}
                 </span>
-                <span className="pb-4 text-foreground">
+                <span className="text-foreground pb-4">
                   <FontAwesomeIcon
                     className="icon mr-2 h-4 w-4"
                     icon={faHeart}
@@ -102,14 +102,14 @@ export const ShowMoreText = (props: {
                   {props.product_count} product
                   {props.product_count > 1 ? 's' : ''}
                 </span> */}
-                <span className="pb-4 text-foreground">
+                <span className="text-foreground pb-4">
                   <FontAwesomeIcon
                     className="icon mr-2 h-4 w-4"
                     icon={faBinoculars}
                   />
                   {props.view_count} view{props.view_count > 1 ? 's' : ''}
                 </span>
-                <span className="pb-4 text-foreground">
+                <span className="text-foreground pb-4">
                   <FontAwesomeIcon
                     className="icon mr-2 h-4 w-4"
                     icon={faInfoCircle}
@@ -121,7 +121,7 @@ export const ShowMoreText = (props: {
                     year: 'numeric',
                   }).format(timestamp)}
                 </span>
-                <span className="pb-8 text-foreground">
+                <span className="text-foreground pb-8">
                   <FontAwesomeIcon
                     className="icon mr-2 h-4 w-4"
                     icon={faGlobeAmericas}
@@ -158,7 +158,7 @@ export const ShowMoreText = (props: {
   }
 
   return (
-    <p className="whitespace-pre-wrap pt-[5px] text-sm text-muted-foreground">
+    <p className="text-muted-foreground pt-[5px] text-sm whitespace-pre-wrap">
       {props.text.length < props.howManyToShow
         ? props.text
         : `${props.text.substring(0, props.howManyToShow)}...`}
@@ -167,7 +167,7 @@ export const ShowMoreText = (props: {
         <DrawerTrigger asChild>
           <Button
             variant="link"
-            className="h-auto p-[0] px-4 text-foreground hover:no-underline"
+            className="text-foreground h-auto p-[0] px-4 hover:no-underline"
             asChild
           >
             <span>...more</span>
@@ -184,18 +184,18 @@ export const ShowMoreText = (props: {
               </DrawerClose>
             </DrawerTitle>
             <DrawerDescription className="flex w-full flex-col items-start text-left">
-              <span className="whitespace-pre-wrap pb-4 text-foreground">
+              <span className="text-foreground pb-4 whitespace-pre-wrap">
                 {props.text.replaceAll('\\n', '\n')}
               </span>
-              <span className="pb-2 text-xl font-bold text-foreground">
+              <span className="text-foreground pb-2 text-xl font-bold">
                 Store Details
               </span>
-              <span className="flex w-full justify-start gap-0 pb-4 text-foreground">
+              <span className="text-foreground flex w-full justify-start gap-0 pb-4">
                 <FontAwesomeIcon className="icon mr-2 h-4 w-4" icon={faGlobe} />
                 htttps://{process.env.NEXT_PUBLIC_BASE_URL}/store/
                 {props.store_name}
               </span>
-              <span className="pb-4 text-foreground">
+              <span className="text-foreground pb-4">
                 <FontAwesomeIcon className="icon mr-2 h-4 w-4" icon={faHeart} />
                 {props.subscription_count} subscriber
                 {props.subscription_count > 1 ? 's' : ''}
@@ -205,14 +205,14 @@ export const ShowMoreText = (props: {
                 {props.product_count} product
                 {props.product_count > 1 ? 's' : ''}
               </span> */}
-              <span className="pb-4 text-foreground">
+              <span className="text-foreground pb-4">
                 <FontAwesomeIcon
                   className="icon mr-2 h-4 w-4"
                   icon={faBinoculars}
                 />
                 {props.view_count} view{props.view_count > 1 ? 's' : ''}
               </span>
-              <span className="pb-4 text-foreground">
+              <span className="text-foreground pb-4">
                 <FontAwesomeIcon
                   className="icon mr-2 h-4 w-4"
                   icon={faInfoCircle}
@@ -224,7 +224,7 @@ export const ShowMoreText = (props: {
                   year: 'numeric',
                 }).format(timestamp)}
               </span>
-              <span className="pb-8 text-foreground">
+              <span className="text-foreground pb-8">
                 <FontAwesomeIcon
                   className="icon mr-2 h-4 w-4"
                   icon={faGlobeAmericas}

@@ -4,13 +4,8 @@ import { Logo } from '@/components/sp-ui/Logo';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
+import { _Address, _Item, _Promotion, _Shipment } from '@/lib/types';
 import cartStore from '@/stores/cartStore';
-import {
-  _Address,
-  _Item,
-  _Promotion,
-  _Shipment,
-} from '@/stores/cartStore.types';
 import { faTruckFast } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format } from 'date-fns';
@@ -167,7 +162,7 @@ export default function ThankYouPage(props: Props) {
               });
             });
 
-            if (orderData.promotions.hasOwnProperty(store)) {
+            if (Object.prototype.hasOwnProperty.call(orderData, store)) {
               const expiration = orderData.promotions[store]
                 .expiration_date as Timestamp;
               let expiration_good = true;
@@ -289,7 +284,7 @@ export default function ThankYouPage(props: Props) {
               status: 'Unfulfilled',
               payment_intent: payment_intent,
               order_total: item_total + store_shipping_total + service_total,
-              promotions: orderData.promotions.hasOwnProperty(store)
+              promotions: Object.prototype.hasOwnProperty.call(orderData, store)
                 ? orderData.promotions[store]
                 : null,
               store_id: store,
@@ -303,7 +298,7 @@ export default function ThankYouPage(props: Props) {
               status: 'Unfulfilled',
               payment_intent: payment_intent,
               order_total: item_total + store_shipping_total + service_total,
-              promotions: orderData.promotions.hasOwnProperty(store)
+              promotions: Object.prototype.hasOwnProperty.call(orderData, store)
                 ? orderData.promotions[store]
                 : null,
               store_id: store,

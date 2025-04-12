@@ -27,7 +27,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { cn } from '@/lib/utils';
 import { faClose, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -45,7 +45,7 @@ const formSchema = z.object({
       message: 'Prompt must be no more than 256 characters long',
     }),
 });
-export const AiDescriptionWriter = (props: {}) => {
+export const AiDescriptionWriter = () => {
   const [open, setOpen] = React.useState(false);
   const [thinking, setThinking] = React.useState(false);
   const [generation, setGeneration] = React.useState<string>('');
@@ -77,7 +77,7 @@ export const AiDescriptionWriter = (props: {}) => {
               event.preventDefault();
               setOpen(true);
             }}
-            className="h-auto p-[0] px-4 text-foreground hover:no-underline"
+            className="text-foreground h-auto p-[0] px-4 hover:no-underline"
           >
             Click Here
           </Button>
@@ -96,7 +96,7 @@ export const AiDescriptionWriter = (props: {}) => {
                       control={aiForm.control}
                       name="prompt"
                       render={({ field }) => (
-                        <FormItem className="w-full text-foreground">
+                        <FormItem className="text-foreground w-full">
                           <FormLabel>Prompt</FormLabel>
                           <FormControl>
                             <Textarea
@@ -129,7 +129,7 @@ export const AiDescriptionWriter = (props: {}) => {
                 )}
 
                 <p
-                  className={cn('whitespace-pre-wrap pt-4 text-foreground', {
+                  className={cn('text-foreground pt-4 whitespace-pre-wrap', {
                     hidden: generation === '',
                   })}
                 >
@@ -150,7 +150,7 @@ export const AiDescriptionWriter = (props: {}) => {
           variant="outline"
           size="sm"
           onClick={(event) => event.preventDefault()}
-          className="h-auto p-[0] px-4 text-foreground hover:no-underline"
+          className="text-foreground h-auto p-[0] px-4 hover:no-underline"
         >
           Click Here
         </Button>
@@ -179,7 +179,7 @@ export const AiDescriptionWriter = (props: {}) => {
                     control={aiForm.control}
                     name="prompt"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Prompt</FormLabel>
                         <FormControl>
                           <Textarea
@@ -212,7 +212,7 @@ export const AiDescriptionWriter = (props: {}) => {
               )}
 
               <p
-                className={cn('whitespace-pre-wrap pt-4 text-foreground', {
+                className={cn('text-foreground pt-4 whitespace-pre-wrap', {
                   hidden: generation === '',
                 })}
               >

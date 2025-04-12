@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { db } from '@/lib/firebase';
-import { Item } from '@/lib/types';
+import { _Item } from '@/lib/types';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,7 +35,7 @@ import { z } from 'zod';
 
 type Props = {
   cart_id: string;
-  item: Item;
+  item: _Item;
   index: number;
 };
 const formSchema = z.object({

@@ -2,6 +2,6 @@
 
 export default function Loading() {
   return (
-    <section className="overflow-y-auto overflow-x-hidden">Loading</section>
+    <section className="overflow-x-hidden overflow-y-auto">Loading</section>
   );
 }

@@ -1,6 +1,7 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-  reactStrictMode: false,
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  /* config options here */
   images: {
     remotePatterns: [
       {

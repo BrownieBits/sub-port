@@ -1,7 +1,6 @@
 'use client';
 
 import { auth, db } from '@/lib/firebase';
-import cartStore from '@/stores/cartStore';
 import {
   _CartItem,
   _Item,
@@ -9,7 +8,8 @@ import {
   _Promotions,
   _RemovedItem,
   _SetCartProps,
-} from '@/stores/cartStore.types';
+} from '@/lib/types';
+import cartStore from '@/stores/cartStore';
 import { deleteCookie, getCookie, setCookie } from 'cookies-next/client';
 import { User } from 'firebase/auth';
 import {
@@ -282,8 +282,8 @@ export default function CartState() {
                   promo_id: promotionDoc.id,
                   amount: promotionDoc.data().amount,
                   minimum_order_value: promotionDoc.data().minimum_order_value,
-                  expiration_date: new Date(
-                    promotionDoc.data().expiration_date.seconds * 1000
+                  expiration_date: Timestamp.fromDate(
+                    new Date(promotionDoc.data().expiration_date.seconds * 1000)
                   ),
                   name: promotionDoc.data().name,
                   status: promotionDoc.data().status,

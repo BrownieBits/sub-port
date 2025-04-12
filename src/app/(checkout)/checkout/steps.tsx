@@ -30,7 +30,7 @@ export default function CheckoutSteps() {
         </>
         <>
           {cart_address !== undefined ? (
-            <p className="text-xs text-primary">Address</p>
+            <p className="text-primary text-xs">Address</p>
           ) : (
             <p className="text-xs">Address</p>
           )}
@@ -59,13 +59,13 @@ export default function CheckoutSteps() {
         </>
         <>
           {cart_address === undefined && (
-            <p className="text-xs text-muted-foreground">Shipping</p>
+            <p className="text-muted-foreground text-xs">Shipping</p>
           )}
           {cart_address !== undefined && !shipments_ready && (
-            <p className="text-xs text-foreground">Shipping</p>
+            <p className="text-foreground text-xs">Shipping</p>
           )}
           {cart_address !== undefined && shipments_ready && (
-            <p className="text-xs text-primary">Shipping</p>
+            <p className="text-primary text-xs">Shipping</p>
           )}
         </>
       </aside>
@@ -87,10 +87,10 @@ export default function CheckoutSteps() {
         </>
         <>
           {(cart_address === undefined || !shipments_ready) && (
-            <p className="text-xs text-muted-foreground">Payment</p>
+            <p className="text-muted-foreground text-xs">Payment</p>
           )}
           {cart_address !== undefined && shipments_ready && (
-            <p className="text-xs text-foreground">Payment</p>
+            <p className="text-foreground text-xs">Payment</p>
           )}
         </>
       </aside>

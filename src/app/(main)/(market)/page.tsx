@@ -1,5 +1,5 @@
 import { analytics, db } from '@/lib/firebase';
-import { GridProduct } from '@/lib/types';
+import { _GridProduct } from '@/lib/types';
 import {
   CollectionReference,
   DocumentData,
@@ -61,20 +61,22 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function Home() {
   const productData: QuerySnapshot<DocumentData, DocumentData> =
     await getData();
-  let products: GridProduct[] = productData.docs.map((product): GridProduct => {
-    return {
-      name: product.data().name as string,
-      images: product.data().images as string[],
-      product_type: product.data().product_type as string,
-      price: product.data().price as number,
-      compare_at: product.data().compare_at as number,
-      currency: product.data().currency as string,
-      like_count: product.data().like_count as number,
-      store_id: product.data().store_id as string,
-      created_at: new Date(product.data().created_at.seconds * 1000),
-      id: product.id as string,
-    };
-  });
+  let products: _GridProduct[] = productData.docs.map(
+    (product): _GridProduct => {
+      return {
+        name: product.data().name as string,
+        images: product.data().images as string[],
+        product_type: product.data().product_type as string,
+        price: product.data().price as number,
+        compare_at: product.data().compare_at as number,
+        currency: product.data().currency as string,
+        like_count: product.data().like_count as number,
+        store_id: product.data().store_id as string,
+        created_at: new Date(product.data().created_at.seconds * 1000),
+        id: product.id as string,
+      };
+    }
+  );
 
   return (
     <main>

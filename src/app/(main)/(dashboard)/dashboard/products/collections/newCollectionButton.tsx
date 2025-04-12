@@ -27,8 +27,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { db } from '@/lib/firebase';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import userStore from '@/stores/userStore';
 import { faClose, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -162,7 +162,7 @@ export default function NewCollectionButton() {
                     control={form.control}
                     name="type"
                     render={({ field }) => (
-                      <FormItem className="space-y-3 text-foreground">
+                      <FormItem className="text-foreground space-y-3">
                         <FormLabel>Collection Type</FormLabel>
                         <FormControl>
                           <RadioGroup
@@ -170,7 +170,7 @@ export default function NewCollectionButton() {
                             defaultValue={field.value}
                             className="flex flex-col space-y-1"
                           >
-                            <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormItem className="flex items-center space-y-0 space-x-3">
                               <FormControl>
                                 <RadioGroupItem value="Manual" />
                               </FormControl>
@@ -178,7 +178,7 @@ export default function NewCollectionButton() {
                                 Manual
                               </FormLabel>
                             </FormItem>
-                            <FormItem className="flex items-center space-x-3 space-y-0">
+                            <FormItem className="flex items-center space-y-0 space-x-3">
                               <FormControl>
                                 <RadioGroupItem value="Smart" />
                               </FormControl>
@@ -254,7 +254,7 @@ export default function NewCollectionButton() {
                   control={form.control}
                   name="type"
                   render={({ field }) => (
-                    <FormItem className="space-y-3 text-foreground">
+                    <FormItem className="text-foreground space-y-3">
                       <FormLabel>Collection Type</FormLabel>
                       <FormControl>
                         <RadioGroup
@@ -262,7 +262,7 @@ export default function NewCollectionButton() {
                           defaultValue={field.value}
                           className="flex flex-col space-y-1"
                         >
-                          <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormItem className="flex items-center space-y-0 space-x-3">
                             <FormControl>
                               <RadioGroupItem value="Manual" />
                             </FormControl>
@@ -270,7 +270,7 @@ export default function NewCollectionButton() {
                               Manual
                             </FormLabel>
                           </FormItem>
-                          <FormItem className="flex items-center space-x-3 space-y-0">
+                          <FormItem className="flex items-center space-y-0 space-x-3">
                             <FormControl>
                               <RadioGroupItem value="Smart" />
                             </FormControl>

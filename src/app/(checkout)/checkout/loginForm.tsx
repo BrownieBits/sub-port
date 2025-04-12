@@ -23,8 +23,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { auth, db } from '@/lib/firebase';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import userStore from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -175,7 +175,7 @@ export default function LoginForm(props: Props) {
                 <Button
                   variant="outline"
                   onClick={() => setGuest(false)}
-                  className="w-full text-foreground"
+                  className="text-foreground w-full"
                 >
                   Continue as Guest
                 </Button>
@@ -240,7 +240,7 @@ export default function LoginForm(props: Props) {
               <Button
                 variant="outline"
                 onClick={() => setGuest(false)}
-                className="w-full text-foreground"
+                className="text-foreground w-full"
               >
                 Continue as Guest
               </Button>

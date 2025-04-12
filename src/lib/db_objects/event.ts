@@ -9,3 +9,4 @@ type _DBEvent = {
     user_id: string;
     created_at: Timestamp;
 }
+export type { _DBEvent };

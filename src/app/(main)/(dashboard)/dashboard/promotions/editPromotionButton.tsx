@@ -41,8 +41,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { db } from '@/lib/firebase';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import userStore from '@/stores/userStore';
 import {
   faCalendar,
@@ -154,7 +154,7 @@ export const EditPromotionButton = (props: {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="link" title="Edit" className="p-0 text-foreground">
+          <Button variant="link" title="Edit" className="text-foreground p-0">
             <FontAwesomeIcon className="icon" icon={faPenToSquare} />
           </Button>
         </DialogTrigger>
@@ -265,7 +265,7 @@ export const EditPromotionButton = (props: {
                             <FormControl>
                               <Button
                                 variant={'outline'}
-                                className="w-full justify-start text-left font-normal text-foreground"
+                                className="text-foreground w-full justify-start text-left font-normal"
                               >
                                 {field.value !== undefined ? (
                                   format(field.value, 'LLL dd, yyyy')
@@ -307,7 +307,7 @@ export const EditPromotionButton = (props: {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="link" title="Edit" className="p-0 text-foreground">
+        <Button variant="link" title="Edit" className="text-foreground p-0">
           <FontAwesomeIcon className="icon" icon={faPenToSquare} />
         </Button>
       </DrawerTrigger>
@@ -426,7 +426,7 @@ export const EditPromotionButton = (props: {
                           <FormControl>
                             <Button
                               variant={'outline'}
-                              className="w-full justify-start text-left font-normal text-foreground"
+                              className="text-foreground w-full justify-start text-left font-normal"
                             >
                               {field.value ? (
                                 format(field.value, 'LLL dd, yyyy')

@@ -2,7 +2,7 @@
 
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
-import { GridProduct } from '@/lib/types';
+import { _GridProduct } from '@/lib/types';
 import {
   collection,
   CollectionReference,
@@ -21,7 +21,7 @@ export function ProductList(props: {
   product_list?: string[];
   tag_list?: string[];
 }) {
-  const [products, setProducts] = React.useState<GridProduct[] | undefined>(
+  const [products, setProducts] = React.useState<_GridProduct[] | undefined>(
     undefined
   );
 
@@ -54,7 +54,7 @@ export function ProductList(props: {
         setProducts([]);
       }
     } else {
-      const gridProducts: GridProduct[] = productsDocs.docs.map((product) => {
+      const gridProducts: _GridProduct[] = productsDocs.docs.map((product) => {
         return {
           name: product.data().name,
           images: product.data().images,
@@ -165,11 +165,11 @@ export function ProductList(props: {
               </p>
               <section className="col-span-1 flex items-center justify-end">
                 {doc.status === 'Public' ? (
-                  <span className="mr-2 rounded bg-success px-2.5 py-0.5 text-xs font-medium text-success-foreground">
+                  <span className="bg-success text-success-foreground mr-2 rounded px-2.5 py-0.5 text-xs font-medium">
                     {doc.status}
                   </span>
                 ) : (
-                  <span className="mr-2 rounded bg-destructive px-2.5 py-0.5 text-xs font-medium text-destructive-foreground">
+                  <span className="bg-destructive text-destructive-foreground mr-2 rounded px-2.5 py-0.5 text-xs font-medium">
                     {doc.status}
                   </span>
                 )}

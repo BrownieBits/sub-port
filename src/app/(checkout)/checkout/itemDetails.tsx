@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
-import { Item } from '@/lib/types';
+import { _Item } from '@/lib/types';
 import {
   doc,
   DocumentData,
@@ -21,7 +21,7 @@ type Store = {
 };
 type Props = {
   store_id: string;
-  items: Item[];
+  items: _Item[];
 };
 
 export default function ItemDetails(props: Props) {
@@ -66,7 +66,7 @@ export default function ItemDetails(props: Props) {
 
           <Separator />
           <section className="flex w-full flex-col gap-4 p-4">
-            {props.items.map((item: Item, index: number) => (
+            {props.items.map((item: _Item, index: number) => (
               <section
                 className="flex w-full gap-4"
                 key={`item-breakdown-item-${item.id}${item.options.join('')}`}
@@ -87,7 +87,7 @@ export default function ItemDetails(props: Props) {
                     <p className="truncate text-sm">
                       <b>{item.name}</b>
                     </p>
-                    <p className="truncate text-xs text-muted-foreground">
+                    <p className="text-muted-foreground truncate text-xs">
                       {item.options.join(', ')} x {item.quantity}
                     </p>
                   </section>
@@ -95,7 +95,7 @@ export default function ItemDetails(props: Props) {
                 <section className="flex">
                   {item.compare_at > 0 && item.compare_at < item.price ? (
                     <section className="flex flex-col items-end">
-                      <p className="text-sm text-destructive line-through">
+                      <p className="text-destructive text-sm line-through">
                         {new Intl.NumberFormat('en-US', {
                           style: 'currency',
                           currency: item.currency,

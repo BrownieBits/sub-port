@@ -10,9 +10,8 @@ import {
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
-import { ShippingCarrier } from '@/lib/types';
+import { _Shipments, _ShippingCarrier } from '@/lib/types';
 import cartStore from '@/stores/cartStore';
-import { _Shipments } from '@/stores/cartStore.types';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -39,7 +38,7 @@ export default function ShippingSelect() {
   const setShipmentsReady = cartStore((state) => state.setShipmentsReady);
   const ship_to = cartStore((state) => state.address);
   const [disabled, setDisabled] = React.useState<boolean>(false);
-  const [carriers, setCarriers] = React.useState<ShippingCarrier[]>([]);
+  const [carriers, setCarriers] = React.useState<_ShippingCarrier[]>([]);
 
   async function submitShipments() {
     setDisabled(true);
@@ -91,6 +90,8 @@ export default function ShippingSelect() {
                 },
                 ship_to: ship_to!.email!,
                 store_id: '',
+                store_name: '',
+                store_avatar: '',
                 name: ship_to!.name,
                 ship_from: null,
                 tracking_number: '',
@@ -111,6 +112,8 @@ export default function ShippingSelect() {
                 ship_from: null,
                 tracking_number: '',
                 status: 'Not Sent',
+                store_name: '',
+                store_avatar: '',
               });
             }
           } else if (product.vendor === 'printful') {
@@ -127,6 +130,8 @@ export default function ShippingSelect() {
                 ship_from: null,
                 tracking_number: '',
                 status: 'Not Sent',
+                store_name: '',
+                store_avatar: '',
               });
             }
           }
@@ -167,7 +172,7 @@ export default function ShippingSelect() {
 
       if (needCarriers) {
         const response = await getCarriers();
-        const carriers: ShippingCarrier[] = response.carriers.map(
+        const carriers: _ShippingCarrier[] = response.carriers.map(
           (carrier: any) => {
             return {
               name: carrier.nickname,

@@ -61,3 +61,5 @@ type _DBPromotion = {
     created_at: Timestamp;
     updated_at: Timestamp
 }
+
+export type { _DBAnalytic, _DBCollection, _DBPromotion, _DBStore };

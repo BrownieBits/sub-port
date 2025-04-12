@@ -1,13 +1,12 @@
 'use server';
 
-import { ShippingCarrier } from '@/lib/types';
-import { _Address, _Item, _Rate } from '@/stores/cartStore.types';
+import { _Address, _Item, _Rate, _ShippingCarrier } from '@/lib/types';
 
 export async function getSelfShipping(
   items: _Item[],
   ship_to: _Address,
   ship_from: _Address,
-  carriers: ShippingCarrier[]
+  carriers: _ShippingCarrier[]
 ) {
   'use server';
   const carrier_ids = carriers.map((carrier) => {

@@ -27,8 +27,8 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { country_list } from '@/lib/countryList';
 import { db } from '@/lib/firebase';
+import { _Address } from '@/lib/types';
 import cartStore from '@/stores/cartStore';
-import { _Address } from '@/stores/cartStore.types';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -269,7 +269,7 @@ export default function GuestAddress() {
                     <FormItem className="w-full">
                       <FormLabel>
                         Apt / Suite / Other{' '}
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-muted-foreground text-xs">
                           (optional)
                         </span>
                       </FormLabel>
@@ -347,7 +347,7 @@ export default function GuestAddress() {
                     <FormItem className="w-full">
                       <FormLabel>
                         Phone{' '}
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-muted-foreground text-xs">
                           (optional)
                         </span>
                       </FormLabel>

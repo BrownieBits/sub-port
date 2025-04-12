@@ -3,24 +3,16 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { db } from '@/lib/firebase';
-import { cn } from '@/lib/utils';
-import {
-  _Address,
-  _Item,
-  _Promotions,
-  _Shipments,
-} from '@/stores/cartStore.types';
+import { _Address, _Item, _Promotion, _Shipment } from '@/lib/types';
 import userStore from '@/stores/userStore';
 import { faCaretLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { format } from 'date-fns';
 import {
   CollectionReference,
   collection,
@@ -28,23 +20,39 @@ import {
   query,
   where,
 } from 'firebase/firestore';
-import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { goTo } from './actions';
+import ShipmentDetails from './shipmentDetails';
 
 type Order = {
-  name: string;
-  status: string;
-  shipments: _Shipments;
-  items: _Item[];
-  order_date: Date;
-  order_total: number;
-  promotions: _Promotions;
+  id?: string;
   address: _Address;
+  billing_address: _Address;
+  created_at: Date;
+  email: string;
+  items: _Item[];
+  status: string;
+  order_total: number;
+  payment_intent: string;
+  promotions: _Promotion | null;
+  store_id: string;
 };
-export const OrderDetails = ({ id }: { id: string }) => {
-  const [order, setOrder] = React.useState<Order | null>(null);
+type Orders = {
+  [key: string]: Order;
+};
+type OrderInfo = {
+  orders: Orders;
+  shipments: _Shipment[];
+  order_id: string;
+  order_total: number;
+  item_total: number;
+  shipments_total: number;
+  discounts_total: number;
+  service_fee_total: number;
+};
+export const OrderDetails = ({ order_id }: { order_id: string }) => {
+  const [orderInfo, setOrderInfo] = React.useState<OrderInfo | null>(null);
   const user_store = userStore((state) => state.user_store);
 
   async function getOrder() {
@@ -52,35 +60,93 @@ export const OrderDetails = ({ id }: { id: string }) => {
     let q = query(
       ordersRef,
       where('store_id', '==', user_store),
-      where('payment_intent', '==', `pi_${id}`)
+      where('payment_intent', '==', `pi_${order_id}`)
     );
-    const orderDocs = await getDocs(q);
-    if (orderDocs.empty) {
-      goTo();
-    } else {
-      setOrder({
-        name: orderDocs.docs[0].data()?.address.name,
-        status: orderDocs.docs[0].data()?.status,
-        shipments: orderDocs.docs[0].data()?.shipments,
-        items: orderDocs.docs[0].data()?.items,
-        order_date: new Date(
-          orderDocs.docs[0].data()?.created_at.seconds * 1000
-        ),
-        order_total: orderDocs.docs[0].data()?.order_total,
-        promotions: orderDocs.docs[0].data()?.promotions,
-        address: orderDocs.docs[0].data()?.address,
+    const ordersDocs = await getDocs(q);
+
+    if (!ordersDocs.empty) {
+      let order_total = 0;
+      let shipments_total = 0;
+      let discounts_total = 0;
+      let item_total = 0;
+      const orders: Orders = {};
+      const shipments: _Shipment[] = [];
+      await Promise.all(
+        ordersDocs.docs.map(async (doc) => {
+          orders[doc.id] = {
+            address: doc.data().address,
+            billing_address: doc.data().billing_address,
+            created_at: new Date(doc.data().created_at.seconds * 1000),
+            email: doc.data().email,
+            items: doc.data().items,
+            status: doc.data().status,
+            order_total: doc.data().order_total,
+            payment_intent: doc.data().payment_intent,
+            promotions: doc.data().promotions,
+            store_id: doc.data().store_id,
+          };
+          order_total += doc.data().order_total;
+
+          doc.data().items.map((item: _Item) => {
+            if (item.compare_at > 0 && item.compare_at < item.price) {
+              item_total += item.compare_at;
+            } else {
+              item_total += item.price;
+            }
+          });
+          const shipmentsRef: CollectionReference = collection(
+            db,
+            `orders/${doc.id}/shipments`
+          );
+          const shipmentsDocs = await getDocs(shipmentsRef);
+          shipmentsDocs.docs.map((shipment) => {
+            shipments.push({
+              error: null,
+              items: shipment.data().items,
+              rate: shipment.data().rate,
+              name: shipment.id,
+              ship_from: shipment.data().ship_from,
+              ship_to: shipment.data().ship_to,
+              tracking_number: shipment.data().tracking_number,
+              status: shipment.data().status,
+              store_id: shipment.data().store_id,
+            });
+            shipments_total += shipment.data().rate.rate;
+          });
+        })
+      );
+
+      setOrderInfo({
+        orders: orders,
+        order_id: order_id!,
+        shipments: shipments,
+        order_total: order_total,
+        item_total: item_total,
+        shipments_total: shipments_total,
+        discounts_total: discounts_total,
+        service_fee_total: order_total - item_total - shipments_total,
       });
+    } else {
+      goTo();
     }
   }
   React.useEffect(() => {
     getOrder();
   }, []);
 
+  if (orderInfo === null) {
+    return (
+      <section className="flex h-dvh w-full items-center justify-center">
+        <p>Retrieving Order</p>
+      </section>
+    );
+  }
+
   return (
     <section>
-      <section className="mx-auto w-full max-w-[1200px]">
-        <section className="flex w-full items-center justify-between gap-4 px-4 py-4">
-          <section className="flex w-auto items-center gap-4 truncate">
+      <section className="mx-auto w-full max-w-[1754px]">
+        <section className="flex w-full items-center justify-between gap-4 p-4">
+          <section className="flex w-auto items-center gap-4">
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="outline" size="sm" asChild>
@@ -90,183 +156,189 @@ export const OrderDetails = ({ id }: { id: string }) => {
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Back to Store Orders</p>
+                <p>Back to Orders</p>
               </TooltipContent>
             </Tooltip>
-            <h1 className="truncate">{id}</h1>
+            <h1 className="line-clamp-1">{order_id}</h1>
           </section>
-          {order !== null && (
-            <span
-              className={cn('rounded-full px-4 py-2 text-xs', {
-                'bg-warning text-warning-foreground':
-                  order.status === 'Unfulfilled' ||
-                  order.status === 'Partially Filled',
-                'bg-success text-success-foreground':
-                  order.status === 'Fulfilled',
-              })}
-            >
-              <p>{order.status}</p>
-            </span>
-          )}
         </section>
       </section>
       <Separator />
-      <section className="mx-auto w-full max-w-[1200px] p-4">
-        {order === null ? (
-          <section className="flex flex-col gap-4">
-            <section className="flex flex-col gap-4 md:flex-row">
-              <Skeleton className="h-[200px] w-full flex-1" />
-              <Skeleton className="h-[200px] w-full flex-1" />
-            </section>
-            <Skeleton className="h-[200px] w-full" />
-            <Skeleton className="h-[200px] w-full" />
-          </section>
-        ) : (
-          <section className="flex flex-col gap-4">
-            <section className="flex flex-col gap-4 md:flex-row">
-              <Card className="w-full flex-1">
-                <CardHeader>
-                  <CardTitle>Summary</CardTitle>
-                </CardHeader>
-                <Separator />
-                <CardContent className="flex flex-col gap-2">
-                  <section className="flex w-full justify-between gap-4">
-                    <p>Order #:</p>
-                    <p>
-                      <b>{id}</b>
-                    </p>
-                  </section>
-                  <section className="flex w-full justify-between gap-4">
-                    <p>Order Date:</p>
-                    <p>
-                      <b>
-                        {format(new Date(order.order_date), 'LLL dd, yyyy')}
-                      </b>
-                    </p>
-                  </section>
-                  <section className="flex w-full justify-between gap-4">
-                    <p>Order Total:</p>
-                    <p>
-                      <b>
-                        {new Intl.NumberFormat('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
-                        }).format(order.order_total / 100)}
-                      </b>
-                    </p>
-                  </section>
-                </CardContent>
-              </Card>
-              <Card className="w-full flex-1">
-                <CardHeader>
-                  <CardTitle>Shipping Address</CardTitle>
-                </CardHeader>
-                <Separator />
-                <CardContent className="flex flex-col gap-1">
-                  <p>{order.address.email}</p>
-                  <p>{order.address.address_line1}</p>
-                  {order.address.address_line2 !== '' && (
-                    <p>{order.address.address_line2}</p>
-                  )}
+      <section className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-8 px-4 py-8">
+        <section className="flex w-full flex-col gap-8 md:flex-row">
+          <Card className="flex-1">
+            <CardHeader>
+              <CardTitle>Summary</CardTitle>
+            </CardHeader>
 
-                  <p>
-                    {order.address.city_locality},{' '}
-                    {order.address.state_province} {order.address.postal_code}
-                  </p>
-                </CardContent>
-              </Card>
-            </section>
-            <Card className="w-full">
-              <CardHeader>
-                <CardTitle>Shipments</CardTitle>
-              </CardHeader>
-              <Separator />
-              <CardContent className="flex flex-col gap-1">
-                <p>{order.address.email}</p>
-                <p>{order.address.address_line1}</p>
-                {order.address.address_line2 !== '' && (
-                  <p>{order.address.address_line2}</p>
-                )}
-
-                <p>
-                  {order.address.city_locality}, {order.address.state_province}{' '}
-                  {order.address.postal_code}
+            <Separator />
+            <CardContent className="flex flex-col gap-1">
+              <section className="flex items-center justify-between">
+                <p className="text-muted-foreground">Order ID:</p>
+                <p className="font-bold">
+                  {orderInfo!.order_id.replace('pi_', '')}
                 </p>
-              </CardContent>
-            </Card>
-            <Card className="w-full">
-              <CardHeader>
-                <CardTitle>Items</CardTitle>
-              </CardHeader>
-              <Separator />
-              <CardContent className="flex flex-col gap-1">
-                {order.items.map((item) => {
-                  return (
-                    <section
-                      className="flex w-full gap-4"
-                      key={`item-breakdown-item-${item.id}${item.options.join('')}`}
-                    >
-                      <section className="flex w-full flex-1 gap-2 overflow-hidden whitespace-nowrap">
-                        {item.images.length > 0 && (
-                          <section className="group flex aspect-square w-[50px] items-center justify-center overflow-hidden rounded border md:w-[100px]">
-                            <Image
-                              src={item.images[0]}
-                              width="100"
-                              height="100"
-                              alt={item.name}
-                              className="flex w-full"
-                            />
-                          </section>
-                        )}
-                        <section className="flex w-full flex-1 flex-col truncate">
-                          <p className="truncate text-sm">
-                            <b>{item.name}</b>
-                          </p>
-                          <p className="truncate text-sm text-muted-foreground">
-                            {item.options.join(', ')} x {item.quantity}
-                          </p>
-                        </section>
-                      </section>
-                      <section className="flex">
-                        {item.compare_at > 0 && item.compare_at < item.price ? (
-                          <section className="flex flex-col items-end">
-                            <p className="text-sm text-destructive line-through">
-                              <b>
-                                {new Intl.NumberFormat('en-US', {
-                                  style: 'currency',
-                                  currency: item.currency,
-                                }).format((item.price * item.quantity) / 100)}
-                              </b>
-                            </p>
-                            <p className="text-sm">
-                              <b>
-                                {new Intl.NumberFormat('en-US', {
-                                  style: 'currency',
-                                  currency: item.currency,
-                                }).format(
-                                  (item.compare_at * item.quantity) / 100
-                                )}
-                              </b>
-                            </p>
-                          </section>
-                        ) : (
-                          <p className="text-sm">
-                            <b>
-                              {new Intl.NumberFormat('en-US', {
-                                style: 'currency',
-                                currency: item.currency,
-                              }).format((item.price * item.quantity) / 100)}
-                            </b>
-                          </p>
-                        )}
-                      </section>
-                    </section>
-                  );
-                })}
-              </CardContent>
-            </Card>
-          </section>
-        )}
+              </section>
+              <section className="flex items-center justify-between">
+                <p className="text-muted-foreground">Item Total:</p>
+                <p>
+                  {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                  }).format(orderInfo!.item_total / 100)}
+                </p>
+              </section>
+              <section className="flex items-center justify-between">
+                <p className="text-muted-foreground">Shipping Total:</p>
+                <p>
+                  {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                  }).format(orderInfo!.shipments_total / 100)}
+                </p>
+              </section>
+              <section className="flex items-center justify-between">
+                <p className="text-muted-foreground">Discount Total:</p>
+                <p>
+                  {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                  }).format(orderInfo!.discounts_total / 100)}
+                </p>
+              </section>
+              <section className="flex items-center justify-between">
+                <p className="text-muted-foreground">Service Fee Total:</p>
+                <p>
+                  {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                  }).format(orderInfo!.service_fee_total / 100)}
+                </p>
+              </section>
+              <section className="flex items-center justify-between">
+                <p className="text-muted-foreground">Order Total:</p>
+                <p className="font-bold">
+                  {new Intl.NumberFormat('en-US', {
+                    style: 'currency',
+                    currency: 'USD',
+                  }).format(orderInfo!.order_total / 100)}
+                </p>
+              </section>
+            </CardContent>
+          </Card>
+          <Card className="flex-1">
+            <CardHeader>
+              <CardTitle>Shipping Address</CardTitle>
+            </CardHeader>
+
+            <Separator />
+            <CardContent className="flex flex-col gap-1">
+              <p>
+                {
+                  orderInfo!.orders[Object.keys(orderInfo!.orders)[0]].address
+                    .email
+                }
+              </p>
+              <p>
+                {
+                  orderInfo!.orders[Object.keys(orderInfo!.orders)[0]].address
+                    .address_line1
+                }
+              </p>
+              {orderInfo!.orders[Object.keys(orderInfo!.orders)[0]].address
+                .address_line2 !== '' && (
+                <p>
+                  {
+                    orderInfo!.orders[Object.keys(orderInfo!.orders)[0]].address
+                      .address_line2
+                  }
+                </p>
+              )}
+              <p>
+                {
+                  orderInfo!.orders[Object.keys(orderInfo!.orders)[0]].address
+                    .city_locality
+                }
+                ,{' '}
+                {
+                  orderInfo!.orders[Object.keys(orderInfo!.orders)[0]].address
+                    .state_province
+                }{' '}
+                {
+                  orderInfo!.orders[Object.keys(orderInfo!.orders)[0]].address
+                    .postal_code
+                }
+              </p>
+              <p>
+                {
+                  orderInfo!.orders[Object.keys(orderInfo!.orders)[0]].address
+                    .phone
+                }
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="flex-1">
+            <CardHeader>
+              <CardTitle>Billing Address</CardTitle>
+            </CardHeader>
+
+            <Separator />
+            <CardContent className="flex flex-col gap-1">
+              <p>
+                {
+                  orderInfo!.orders[Object.keys(orderInfo!.orders)[0]]
+                    .billing_address.email
+                }
+              </p>
+              <p>
+                {
+                  orderInfo!.orders[Object.keys(orderInfo!.orders)[0]]
+                    .billing_address.address_line1
+                }
+              </p>
+              {orderInfo!.orders[Object.keys(orderInfo!.orders)[0]]
+                .billing_address.address_line2 !== '' && (
+                <p>
+                  {
+                    orderInfo!.orders[Object.keys(orderInfo!.orders)[0]]
+                      .billing_address.address_line2
+                  }
+                </p>
+              )}
+              <p>
+                {
+                  orderInfo!.orders[Object.keys(orderInfo!.orders)[0]]
+                    .billing_address.city_locality
+                }
+                ,{' '}
+                {
+                  orderInfo!.orders[Object.keys(orderInfo!.orders)[0]]
+                    .billing_address.state_province
+                }{' '}
+                {
+                  orderInfo!.orders[Object.keys(orderInfo!.orders)[0]]
+                    .billing_address.postal_code
+                }
+              </p>
+              <p>
+                {
+                  orderInfo!.orders[Object.keys(orderInfo!.orders)[0]]
+                    .billing_address.phone
+                }
+              </p>
+            </CardContent>
+          </Card>
+        </section>
+        <section className="flex w-full flex-col gap-8">
+          {orderInfo!.shipments.map((shipment) => {
+            return (
+              <ShipmentDetails
+                shipment={shipment}
+                key={`shipment-info-${shipment.name}`}
+              />
+            );
+          })}
+        </section>
       </section>
     </section>
   );

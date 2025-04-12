@@ -36,9 +36,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { country_list } from '@/lib/countryList';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
-import { _Address } from '@/stores/cartStore.types';
+import { _Address } from '@/lib/types';
 import { faSpinner, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -177,7 +177,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="email"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Email</FormLabel>
                         <FormControl>
                           <Input id="email" {...field} />
@@ -190,7 +190,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="name"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
                           <Input id="name" {...field} />
@@ -203,7 +203,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="addressLine1"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Address Line 1</FormLabel>
                         <FormControl>
                           <Input id="AddressLine1" {...field} />
@@ -216,7 +216,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="addressLine2"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Address Line 2</FormLabel>
                         <FormControl>
                           <Input id="AddressLine2" {...field} />
@@ -229,7 +229,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="city"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>City</FormLabel>
                         <FormControl>
                           <Input id="city" {...field} />
@@ -242,7 +242,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="province"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>State/Province</FormLabel>
                         <FormControl>
                           <Input id="province" {...field} />
@@ -255,7 +255,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="country"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Country</FormLabel>
                         <Select
                           onValueChange={field.onChange}
@@ -287,7 +287,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="postal"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Postal Code</FormLabel>
                         <FormControl>
                           <Input id="postal" {...field} />
@@ -300,10 +300,10 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="phone"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>
                           PhonePhone{' '}
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-muted-foreground text-xs">
                             (optional)
                           </span>
                         </FormLabel>
@@ -366,7 +366,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="email"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Email</FormLabel>
                         <FormControl>
                           <Input id="email" {...field} />
@@ -379,7 +379,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="name"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Full Name</FormLabel>
                         <FormControl>
                           <Input id="name" {...field} />
@@ -392,7 +392,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="addressLine1"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Address Line 1</FormLabel>
                         <FormControl>
                           <Input id="AddressLine1" {...field} />
@@ -405,7 +405,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="addressLine2"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Address Line 2</FormLabel>
                         <FormControl>
                           <Input id="AddressLine2" {...field} />
@@ -418,7 +418,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="city"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>City</FormLabel>
                         <FormControl>
                           <Input id="city" {...field} />
@@ -431,7 +431,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="province"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>State/Province</FormLabel>
                         <FormControl>
                           <Input id="province" {...field} />
@@ -444,7 +444,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="country"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Country</FormLabel>
                         <Select
                           onValueChange={field.onChange}
@@ -476,7 +476,7 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="postal"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Postal Code</FormLabel>
                         <FormControl>
                           <Input id="postal" {...field} />
@@ -489,10 +489,10 @@ export default function AddAddress(props: Props) {
                     control={form.control}
                     name="phone"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>
                           PhonePhone{' '}
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-muted-foreground text-xs">
                             (optional)
                           </span>
                         </FormLabel>

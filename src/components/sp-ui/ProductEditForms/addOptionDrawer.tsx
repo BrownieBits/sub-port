@@ -20,7 +20,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Option } from '@/lib/types';
+import { _Option } from '@/lib/types';
 import { faSquarePen, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -45,10 +45,10 @@ const formSchema = z.object({
 type Props = {
   name?: string;
   options?: string;
-  optionList: Option[];
+  optionList: _Option[];
   index?: number;
   id?: string;
-  setOptions: (options: Option[]) => void;
+  setOptions: (options: _Option[]) => void;
 };
 
 export default function AddOptionDrawer(props: Props) {
@@ -61,7 +61,7 @@ export default function AddOptionDrawer(props: Props) {
     },
   });
   async function onAdd() {
-    const newOption: Option = {
+    const newOption: _Option = {
       name: addForm.getValues('name'),
       options: addForm.getValues('options').replace(/ /g, '').split(','),
       id: props.id,
@@ -113,7 +113,7 @@ export default function AddOptionDrawer(props: Props) {
                   control={addForm.control}
                   name="name"
                   render={({ field }) => (
-                    <FormItem className="flex w-full flex-col items-start justify-start text-foreground">
+                    <FormItem className="text-foreground flex w-full flex-col items-start justify-start">
                       <FormLabel className="text-foreground">Name</FormLabel>
                       <FormControl>
                         <Input
@@ -130,7 +130,7 @@ export default function AddOptionDrawer(props: Props) {
                   control={addForm.control}
                   name="options"
                   render={({ field }) => (
-                    <FormItem className="flex w-full flex-col items-start justify-start text-foreground">
+                    <FormItem className="text-foreground flex w-full flex-col items-start justify-start">
                       <FormLabel className="text-foreground">Options</FormLabel>
                       <FormControl>
                         <Input

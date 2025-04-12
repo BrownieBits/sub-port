@@ -12,12 +12,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
-import {
-  _Address,
-  _Item,
-  _Promotion,
-  _Shipment,
-} from '@/stores/cartStore.types';
+import { _Address, _Item, _Promotion, _Shipment } from '@/lib/types';
 import { format } from 'date-fns';
 import {
   doc,
@@ -157,7 +152,7 @@ export default function StoreOrderDetails(props: Props) {
                       <p className="truncate text-sm">
                         <b>{item.name}</b>
                       </p>
-                      <p className="truncate text-sm text-muted-foreground">
+                      <p className="text-muted-foreground truncate text-sm">
                         {item.options.join(', ')} x {item.quantity}
                       </p>
                     </section>
@@ -165,7 +160,7 @@ export default function StoreOrderDetails(props: Props) {
                   <section className="flex">
                     {item.compare_at > 0 && item.compare_at < item.price ? (
                       <section className="flex flex-col items-end">
-                        <p className="text-sm text-destructive line-through">
+                        <p className="text-destructive text-sm line-through">
                           <b>
                             {new Intl.NumberFormat('en-US', {
                               style: 'currency',

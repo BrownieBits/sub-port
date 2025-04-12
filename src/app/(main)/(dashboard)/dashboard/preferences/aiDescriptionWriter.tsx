@@ -27,7 +27,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { cn } from '@/lib/utils';
 import { faClose, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -72,7 +72,7 @@ export const AiDescriptionWriter = (props: {}) => {
         <DialogTrigger asChild>
           <Button
             variant="link"
-            className="h-auto p-[0] px-4 text-foreground hover:no-underline"
+            className="text-foreground h-auto p-[0] px-4 hover:no-underline"
             asChild
           >
             <span>Click Here</span>
@@ -93,7 +93,7 @@ export const AiDescriptionWriter = (props: {}) => {
                     control={aiForm.control}
                     name="prompt"
                     render={({ field }) => (
-                      <FormItem className="w-full text-foreground">
+                      <FormItem className="text-foreground w-full">
                         <FormLabel>Prompt</FormLabel>
                         <FormControl>
                           <Textarea
@@ -126,7 +126,7 @@ export const AiDescriptionWriter = (props: {}) => {
               )}
 
               <p
-                className={cn('whitespace-pre-wrap pt-4 text-foreground', {
+                className={cn('text-foreground pt-4 whitespace-pre-wrap', {
                   hidden: generation === '',
                 })}
               >
@@ -144,7 +144,7 @@ export const AiDescriptionWriter = (props: {}) => {
       <DrawerTrigger>
         <Button
           variant="link"
-          className="h-auto p-[0] px-4 text-foreground hover:no-underline"
+          className="text-foreground h-auto p-[0] px-4 hover:no-underline"
           asChild
         >
           <span>Click Here</span>
@@ -170,7 +170,7 @@ export const AiDescriptionWriter = (props: {}) => {
                   control={aiForm.control}
                   name="prompt"
                   render={({ field }) => (
-                    <FormItem className="w-full text-foreground">
+                    <FormItem className="text-foreground w-full">
                       <FormLabel>Prompt</FormLabel>
                       <FormControl>
                         <Textarea
@@ -203,7 +203,7 @@ export const AiDescriptionWriter = (props: {}) => {
             )}
 
             <p
-              className={cn('whitespace-pre-wrap pt-4 text-foreground', {
+              className={cn('text-foreground pt-4 whitespace-pre-wrap', {
                 hidden: generation === '',
               })}
             >

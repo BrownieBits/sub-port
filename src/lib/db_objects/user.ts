@@ -26,3 +26,4 @@ type _DBLikes = {
 type _DBSubscribes = {
     date: Timestamp;
 }
+export type { _DBLikes, _DBSubscribes, _DBUser };

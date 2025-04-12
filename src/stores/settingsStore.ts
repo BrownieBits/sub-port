@@ -1,7 +1,7 @@
 
+import { _SettingsStore } from '@/lib/types';
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 import { create } from 'zustand';
-import { _SettingsStore } from './settingsStore.types';
 
 const settingsStore = create<_SettingsStore>(set => ({
     language: 'en_US',

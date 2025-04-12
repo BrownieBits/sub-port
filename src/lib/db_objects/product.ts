@@ -55,3 +55,4 @@ type _DBVariant = {
     created_at: Timestamp;
     updated_at: Timestamp;
 }
+export type { _DBCart, _DBOption, _DBVariant };

@@ -4,7 +4,7 @@ import { AddProductButton } from '@/components/sp-ui/AddProductButton';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
-import { GridProduct } from '@/lib/types';
+import { _GridProduct } from '@/lib/types';
 import { Unsubscribe } from 'firebase/auth';
 import {
   CollectionReference,
@@ -21,7 +21,7 @@ import React from 'react';
 
 export const LatestProduct = (props: {}) => {
   const [latestProduct, setLatestProduct] = React.useState<
-    GridProduct | '' | null
+    _GridProduct | '' | null
   >(null);
   React.useEffect(() => {
     const getLatest: Unsubscribe = async () => {
@@ -36,7 +36,7 @@ export const LatestProduct = (props: {}) => {
         if (snapshot.empty) {
           setLatestProduct('');
         } else {
-          const newProduct: GridProduct = {
+          const newProduct: _GridProduct = {
             name: snapshot.docs[0].data().name as string,
             images: snapshot.docs[0].data().images as string[],
             product_type: snapshot.docs[0].data().product_type as string,

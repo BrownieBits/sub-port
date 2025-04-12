@@ -1,8 +1,8 @@
 'use client';
 
 import { db } from '@/lib/firebase';
+import { _Address } from '@/lib/types';
 import cartStore from '@/stores/cartStore';
-import { _Address } from '@/stores/cartStore.types';
 import {
   CollectionReference,
   DocumentData,
@@ -42,9 +42,6 @@ export default function AddressForm(props: Props) {
           );
           const addressesData: QuerySnapshot<DocumentData, DocumentData> =
             await getDocs(q);
-          if (addressesData.empty) {
-          } else {
-          }
           const addresses: _Address[] = addressesData.docs.map((item) => {
             return {
               id: item.id,

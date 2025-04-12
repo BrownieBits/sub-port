@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
-import { Item } from '@/lib/types';
+import { _Item } from '@/lib/types';
 import cartStore from '@/stores/cartStore';
 import { faClose, faTag } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -155,10 +155,10 @@ export default function StoreItems(props: Props) {
         setPromotionError('Code is not active.');
       }
       const today = new Date();
-      if (
-        promotions.get(props.store_id)?.expiration_date !== null &&
-        promotions.get(props.store_id)?.expiration_date! < today
-      ) {
+      const expiration_date = new Date(
+        promotions.get(props.store_id)?.expiration_date?.seconds! * 1000
+      );
+      if (expiration_date !== null && expiration_date < today) {
         setPromotionError('Code is expired.');
       }
     }
@@ -193,7 +193,7 @@ export default function StoreItems(props: Props) {
         <section className="flex w-full flex-col gap-4">
           {items
             .get(props.store_id)
-            ?.map((item: Item, index: number) => (
+            ?.map((item: _Item, index: number) => (
               <ItemDetails
                 item={item}
                 cart_id={cart_id}
@@ -255,12 +255,12 @@ export default function StoreItems(props: Props) {
                   removePromo(promotions.get(props.store_id)?.name!)
                 }
               >
-                <span className="flex gap-4 rounded border px-2 py-0.5 text-xs text-foreground">
+                <span className="text-foreground flex gap-4 rounded border px-2 py-0.5 text-xs">
                   <b>{promotions.get(props.store_id)?.name}</b>
                   <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
                 </span>
               </Button>
-              <p className="text-sm text-destructive">{promotionError}</p>
+              <p className="text-destructive text-sm">{promotionError}</p>
             </section>
           )}
         </section>

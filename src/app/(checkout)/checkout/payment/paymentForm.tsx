@@ -135,14 +135,14 @@ export default function PaymentForm(props: Props) {
           }
         });
 
-        if (cart_promotions.hasOwnProperty(store)) {
+        if (Object.prototype.hasOwnProperty.call(cart_promotions, store)) {
           let expiration_good = true;
           if (cart_promotions.get(store)?.expiration_date !== null) {
             const today = new Date();
-            if (
-              today.getTime() >
-              cart_promotions.get(store)!.expiration_date!.getTime()
-            ) {
+            const expiration_date = new Date(
+              cart_promotions.get(store)?.expiration_date?.seconds! * 1000
+            );
+            if (today.getTime() > expiration_date.getTime()) {
               expiration_good = false;
             }
           }

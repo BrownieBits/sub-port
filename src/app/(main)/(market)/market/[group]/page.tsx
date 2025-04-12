@@ -2,7 +2,7 @@ import ProductCard from '@/components/sp-ui/ProductCard';
 import { Separator } from '@/components/ui/separator';
 
 import { db } from '@/lib/firebase';
-import { GridProduct } from '@/lib/types';
+import { _GridProduct } from '@/lib/types';
 import {
   collection,
   CollectionReference,
@@ -154,9 +154,9 @@ export default async function MarketplacePage({ params }: { params: Params }) {
     return <>No Marketplace Page</>;
   }
 
-  let products: GridProduct[] = [];
+  let products: _GridProduct[] = [];
   if (data.products) {
-    products = data.products?.docs.map((product): GridProduct => {
+    products = data.products?.docs.map((product): _GridProduct => {
       return {
         name: product.data().name as string,
         images: product.data().images as string[],

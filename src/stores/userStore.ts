@@ -1,7 +1,7 @@
 
+import { _SetUserProps, _UserStore } from '@/lib/types';
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 import { create } from 'zustand';
-import { _SetUserProps, _UserStore } from './userStore.types';
 
 const userStore = create<_UserStore>(set => ({
     user_id: '',
@@ -38,7 +38,7 @@ const userStore = create<_UserStore>(set => ({
         user_store_avatart: '',
         user_store_name: '',
     })),
-    setUserLoaded: (loaded: boolean) => set(() => ({
+    setUserLoaded: () => set(() => ({
         user_loaded: true,
     })),
     setProductLikes: (likes: string[]) => set(() => ({

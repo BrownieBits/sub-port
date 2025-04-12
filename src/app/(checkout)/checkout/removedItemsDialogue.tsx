@@ -56,7 +56,7 @@ export default function RemovedItemsDialogue() {
                     />
                     <section className="w-full flex-1">
                       <p className="text-foreground">{item.name}</p>
-                      <p className="text-xs text-destructive">{item.reason}</p>
+                      <p className="text-destructive text-xs">{item.reason}</p>
                     </section>
                   </section>
                 );

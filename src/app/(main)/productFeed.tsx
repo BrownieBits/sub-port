@@ -3,7 +3,7 @@
 import { NewStores } from '@/components/sp-ui/HomePageSections/newStores';
 import { HomepageProducts } from '@/components/sp-ui/HomePageSections/products';
 import { db } from '@/lib/firebase';
-import { GridProduct } from '@/lib/types';
+import { _GridProduct } from '@/lib/types';
 import {
   collection,
   CollectionReference,
@@ -32,12 +32,12 @@ type Section = {
   banner_width?: number;
   banner_height?: number;
   banner_link?: string;
-  products?: GridProduct[];
+  products?: _GridProduct[];
 };
 
 export function ProductFeed() {
   const [sectionsData, setSectionsData] = React.useState<Section[]>([]);
-  const [moreProducts, setMoreProducts] = React.useState<GridProduct[]>([]);
+  const [moreProducts, setMoreProducts] = React.useState<_GridProduct[]>([]);
   const [lastDoc, setLastDoc] = React.useState<DocumentData | null>(null);
   const [lastProduct, setLastProduct] = React.useState<
     DocumentData | undefined
@@ -104,7 +104,7 @@ export function ProductFeed() {
         if (section.type === 'products') {
           const products = await getProducts(section.size, last_product);
           last_product = products[products.length - 1];
-          const gridProducts: GridProduct[] = products.map((product) => {
+          const gridProducts: _GridProduct[] = products.map((product) => {
             return {
               name: product.data().name,
               images: product.data().images,

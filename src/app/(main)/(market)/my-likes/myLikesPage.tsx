@@ -3,7 +3,7 @@ import ProductCard from '@/components/sp-ui/ProductCard';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { db } from '@/lib/firebase';
-import { GridProduct } from '@/lib/types';
+import { _GridProduct } from '@/lib/types';
 import userStore from '@/stores/userStore';
 import {
   collection,
@@ -25,7 +25,7 @@ export default function MyLikesPage() {
   const user_loaded = userStore((state) => state.user_loaded);
   const user_id = userStore((state) => state.user_id);
   const product_likes = userStore((state) => state.product_likes);
-  const [products, setProducts] = React.useState<GridProduct[] | null>(null);
+  const [products, setProducts] = React.useState<_GridProduct[] | null>(null);
   const [lastProduct, setLastProduct] = React.useState<
     DocumentData | undefined
   >(undefined);
@@ -53,7 +53,7 @@ export default function MyLikesPage() {
         setLastProduct(undefined);
       }
 
-      const gridProducts: GridProduct[] = [];
+      const gridProducts: _GridProduct[] = [];
       if (productData.empty) {
         if (products === undefined) {
           setProducts([]);
@@ -117,7 +117,7 @@ export default function MyLikesPage() {
                       <Skeleton className="h-[28px] w-[250px]" />
                       <Skeleton className="h-[20px] w-[150px]" />
                     </section>
-                    <section className="text-sm text-muted-foreground">
+                    <section className="text-muted-foreground text-sm">
                       <Skeleton className="h-[20px] w-[150px]" />
                     </section>
                   </section>
@@ -138,7 +138,7 @@ export default function MyLikesPage() {
                       <Skeleton className="h-[28px] w-[250px]" />
                       <Skeleton className="h-[20px] w-[150px]" />
                     </section>
-                    <section className="text-sm text-muted-foreground">
+                    <section className="text-muted-foreground text-sm">
                       <Skeleton className="h-[20px] w-[150px]" />
                     </section>
                   </section>
@@ -159,7 +159,7 @@ export default function MyLikesPage() {
                       <Skeleton className="h-[28px] w-[250px]" />
                       <Skeleton className="h-[20px] w-[150px]" />
                     </section>
-                    <section className="text-sm text-muted-foreground">
+                    <section className="text-muted-foreground text-sm">
                       <Skeleton className="h-[20px] w-[150px]" />
                     </section>
                   </section>
@@ -208,7 +208,7 @@ export default function MyLikesPage() {
                     <Skeleton className="h-[28px] w-[250px]" />
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
-                  <section className="text-sm text-muted-foreground">
+                  <section className="text-muted-foreground text-sm">
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
                 </section>
@@ -229,7 +229,7 @@ export default function MyLikesPage() {
                     <Skeleton className="h-[28px] w-[250px]" />
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
-                  <section className="text-sm text-muted-foreground">
+                  <section className="text-muted-foreground text-sm">
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
                 </section>
@@ -250,7 +250,7 @@ export default function MyLikesPage() {
                     <Skeleton className="h-[28px] w-[250px]" />
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
-                  <section className="text-sm text-muted-foreground">
+                  <section className="text-muted-foreground text-sm">
                     <Skeleton className="h-[20px] w-[150px]" />
                   </section>
                 </section>

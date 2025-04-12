@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import cartStore from '@/stores/cartStore';
 import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -55,7 +55,8 @@ export default function CheckoutSummary() {
           let expiration_good = true;
           if (expiration !== null) {
             const today = new Date();
-            if (today.getTime() > expiration.getTime()) {
+            const expiration_date = new Date(expiration.seconds * 1000);
+            if (today.getTime() > expiration_date.getTime()) {
               expiration_good = false;
             }
           }

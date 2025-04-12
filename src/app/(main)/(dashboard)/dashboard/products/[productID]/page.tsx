@@ -1,7 +1,7 @@
 import DigitalEditForm from '@/components/sp-ui/ProductEditForms/digitalEditForm';
 import SelfEditForm from '@/components/sp-ui/ProductEditForms/selfEditForm';
 import { db } from '@/lib/firebase';
-import { ProductImage } from '@/lib/types';
+import { _ProductImage } from '@/lib/types';
 import {
   CollectionReference,
   DocumentData,
@@ -102,7 +102,7 @@ export default async function DashboardProduct({ params }: { params: Params }) {
     variants: QuerySnapshot<DocumentData, DocumentData>;
     options: QuerySnapshot<DocumentData, DocumentData>;
   } = await getData(productID);
-  const images: ProductImage[] = data.product
+  const images: _ProductImage[] = data.product
     .data()
     .images.map((image: string, index: number) => {
       return { id: index, image: image };

@@ -46,9 +46,12 @@ export const ConversionRateChart = (props: {
 
       if (city !== 'undefined') {
         if (type === 'product_view' || type === 'store_view') {
-          if (sessionTracker.hasOwnProperty(formattedDate)) {
+          if (
+            Object.prototype.hasOwnProperty.call(sessionTracker, formattedDate)
+          ) {
             if (
-              !sessionTracker[formattedDate].hasOwnProperty(
+              !Object.prototype.hasOwnProperty.call(
+                sessionTracker[formattedDate],
                 ip.replaceAll('.', '')
               )
             ) {
@@ -61,9 +64,12 @@ export const ConversionRateChart = (props: {
             sessionsCount += 1;
           }
         } else if (type === 'cart_add') {
-          if (cartAddTracker.hasOwnProperty(formattedDate)) {
+          if (
+            Object.prototype.hasOwnProperty.call(cartAddTracker, formattedDate)
+          ) {
             if (
-              !cartAddTracker[formattedDate].hasOwnProperty(
+              !Object.prototype.hasOwnProperty.call(
+                cartAddTracker[formattedDate],
                 ip.replaceAll('.', '')
               )
             ) {
@@ -76,9 +82,15 @@ export const ConversionRateChart = (props: {
             cartAddsCount += 1;
           }
         } else if (type === 'checkout_reached') {
-          if (checkoutReachedTracker.hasOwnProperty(formattedDate)) {
+          if (
+            Object.prototype.hasOwnProperty.call(
+              checkoutReachedTracker,
+              formattedDate
+            )
+          ) {
             if (
-              !checkoutReachedTracker[formattedDate].hasOwnProperty(
+              !Object.prototype.hasOwnProperty.call(
+                checkoutReachedTracker[formattedDate],
                 ip.replaceAll('.', '')
               )
             ) {
@@ -93,9 +105,15 @@ export const ConversionRateChart = (props: {
             checkoutReachedCount += 1;
           }
         } else if (type === 'order') {
-          if (convertedTracker.hasOwnProperty(formattedDate)) {
+          if (
+            Object.prototype.hasOwnProperty.call(
+              convertedTracker,
+              formattedDate
+            )
+          ) {
             if (
-              !convertedTracker[formattedDate].hasOwnProperty(
+              !Object.prototype.hasOwnProperty.call(
+                convertedTracker[formattedDate],
                 ip.replaceAll('.', '')
               )
             ) {
@@ -154,7 +172,7 @@ export const ConversionRateChart = (props: {
         <section className="flex items-center justify-between">
           <aside>
             <p>Add to Cart</p>
-            <p className="text-sm text-muted-foreground">{sessions} sessions</p>
+            <p className="text-muted-foreground text-sm">{sessions} sessions</p>
           </aside>
           <aside>
             {new Intl.NumberFormat('en-US', {
@@ -169,7 +187,7 @@ export const ConversionRateChart = (props: {
         <section className="flex items-center justify-between">
           <aside>
             <p>Reached Checkout</p>
-            <p className="text-sm text-muted-foreground">{sessions} sessions</p>
+            <p className="text-muted-foreground text-sm">{sessions} sessions</p>
           </aside>
           <aside>
             {new Intl.NumberFormat('en-US', {
@@ -184,7 +202,7 @@ export const ConversionRateChart = (props: {
         <section className="flex items-center justify-between">
           <aside>
             <p>Checkout Converted</p>
-            <p className="text-sm text-muted-foreground">{sessions} sessions</p>
+            <p className="text-muted-foreground text-sm">{sessions} sessions</p>
           </aside>
           <aside>
             {new Intl.NumberFormat('en-US', {

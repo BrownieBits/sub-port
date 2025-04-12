@@ -36,5 +36,5 @@ export async function generateMetadata({
 
 export default async function Order({ params }: { params: Params }) {
   const { orderID } = await params;
-  return <OrderDetails id={orderID} />;
+  return <OrderDetails order_id={orderID} />;
 }

@@ -1,9 +1,9 @@
 
+import { _Cart, _CartActions, _Items, _Promotions, _RemovedItem, _SetCartProps, _SetItemsProps, _Shipments } from '@/lib/types';
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 import { create } from 'zustand';
-import { _Actions, _Cart, _Items, _Promotions, _RemovedItem, _SetCartProps, _SetItemsProps, _Shipments } from './cartStore.types';
 
-const cartStore = create<_Cart & _Actions>(set => ({
+const cartStore = create<_Cart & _CartActions>(set => ({
     cart_id: '',
     address: null,
     billing_address: null,

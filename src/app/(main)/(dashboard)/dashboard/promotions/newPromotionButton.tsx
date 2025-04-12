@@ -41,8 +41,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { db } from '@/lib/firebase';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
 import userStore from '@/stores/userStore';
 import {
   faCalendar,
@@ -288,7 +288,7 @@ export const NewPromotionButton = (props: {
                             <FormControl>
                               <Button
                                 variant={'outline'}
-                                className="w-full justify-start text-left font-normal text-foreground"
+                                className="text-foreground w-full justify-start text-left font-normal"
                               >
                                 {field.value ? (
                                   format(field.value, 'LLL dd, yyyy')
@@ -451,7 +451,7 @@ export const NewPromotionButton = (props: {
                           <FormControl>
                             <Button
                               variant={'outline'}
-                              className="w-full justify-start text-left font-normal text-foreground"
+                              className="text-foreground w-full justify-start text-left font-normal"
                             >
                               {field.value ? (
                                 format(field.value, 'LLL dd, yyyy')

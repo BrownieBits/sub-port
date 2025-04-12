@@ -19,8 +19,8 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
+import { _Address } from '@/lib/types';
 import cartStore from '@/stores/cartStore';
-import { _Address } from '@/stores/cartStore.types';
 import userStore from '@/stores/userStore';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {

@@ -2,7 +2,7 @@
 
 import ProductCard from '@/components/sp-ui/ProductCard';
 import { db } from '@/lib/firebase';
-import { GridProduct } from '@/lib/types';
+import { _GridProduct } from '@/lib/types';
 import cartStore from '@/stores/cartStore';
 import {
   collection,
@@ -19,7 +19,7 @@ import React from 'react';
 
 export default function RelatedItems() {
   const cart_items = cartStore((state) => state.items);
-  const [related, setRelated] = React.useState<GridProduct[]>([]);
+  const [related, setRelated] = React.useState<_GridProduct[]>([]);
 
   const getItems = async () => {
     const store_ids = Object.keys(cart_items!);
@@ -37,7 +37,7 @@ export default function RelatedItems() {
       const relatedData: QuerySnapshot<DocumentData, DocumentData> =
         await getDocs(relatedQuery);
 
-      const products: GridProduct[] = relatedData.docs.map((product) => {
+      const products: _GridProduct[] = relatedData.docs.map((product) => {
         return {
           name: product.data().name,
           images: product.data().images,

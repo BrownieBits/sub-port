@@ -65,3 +65,4 @@ type _DBItem = {
     store_id: string;
     created_at: Timestamp;
 }
+export type { _DBCart, _DBItem };

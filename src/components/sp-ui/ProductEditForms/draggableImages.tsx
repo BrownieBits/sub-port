@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { ProductImage } from '@/lib/types';
+import { _ProductImage } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import {
   faTrash,
@@ -14,15 +14,15 @@ import React, { useRef } from 'react';
 import { createSwapy } from 'swapy';
 
 type Props = {
-  product_images: ProductImage[];
+  product_images: _ProductImage[];
   uploadRef: React.RefObject<HTMLInputElement | null>;
   removeImage: (index: number) => void;
-  reOrderImages: (images: ProductImage[]) => void;
+  reOrderImages: (images: _ProductImage[]) => void;
 };
 
 export default function DraggableImages(props: Props) {
   const container = useRef(null);
-  const [productImages, setProductImages] = React.useState<ProductImage[]>([]);
+  const [productImages, setProductImages] = React.useState<_ProductImage[]>([]);
 
   function removeProductImage(index: number) {
     props.removeImage(index);
@@ -38,7 +38,7 @@ export default function DraggableImages(props: Props) {
         enabled: true,
       });
       swapy.onSwap((data) => {
-        const newImageOrder: ProductImage[] = data.newSlotItemMap.asArray.map(
+        const newImageOrder: _ProductImage[] = data.newSlotItemMap.asArray.map(
           (item, index) => {
             return {
               id: index,
@@ -83,7 +83,7 @@ export default function DraggableImages(props: Props) {
             data-swapy-item={productImages[0].id}
           >
             <section
-              className="handle absolute left-[2px] top-[2px] hidden group-hover:block"
+              className="handle absolute top-[2px] left-[2px] hidden group-hover:block"
               // data-swapy-handle
             >
               <Button
@@ -91,19 +91,19 @@ export default function DraggableImages(props: Props) {
                 onClick={(event) => {
                   event.preventDefault();
                 }}
-                className="h-auto rounded-full border bg-background p-2 text-foreground"
+                className="bg-background text-foreground h-auto rounded-full border p-2"
               >
                 <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
               </Button>
             </section>
-            <section className="absolute right-[2px] top-[2px] hidden group-hover:block">
+            <section className="absolute top-[2px] right-[2px] hidden group-hover:block">
               <Button
                 size="sm"
                 onClick={(event) => {
                   event.preventDefault();
                   removeProductImage(productImages[0].id);
                 }}
-                className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+                className="border-destructive bg-destructive text-destructive-foreground hover:bg-destructive h-auto p-2"
               >
                 <FontAwesomeIcon className="icon" icon={faTrash} />
               </Button>
@@ -127,25 +127,25 @@ export default function DraggableImages(props: Props) {
             className="relative flex aspect-square items-center justify-center overflow-hidden rounded"
             data-swapy-item={productImages[1].id}
           >
-            <section className="handle absolute left-[2px] top-[2px] hidden group-hover:block">
+            <section className="handle absolute top-[2px] left-[2px] hidden group-hover:block">
               <Button
                 size="sm"
                 onClick={(event) => {
                   event.preventDefault();
                 }}
-                className="hover: h-auto border bg-background p-2 text-foreground"
+                className="hover: bg-background text-foreground h-auto border p-2"
               >
                 <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
               </Button>
             </section>
-            <section className="absolute right-[2px] top-[2px] hidden group-hover:block">
+            <section className="absolute top-[2px] right-[2px] hidden group-hover:block">
               <Button
                 size="sm"
                 onClick={(event) => {
                   event.preventDefault();
                   removeProductImage(productImages[1].id);
                 }}
-                className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+                className="border-destructive bg-destructive text-destructive-foreground hover:bg-destructive h-auto p-2"
               >
                 <FontAwesomeIcon className="icon" icon={faTrash} />
               </Button>
@@ -168,25 +168,25 @@ export default function DraggableImages(props: Props) {
             className="group relative flex aspect-square items-center justify-center overflow-hidden rounded"
             data-swapy-item={productImages[2].id}
           >
-            <section className="handle absolute left-[2px] top-[2px] hidden group-hover:block">
+            <section className="handle absolute top-[2px] left-[2px] hidden group-hover:block">
               <Button
                 size="sm"
                 onClick={(event) => {
                   event.preventDefault();
                 }}
-                className="hover: h-auto border bg-background p-2 text-foreground"
+                className="hover: bg-background text-foreground h-auto border p-2"
               >
                 <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
               </Button>
             </section>
-            <section className="absolute right-[2px] top-[2px] hidden group-hover:block">
+            <section className="absolute top-[2px] right-[2px] hidden group-hover:block">
               <Button
                 size="sm"
                 onClick={(event) => {
                   event.preventDefault();
                   removeProductImage(productImages[2].id);
                 }}
-                className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+                className="border-destructive bg-destructive text-destructive-foreground hover:bg-destructive h-auto p-2"
               >
                 <FontAwesomeIcon className="icon" icon={faTrash} />
               </Button>
@@ -210,24 +210,24 @@ export default function DraggableImages(props: Props) {
             data-swapy-item={productImages[3].id}
           >
             <section
-              className="handle absolute left-[2px] top-[2px]"
+              className="handle absolute top-[2px] left-[2px]"
               data-swapy-handle
             >
               <Button
                 size="sm"
-                className="hover: h-auto border bg-background p-2 text-foreground"
+                className="hover: bg-background text-foreground h-auto border p-2"
               >
                 <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
               </Button>
             </section>
-            <section className="absolute right-[2px] top-[2px]">
+            <section className="absolute top-[2px] right-[2px]">
               <Button
                 size="sm"
                 onClick={(event) => {
                   event.preventDefault();
                   removeProductImage(productImages[3].id);
                 }}
-                className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+                className="border-destructive bg-destructive text-destructive-foreground hover:bg-destructive h-auto p-2"
               >
                 <FontAwesomeIcon className="icon" icon={faTrash} />
               </Button>
@@ -250,25 +250,25 @@ export default function DraggableImages(props: Props) {
             className="group relative flex aspect-square items-center justify-center overflow-hidden rounded"
             data-swapy-item={productImages[4].id}
           >
-            <section className="handle absolute left-[2px] top-[2px] hidden group-hover:block">
+            <section className="handle absolute top-[2px] left-[2px] hidden group-hover:block">
               <Button
                 size="sm"
                 onClick={(event) => {
                   event.preventDefault();
                 }}
-                className="hover: h-auto border bg-background p-2 text-foreground"
+                className="hover: bg-background text-foreground h-auto border p-2"
               >
                 <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
               </Button>
             </section>
-            <section className="absolute right-[2px] top-[2px] hidden group-hover:block">
+            <section className="absolute top-[2px] right-[2px] hidden group-hover:block">
               <Button
                 size="sm"
                 onClick={(event) => {
                   event.preventDefault();
                   removeProductImage(productImages[4].id);
                 }}
-                className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+                className="border-destructive bg-destructive text-destructive-foreground hover:bg-destructive h-auto p-2"
               >
                 <FontAwesomeIcon className="icon" icon={faTrash} />
               </Button>
@@ -291,25 +291,25 @@ export default function DraggableImages(props: Props) {
             className="group relative flex aspect-square items-center justify-center overflow-hidden rounded"
             data-swapy-item={productImages[5].id}
           >
-            <section className="handle absolute left-[2px] top-[2px] hidden group-hover:block">
+            <section className="handle absolute top-[2px] left-[2px] hidden group-hover:block">
               <Button
                 size="sm"
                 onClick={(event) => {
                   event.preventDefault();
                 }}
-                className="hover: h-auto border bg-background p-2 text-foreground"
+                className="hover: bg-background text-foreground h-auto border p-2"
               >
                 <FontAwesomeIcon className="icon" icon={faUpDownLeftRight} />
               </Button>
             </section>
-            <section className="absolute right-[2px] top-[2px] hidden group-hover:block">
+            <section className="absolute top-[2px] right-[2px] hidden group-hover:block">
               <Button
                 size="sm"
                 onClick={(event) => {
                   event.preventDefault();
                   removeProductImage(productImages[5].id);
                 }}
-                className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+                className="border-destructive bg-destructive text-destructive-foreground hover:bg-destructive h-auto p-2"
               >
                 <FontAwesomeIcon className="icon" icon={faTrash} />
               </Button>
@@ -332,7 +332,7 @@ export default function DraggableImages(props: Props) {
                 event.preventDefault();
                 props.uploadRef.current?.click();
               }}
-              className="hover: h-full w-full rounded text-foreground"
+              className="hover: text-foreground h-full w-full rounded"
             >
               <p className="text-4xl">
                 <FontAwesomeIcon className="icon" icon={faUpload} />
@@ -349,7 +349,7 @@ export default function DraggableImages(props: Props) {
                 event.preventDefault();
                 props.uploadRef.current?.click();
               }}
-              className="hover: h-full w-full rounded text-foreground"
+              className="hover: text-foreground h-full w-full rounded"
             >
               <p className="text-4xl">
                 <FontAwesomeIcon className="icon" icon={faUpload} />
@@ -366,7 +366,7 @@ export default function DraggableImages(props: Props) {
                 event.preventDefault();
                 props.uploadRef.current?.click();
               }}
-              className="hover: h-full w-full rounded text-foreground"
+              className="hover: text-foreground h-full w-full rounded"
             >
               <p className="text-4xl">
                 <FontAwesomeIcon className="icon" icon={faUpload} />
@@ -383,7 +383,7 @@ export default function DraggableImages(props: Props) {
                 event.preventDefault();
                 props.uploadRef.current?.click();
               }}
-              className="hover: h-full w-full rounded text-foreground"
+              className="hover: text-foreground h-full w-full rounded"
             >
               <p className="text-4xl">
                 <FontAwesomeIcon className="icon" icon={faUpload} />

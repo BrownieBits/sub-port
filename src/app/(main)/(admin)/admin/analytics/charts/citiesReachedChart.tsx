@@ -42,7 +42,12 @@ export const CitiesReachedChart = (props: { data: Analytic[] }) => {
       const ip = doc.ip;
 
       if (city !== 'undefined') {
-        if (!citiesReached.hasOwnProperty(`${city}, ${country}`)) {
+        if (
+          !Object.prototype.hasOwnProperty.call(
+            citiesReached,
+            `${city}, ${country}`
+          )
+        ) {
           citiesReached[`${city.replaceAll('%20', ' ')}, ${country}`] = [ip];
         } else {
           if (!citiesReached[`${city}, ${country}`].includes(ip)) {

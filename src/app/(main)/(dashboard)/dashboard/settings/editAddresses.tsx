@@ -9,7 +9,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { db } from '@/lib/firebase';
-import { Address } from '@/lib/types';
+import { _Address } from '@/lib/types';
 import {
   faCircle,
   faCircleDot,
@@ -46,15 +46,15 @@ export default function EditAddresses(props: {
   const [addressData, setAddressData] = React.useState<
     QueryDocumentSnapshot<DocumentData, DocumentData>[]
   >([]);
-  const [matchedAddress, setMatchedAddress] = React.useState<Address | null>(
+  const [matchedAddress, setMatchedAddress] = React.useState<_Address | null>(
     null
   );
-  const [originalAddress, setOriginalAddress] = React.useState<Address | null>(
+  const [originalAddress, setOriginalAddress] = React.useState<_Address | null>(
     null
   );
   const [defaultAddress, seDefaultAddress] = React.useState<string>('');
 
-  async function addValidatedAddress(address: Address) {
+  async function addValidatedAddress(address: _Address) {
     setMatchedAddress(null);
     setOriginalAddress(null);
     const docRef: DocumentReference = doc(db, 'users', props.userID);
@@ -81,7 +81,7 @@ export default function EditAddresses(props: {
     });
   }
 
-  function setValidated(matched: Address, original: Address) {
+  function setValidated(matched: _Address, original: _Address) {
     setMatchedAddress(matched);
     setOriginalAddress(original);
   }
@@ -187,7 +187,7 @@ export default function EditAddresses(props: {
                     <p>
                       <b>{doc.data().name}</b>
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {doc.data().address_line1}
                       {doc.data().address_line2}
                       {', '}
@@ -201,7 +201,7 @@ export default function EditAddresses(props: {
                       <Tooltip>
                         <TooltipTrigger>
                           <FontAwesomeIcon
-                            className="icon h-4 w-4 text-muted-foreground"
+                            className="icon text-muted-foreground h-4 w-4"
                             icon={faTrash}
                           />
                         </TooltipTrigger>
@@ -223,7 +223,7 @@ export default function EditAddresses(props: {
                             asChild
                           >
                             <FontAwesomeIcon
-                              className="icon h-4 w-4 text-destructive"
+                              className="icon text-destructive h-4 w-4"
                               icon={faTrash}
                             />
                           </Button>

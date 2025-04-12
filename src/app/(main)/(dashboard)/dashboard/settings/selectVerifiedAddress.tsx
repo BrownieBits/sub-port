@@ -24,8 +24,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
-import { Address } from '@/lib/types';
+import { useMediaQuery } from '@/hooks/use-media-query';
+import { _Address } from '@/lib/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -38,9 +38,9 @@ const formSchema = z.object({
 });
 
 type Props = {
-  matchedAddress: Address | null;
-  originalAddress: Address | null;
-  selectAddress: (address: Address) => void;
+  matchedAddress: _Address | null;
+  originalAddress: _Address | null;
+  selectAddress: (address: _Address) => void;
 };
 const tempAddress = {
   address_line1: '',
@@ -59,10 +59,10 @@ const tempAddress = {
 
 export default function SelectVerifiedAddress(props: Props) {
   const [open, setOpen] = React.useState(false);
-  const [matchedAddress, setMatchedAddress] = React.useState<Address | null>(
+  const [matchedAddress, setMatchedAddress] = React.useState<_Address | null>(
     tempAddress
   );
-  const [originalAddress, setOriginalAddress] = React.useState<Address | null>(
+  const [originalAddress, setOriginalAddress] = React.useState<_Address | null>(
     tempAddress
   );
   const isDesktop = useMediaQuery('(min-width: 768px)');
@@ -126,7 +126,7 @@ export default function SelectVerifiedAddress(props: Props) {
                               <FormControl>
                                 <RadioGroupItem value="matched" />
                               </FormControl>
-                              <FormLabel className="flex flex-col gap-1 text-foreground">
+                              <FormLabel className="text-foreground flex flex-col gap-1">
                                 <p>
                                   <b>Verified Address:</b>
                                 </p>
@@ -147,7 +147,7 @@ export default function SelectVerifiedAddress(props: Props) {
                               <FormControl>
                                 <RadioGroupItem value="original" />
                               </FormControl>
-                              <FormLabel className="flex flex-col gap-1 text-foreground">
+                              <FormLabel className="text-foreground flex flex-col gap-1">
                                 <p>
                                   <b>Original Address:</b>
                                 </p>
@@ -207,7 +207,7 @@ export default function SelectVerifiedAddress(props: Props) {
                             <FormControl>
                               <RadioGroupItem value="matched" />
                             </FormControl>
-                            <FormLabel className="flex flex-col gap-1 text-foreground">
+                            <FormLabel className="text-foreground flex flex-col gap-1">
                               <p>
                                 <b>Verified Address:</b>
                               </p>
@@ -228,7 +228,7 @@ export default function SelectVerifiedAddress(props: Props) {
                             <FormControl>
                               <RadioGroupItem value="original" />
                             </FormControl>
-                            <FormLabel className="flex flex-col gap-1 text-foreground">
+                            <FormLabel className="text-foreground flex flex-col gap-1">
                               <p>
                                 <b>Original Address:</b>
                               </p>

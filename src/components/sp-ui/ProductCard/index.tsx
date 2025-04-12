@@ -1,6 +1,6 @@
 'use client';
 import { ShowAvatar } from '@/components/sp-ui/ShowAvatar';
-import { GridProduct } from '@/lib/types';
+import { _GridProduct } from '@/lib/types';
 import { Timestamp } from 'firebase/firestore';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,7 +9,7 @@ export default function ProductCard({
   product,
   show_creator,
 }: {
-  product: GridProduct;
+  product: _GridProduct;
   show_creator: boolean;
 }) {
   const today = Timestamp.fromDate(new Date());

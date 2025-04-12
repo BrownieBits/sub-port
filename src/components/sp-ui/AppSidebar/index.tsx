@@ -13,6 +13,7 @@ import {
   SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { _FooterNavItem } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -25,7 +26,6 @@ import {
 } from './navItems';
 import { NavSection } from './navSection';
 import { NavUser } from './navUser';
-import { _FooterNavItem } from './types';
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -102,11 +102,11 @@ export function AppSidebar() {
                 {footerNavItems.map((link: _FooterNavItem, index: number) => {
                   return (
                     <SidebarMenuItem key={`menu_item_${link.name}`}>
-                      <SidebarMenuButton className="h-auto p-0 hover:bg-sidebar">
+                      <SidebarMenuButton className="hover:bg-sidebar h-auto p-0">
                         <Link
                           href={link.url}
                           className={cn(
-                            'hover:bg-none" px-0 py-0 text-xs text-foreground',
+                            'hover:bg-none" text-foreground px-0 py-0 text-xs',
                             index !== footerNavItems.length - 1 &&
                               "after:pl-2 after:content-['|']"
                           )}

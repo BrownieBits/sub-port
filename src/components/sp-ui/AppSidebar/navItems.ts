@@ -1,4 +1,4 @@
-import { _FooterNavItem, _NavSection } from "./types";
+import { _FooterNavItem, _NavSection } from "@/lib/types";
 
 export const marketNavSections: _NavSection[] = [
     {

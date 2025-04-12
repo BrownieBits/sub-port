@@ -36,7 +36,7 @@ import {
 } from '@/components/ui/tooltip';
 import { currency_list } from '@/lib/currencyList';
 import { db, storage } from '@/lib/firebase';
-import { Option, ProductImage } from '@/lib/types';
+import { _Option, _ProductImage } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import {
@@ -82,6 +82,7 @@ const ALLOWED_IMAGE_TYPES = [
   'image/jpg',
 ];
 const currencyTypes = currency_list.map((item) => item.value);
+
 const formSchema = z.object({
   name: z
     .string()
@@ -103,13 +104,6 @@ const formSchema = z.object({
     .refine(
       (files) => Array.from(files).every((file) => file.size <= MAX_IMAGE_SIZE),
       `Each file size should be less than 5 MB.`
-    )
-    .refine(
-      (files) =>
-        Array.from(files).every((file) =>
-          ALLOWED_IMAGE_TYPES.includes(file.type)
-        ),
-      'Only these types are allowed .jpg, .jpeg, .png and .webp'
     )
     .refine(
       (files) =>
@@ -152,8 +146,8 @@ const formSchema = z.object({
   }),
   tags: z.array(z.string()),
   sku: z.string().optional(),
-  is_featured: z.boolean().default(false),
-  track_inventory: z.boolean().default(false),
+  is_featured: z.boolean().default(false).optional(),
+  track_inventory: z.boolean().default(false).optional(),
   inventory: z.union([
     z.coerce
       .number({
@@ -265,7 +259,7 @@ type Props = {
   name?: string;
   description?: string;
   product_type?: string;
-  product_images?: ProductImage[];
+  product_images?: _ProductImage[];
   price?: number;
   compare_at?: number;
   currency?: string;
@@ -292,7 +286,7 @@ type Props = {
     compare_at: number;
     inventory: number;
   }[];
-  options?: Option[];
+  options?: _Option[];
 };
 
 export default function SelfEditForm(props: Props) {
@@ -300,19 +294,19 @@ export default function SelfEditForm(props: Props) {
   const pathname = usePathname();
   const [disabled, setDisabled] = React.useState<boolean>(false);
   const productImagesRef = React.useRef<HTMLInputElement>(null);
-  const [productImages, setProductImages] = React.useState<ProductImage[]>([]);
+  const [productImages, setProductImages] = React.useState<_ProductImage[]>([]);
   const [productImageRemovals, setProductImageRemovals] = React.useState<
     string[]
   >([]);
 
   const [tags, setTags] = React.useState<string[]>([]);
-  const [options, setOptions] = React.useState<Option[]>([]);
+  const [options, setOptions] = React.useState<_Option[]>([]);
   const [removeOptions, setRemoveOptions] = React.useState<string[]>([]);
   const [variants, setVariants] = React.useState<string[]>([]);
   const [trackInventory, setTrackInventory] = React.useState<boolean>(false);
   const [address, setAddress] = React.useState<string>('');
   const [status, setStatus] = React.useState<string>('');
-  const [uploadFile, uploading, snapshot, uploadError] = useUploadFile();
+  const [uploadFile] = useUploadFile();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -416,7 +410,7 @@ export default function SelfEditForm(props: Props) {
       }
     } else {
       variants.map((variant, index) => {
-        let variant_price = form.getValues(`variant.${index}.prices.price`);
+        const variant_price = form.getValues(`variant.${index}.prices.price`);
         let variant_compare_at = form.getValues(
           `variant.${index}.prices.compare_at`
         );
@@ -602,7 +596,7 @@ export default function SelfEditForm(props: Props) {
         );
         options.map((option, index) => {
           if (option.id) {
-            let optionRef: DocumentReference = doc(
+            const optionRef: DocumentReference = doc(
               db,
               `products/${props.docID}/options`,
               option.name.toLowerCase()
@@ -614,7 +608,7 @@ export default function SelfEditForm(props: Props) {
               owner_id: props.userID,
             });
           } else {
-            let optionRef: DocumentReference = doc(
+            const optionRef: DocumentReference = doc(
               db,
               `products/${props.docID}/options`,
               option.name.toLowerCase()
@@ -720,7 +714,7 @@ export default function SelfEditForm(props: Props) {
             db,
             `products/${docRef.id}/options`
           );
-          let optionDocRef: DocumentReference = doc(optionRef);
+          const optionDocRef: DocumentReference = doc(optionRef);
           batch.set(optionDocRef, {
             name: option.name,
             options: option.options,
@@ -919,7 +913,7 @@ export default function SelfEditForm(props: Props) {
                         size="sm"
                         title="View Product"
                         asChild
-                        className="flex h-auto w-full justify-start py-0 text-foreground"
+                        className="text-foreground flex h-auto w-full justify-start py-0"
                       >
                         <Link href={`/product/${props.docID}`}>
                           <FontAwesomeIcon
@@ -939,7 +933,7 @@ export default function SelfEditForm(props: Props) {
                           size="sm"
                           title="Make Private"
                           onClick={() => ChangeStatus('Private')}
-                          className="flex h-auto w-full justify-start py-0 text-foreground"
+                          className="text-foreground flex h-auto w-full justify-start py-0"
                         >
                           <FontAwesomeIcon
                             className="icon mr-4"
@@ -955,7 +949,7 @@ export default function SelfEditForm(props: Props) {
                           size="sm"
                           title="Make Publix"
                           onClick={() => ChangeStatus('Public')}
-                          className="flex h-auto w-full justify-start py-0 text-foreground"
+                          className="text-foreground flex h-auto w-full justify-start py-0"
                         >
                           <FontAwesomeIcon className="icon mr-4" icon={faEye} />
                           Make Public
@@ -969,7 +963,7 @@ export default function SelfEditForm(props: Props) {
                         size="sm"
                         title="Delete"
                         onClick={() => ChangeStatus('Delete')}
-                        className="flex h-auto w-full justify-start py-0 text-foreground"
+                        className="text-foreground flex h-auto w-full justify-start py-0"
                       >
                         <FontAwesomeIcon className="icon mr-4" icon={faTrash} />
                         Delete
@@ -1190,7 +1184,7 @@ export default function SelfEditForm(props: Props) {
                               event.preventDefault();
                               productImagesRef.current?.click();
                             }}
-                            className="hover: h-full w-full rounded text-foreground"
+                            className="hover: text-foreground h-full w-full rounded"
                           >
                             <p className="text-4xl">
                               <FontAwesomeIcon
@@ -1207,14 +1201,14 @@ export default function SelfEditForm(props: Props) {
                     <section className="grid grid-cols-2 grid-rows-3 gap-4 md:grid-cols-5 md:grid-rows-2">
                       <section className="col-span-2 row-span-2 aspect-square w-full">
                         <section className="relative flex aspect-square items-center justify-center overflow-hidden rounded">
-                          <section className="absolute right-[2px] top-[2px]">
+                          <section className="absolute top-[2px] right-[2px]">
                             <Button
                               size="sm"
                               onClick={(event) => {
                                 event.preventDefault();
                                 removeImage(productImages[0].id);
                               }}
-                              className="h-auto border-destructive bg-destructive p-2 text-destructive-foreground hover:bg-destructive"
+                              className="border-destructive bg-destructive text-destructive-foreground hover:bg-destructive h-auto p-2"
                             >
                               <FontAwesomeIcon
                                 className="icon"
@@ -1240,7 +1234,7 @@ export default function SelfEditForm(props: Props) {
                               event.preventDefault();
                               productImagesRef.current?.click();
                             }}
-                            className="hover: h-full w-full rounded text-foreground"
+                            className="hover: text-foreground h-full w-full rounded"
                           >
                             <p className="text-4xl">
                               <FontAwesomeIcon
@@ -1399,7 +1393,7 @@ export default function SelfEditForm(props: Props) {
                               {item.options.map((opt, i) => {
                                 return (
                                   <span
-                                    className="rounded px-2.5 py-0.5 text-xs font-medium text-background"
+                                    className="text-background rounded px-2.5 py-0.5 text-xs font-medium"
                                     key={`variant_option_${i}`}
                                   >
                                     {opt}
@@ -1560,7 +1554,7 @@ export default function SelfEditForm(props: Props) {
                         </FormControl>
                         <FormDescription>
                           Use{' '}
-                          <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                          <kbd className="bg-muted text-muted-foreground pointer-events-none inline-flex h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none">
                             Enter
                           </kbd>{' '}
                           to add tags to list.
@@ -1590,7 +1584,7 @@ export default function SelfEditForm(props: Props) {
                     control={form.control}
                     name="is_featured"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormItem className="flex flex-row items-start space-y-0 space-x-3">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
@@ -1607,7 +1601,7 @@ export default function SelfEditForm(props: Props) {
                     control={form.control}
                     name="track_inventory"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                      <FormItem className="flex flex-row items-start space-y-0 space-x-3">
                         <FormControl>
                           <Checkbox
                             checked={field.value}

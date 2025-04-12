@@ -21,11 +21,11 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { _NavItem } from '@/lib/types';
 import userStore from '@/stores/userStore';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { _NavItem } from './types';
 
 export function NavSection({
   name,
@@ -52,7 +52,7 @@ export function NavSection({
                         <Link
                           href={`/sign-in?redirect=${item.url}`}
                           aria-label={`Sign In to Access ${item.name}`}
-                          className="flex w-full justify-start text-muted-foreground"
+                          className="text-muted-foreground flex w-full justify-start"
                         >
                           <p>
                             <i className={`${item.icon} mr-2 h-4 w-4`}></i>

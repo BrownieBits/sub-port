@@ -7,9 +7,9 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { db } from '@/lib/firebase';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
-import { GridProduct } from '@/lib/types';
+import { _GridProduct } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import {
   CollectionReference,
@@ -32,7 +32,7 @@ export default function RelatedProducts(props: {
   const [api, setApi] = React.useState<CarouselApi>();
   const [current, setCurrent] = React.useState(0);
   const [count, setCount] = React.useState(0);
-  const [related, setRelated] = React.useState<GridProduct[]>([]);
+  const [related, setRelated] = React.useState<_GridProduct[]>([]);
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
   React.useEffect(() => {
@@ -54,7 +54,7 @@ export default function RelatedProducts(props: {
       const itemsData: QuerySnapshot<DocumentData, DocumentData> =
         await getDocs(itemsQuery);
 
-      const products: GridProduct[] = itemsData.docs.map((product) => {
+      const products: _GridProduct[] = itemsData.docs.map((product) => {
         return {
           name: product.data().name,
           images: product.data().images,

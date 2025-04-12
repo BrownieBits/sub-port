@@ -19,7 +19,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
-import { useMediaQuery } from '@/lib/hooks/useMediaQuery';
+import { useMediaQuery } from '@/hooks/use-media-query';
 import { faCheck, faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
@@ -59,7 +59,7 @@ export const DatePicker = (props: {
             </section>
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-900 w-auto">
+        <DialogContent className="w-auto max-w-900">
           <DialogHeader>
             <DialogTitle>Select Dates</DialogTitle>
             <DialogDescription
