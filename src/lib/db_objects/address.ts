@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase/firestore";
-
+//example address object
 type _DBAddress = {
     address_line1: string;
     address_line2: string;
