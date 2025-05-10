@@ -20,7 +20,7 @@ export default function SelectedSummary() {
     return <></>;
   }
   return (
-    <Card>
+    <Card className="pt-0 pb-0">
       <CardContent className="p-0">
         <section className="flex items-center gap-4 p-4">
           <p className="text-muted-foreground w-[75px] text-sm">Contact</p>

@@ -1,10 +1,11 @@
 'use client';
 
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -12,9 +13,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import {
   Tooltip,
@@ -46,7 +44,7 @@ export function NavSection({
             if (item.needs_user && user_id === '') {
               return (
                 <SidebarMenuItem key={`menu_item_${item.name}`}>
-                  <SidebarMenuButton>
+                  <SidebarMenuButton tooltip={item.name} asChild>
                     <Tooltip>
                       <TooltipTrigger asChild className="w-full">
                         <Link
@@ -68,53 +66,47 @@ export function NavSection({
             }
             if (item.sub_menu.length > 0) {
               return (
-                <Collapsible
-                  asChild
-                  defaultOpen={pathname.startsWith(item.url)}
-                  className="group/collapsible"
-                  key={`menu_item_${item.name}`}
-                >
-                  <SidebarMenuItem>
-                    <CollapsibleTrigger asChild>
-                      <SidebarMenuButton tooltip={item.name}>
-                        <section className="flex w-full justify-start">
-                          <p>
-                            <i className={`${item.icon} mr-2 h-4 w-4`}></i>
-                          </p>
-                          <p className="flex-1">{item.name}</p>
-                          <ChevronRight className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                        </section>
-                      </SidebarMenuButton>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent>
-                      <SidebarMenuSub>
-                        {item.sub_menu.map((subItem) => (
-                          <SidebarMenuSubItem
-                            key={`sub_menu_item_${subItem.name}`}
-                          >
-                            <SidebarMenuSubButton
-                              asChild
-                              isActive={subItem.url === pathname}
-                            >
-                              <Link
-                                href={subItem.url}
-                                aria-label={subItem.name}
-                                className="flex w-full justify-start"
-                              >
-                                <p>{subItem.name}</p>
-                              </Link>
-                            </SidebarMenuSubButton>
-                          </SidebarMenuSubItem>
-                        ))}
-                      </SidebarMenuSub>
-                    </CollapsibleContent>
-                  </SidebarMenuItem>
-                </Collapsible>
+                <DropdownMenu key={`menu_item_${item.name}`}>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuButton
+                      tooltip={item.name}
+                      isActive={pathname.startsWith(item.url)}
+                      className="flex w-full justify-start"
+                    >
+                      <p>
+                        <i className={`${item.icon} mr-2 h-4 w-4`}></i>
+                      </p>
+                      <p className="flex-1">{item.name}</p>
+                      <ChevronRight className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </SidebarMenuButton>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    side="right"
+                    align="start"
+                    className="w-[--radix-popper-anchor-width]"
+                  >
+                    {item.sub_menu.map((subItem) => (
+                      <DropdownMenuItem key={`sub_menu_item_${subItem.name}`}>
+                        <Link
+                          href={subItem.url}
+                          aria-label={subItem.name}
+                          className="flex w-full justify-start"
+                        >
+                          <p>{subItem.name}</p>
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
               );
             }
             return (
               <SidebarMenuItem key={`menu_item_${item.name}`}>
-                <SidebarMenuButton asChild isActive={item.url === pathname}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={item.url === pathname}
+                  tooltip={item.name}
+                >
                   <Link
                     href={item.url}
                     aria-label={item.name}

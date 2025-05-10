@@ -57,11 +57,7 @@ export const OrderDetails = ({ order_id }: { order_id: string }) => {
 
   async function getOrder() {
     const ordersRef: CollectionReference = collection(db, 'orders');
-    let q = query(
-      ordersRef,
-      where('store_id', '==', user_store),
-      where('payment_intent', '==', `pi_${order_id}`)
-    );
+    let q = query(ordersRef, where('payment_intent', '==', `pi_${order_id}`));
     const ordersDocs = await getDocs(q);
 
     if (!ordersDocs.empty) {
@@ -150,7 +146,7 @@ export const OrderDetails = ({ order_id }: { order_id: string }) => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button variant="outline" size="sm" asChild>
-                  <Link href="/dashboard/orders">
+                  <Link href="/dashboard/orders/my-orders">
                     <FontAwesomeIcon className="icon" icon={faCaretLeft} />
                   </Link>
                 </Button>

@@ -139,10 +139,8 @@ export default function PaymentForm(props: Props) {
           let expiration_good = true;
           if (cart_promotions.get(store)?.expiration_date !== null) {
             const today = new Date();
-            const expiration_date = new Date(
-              cart_promotions.get(store)?.expiration_date?.seconds! * 1000
-            );
-            if (today.getTime() > expiration_date.getTime()) {
+            const expiration_date = cart_promotions.get(store)?.expiration_date;
+            if (today.getTime() > expiration_date!.getTime()) {
               expiration_good = false;
             }
           }

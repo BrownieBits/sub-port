@@ -133,6 +133,4 @@ export async function CreateCustomer(shipping_address: _Address, billing_address
         }
 
     }
-
-
 }

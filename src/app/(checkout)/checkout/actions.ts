@@ -1,4 +1,5 @@
 'use server';
+import { _Address } from '@/lib/types';
 import { revalidatePath } from 'next/cache';
 
 export async function revalidate() {
@@ -6,24 +7,22 @@ export async function revalidate() {
   revalidatePath(`/checkout`);
 }
 
-type Address = {
-  email: string;
-  name: string;
-  phone: string | null | undefined;
-  address_line1: string;
-  address_line2?: string;
-  city_locality: string;
-  state_province: string;
-  postal_code: string;
-  country_code: string;
-};
-
-export async function validateAddress(address: Address) {
+export async function validateAddress(address: _Address) {
   'use server';
   const result = await fetch(
     'https://api.shipengine.com/v1/addresses/validate',
     {
-      body: JSON.stringify([address]),
+      body: JSON.stringify({
+        address_line1: address.address_line1,
+        address_line2: address.address_line2,
+        city_locality: address.city_locality,
+        state_province: address.state_province,
+        postal_code: address.postal_code,
+        country_code: address.country_code,
+        phone: address.phone,
+        name: address.name,
+        email: address.email,
+      }),
       headers: {
         'API-Key': process.env.USPS_ADDRESS_API_KEY!,
         'Content-Type': 'application/json',

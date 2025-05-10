@@ -29,7 +29,7 @@ export function WelcomeEmail() {
           <Section style={message}>
             <Link href={baseUrl}>
               <Img
-                src={`${baseUrl}/images/SubPortLogoVertical.png`}
+                src={`https://sub-port.com/images/SubPortLogoVertical.png`}
                 width="100"
                 height="auto"
                 alt="Sub-Port.com"

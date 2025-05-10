@@ -19,12 +19,6 @@ const baseUrl = process.env.BASE_URL
   ? `https://${process.env.BASE_URL}`
   : 'https://localhost:3000';
 
-interface Recommendation {
-  image_url: string;
-  name: string;
-  type: string;
-  url: string;
-}
 interface Product {
   image_url: string;
   url: string;
@@ -61,7 +55,7 @@ export function NewOrderStore({
           <Section style={message}>
             <Link href={baseUrl}>
               <Img
-                src={`${baseUrl}/images/SubPortLogoVertical.png`}
+                src={`https://sub-port.com/images/SubPortLogoVertical.png`}
                 width="100"
                 height="auto"
                 alt="Sub-Port.com"
@@ -82,6 +76,7 @@ export function NewOrderStore({
             </Text>
           </Section>
           <Hr style={global.hr} />
+
           <Section
             style={{ ...paddingX, paddingTop: '24px', paddingBottom: '8px' }}
           >
@@ -114,6 +109,7 @@ export function NewOrderStore({
             ))}
           </Section>
           <Hr style={global.hr} />
+
           <Section style={global.defaultPadding}>
             <Row style={{ marginBottom: '24px' }}>
               <Column style={{ width: '50%' }}>
@@ -136,7 +132,6 @@ export function NewOrderStore({
               </Column>
             </Row>
           </Section>
-
           <Hr style={global.hr} />
           <Section style={paddingY}>
             <Row>

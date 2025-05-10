@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
             tracking_id: data.tracking_id,
             order_address: data.order_address,
             order_name: data.order_name,
+            order_status: data.order_status,
             currency: data.currency,
             products: data.products,
         }),

@@ -22,7 +22,7 @@ export type Order = {
   status: string;
   order_date: Date;
   item_count: number;
-  store_id: string;
+  store_id: string[];
   filter: string;
 };
 
@@ -56,11 +56,6 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: 'filter',
     header: () => <div className="hidden">Filter</div>,
     cell: ({ row }) => <div className="hidden">{row.getValue('filter')}</div>,
-  },
-  {
-    accessorKey: 'store_id',
-    header: () => <div className="hidden"></div>,
-    cell: ({ row }) => <div className="hidden"></div>,
   },
   {
     accessorKey: 'id',
@@ -157,50 +152,6 @@ export const columns: ColumnDef<Order>[] = [
     },
     cell: ({ row }) => {
       return <p>{format(row.getValue('order_date'), 'LLL dd, yyyy')}</p>;
-    },
-  },
-  {
-    accessorKey: 'name',
-    header: ({ column }) => {
-      if (column.getIsSorted() === 'asc') {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="text-foreground bg-inherit p-0 hover:bg-inherit"
-          >
-            Customer Name
-            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowDown} />
-          </Button>
-        );
-      } else if (column.getIsSorted() === 'desc') {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="text-foreground bg-inherit p-0 hover:bg-inherit"
-          >
-            Customer Name
-            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowUp} />
-          </Button>
-        );
-      }
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="bg-inherit p-0 hover:bg-inherit"
-        >
-          Customer Name
-          <FontAwesomeIcon
-            className="icon text-muted-foreground hover:text-foreground ml-[5px]"
-            icon={faArrowDown}
-          />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      return <p>{row.getValue('name')}</p>;
     },
   },
   {
@@ -386,7 +337,7 @@ export const columns: ColumnDef<Order>[] = [
             className="text-foreground p-0"
             asChild
           >
-            <Link href={`/dashboard/orders/${id}`}>
+            <Link href={`/dashboard/orders/my-orders/${id}`}>
               <FontAwesomeIcon className="icon" icon={faEye} />
             </Link>
           </Button>

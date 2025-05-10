@@ -42,7 +42,6 @@ export default function ShipmentDetails(props: Props) {
     }
   }
   React.useEffect(() => {
-    console.log(props.shipment.name);
     if (props.shipment.name?.startsWith('self-')) {
       getStore(props.shipment.store_id);
     } else if (props.shipment.name?.startsWith('printful-')) {

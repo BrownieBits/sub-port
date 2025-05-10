@@ -19,13 +19,21 @@ const baseUrl = process.env.BASE_URL
   ? `https://${process.env.BASE_URL}`
   : 'https://localhost:3000';
 
+interface Product {
+  image_url: string;
+  url: string;
+  digital_download: string;
+  name: string;
+}
 interface EmailProps {
   order_id: string;
-  recommendations?: string[];
+  order_date: string;
+  products: Product[];
 }
 export function DigitalDownloadEmail({
   order_id,
-  recommendations = [],
+  order_date,
+  products,
 }: EmailProps) {
   return (
     <Html>
@@ -35,144 +43,73 @@ export function DigitalDownloadEmail({
       </Preview>
       <Body style={main}>
         <Container style={container}>
-          <Section style={track.container}>
-            <Row>
-              <Column>
-                <Text style={global.paragraphWithBold}>Tracking Number</Text>
-                <Text style={track.number}>{order_id}</Text>
-              </Column>
-              <Column align="right">
-                <Link style={global.button}>Track Package</Link>
-              </Column>
-            </Row>
-          </Section>
-          <Hr style={global.hr} />
           <Section style={message}>
             <Img
-              src={`${baseUrl}/images/SubPortLogoVertical.png`}
+              src={`https://www.sub-port.com/images/SubPortLogoVertical.png`}
               width="100"
               height="auto"
-              alt="Nike"
+              alt="SubPort Logo"
               style={{ margin: 'auto' }}
             />
-            <Heading style={global.heading}>It&apos;s On Its Way.</Heading>
+            <Heading style={global.heading}>
+              Ding Dong! Your Digital Downloads Are Here!
+            </Heading>
             <Text style={global.text}>
-              You order&apos;s is on its way. Use the link above to track its
-              progress.
-              {baseUrl}
-            </Text>
-            <Text style={{ ...global.text, marginTop: 24 }}>
-              We´ve also charged your payment method for the cost of your order
-              and will be removing any authorization holds. For payment details,
-              please visit your Orders page on Nike.com or in the Nike app.
+              The wait is over! Your digital downloads from your recent SubPort
+              order are officially here and ready for you to enjoy. Just click
+              the link below to access them. Happy downloading!
             </Text>
           </Section>
           <Hr style={global.hr} />
-          <Section style={global.defaultPadding}>
-            <Text style={adressTitle}>Shipping to: Alan Turing</Text>
-            <Text style={{ ...global.text, fontSize: 14 }}>
-              2125 Chestnut St, San Francisco, CA 94123
-            </Text>
-          </Section>
-          <Hr style={global.hr} />
+
           <Section
-            style={{ ...paddingX, paddingTop: '24px', paddingBottom: '24px' }}
+            style={{ ...paddingX, paddingTop: '24px', paddingBottom: '8px' }}
           >
-            <Row>
-              <Column>
-                <Img
-                  src={`${baseUrl}/images/SubPort.jpg`}
-                  alt="Brazil 2022/23 Stadium Away Women's Nike Dri-FIT Soccer Jersey"
-                  style={{ float: 'left' }}
-                  width="260px"
-                />
-              </Column>
-              <Column style={{ verticalAlign: 'top', paddingLeft: '12px' }}>
-                <Text style={{ ...paragraph, fontWeight: '500' }}>
-                  Brazil 2022/23 Stadium Away Women&apos;s Nike Dri-FIT Soccer
-                  Jersey
-                </Text>
-                <Text style={global.text}>Size L (12–14)</Text>
-              </Column>
-            </Row>
+            {products.map((product, index) => (
+              <Row style={{ margin: '0 0 16px 0' }} key={`product-${index}`}>
+                <Column>
+                  <Link href={product.url}>
+                    <Img
+                      src={product.image_url}
+                      alt={product.name}
+                      style={{ float: 'left' }}
+                      width="260px"
+                    />
+                  </Link>
+                </Column>
+                <Column style={{ verticalAlign: 'top', paddingLeft: '12px' }}>
+                  <Text style={productStyle.name}>{product.name}</Text>
+                  <Link
+                    href={`${product.digital_download}?download=true`}
+                    download
+                    style={global.button}
+                  >
+                    Download
+                  </Link>
+                </Column>
+              </Row>
+            ))}
           </Section>
           <Hr style={global.hr} />
+
           <Section style={global.defaultPadding}>
-            <Row style={{ display: 'inline-flex', marginBottom: '40px' }}>
-              <Column style={{ width: '170px' }}>
+            <Row style={{ marginBottom: '24px' }}>
+              <Column style={{ width: '50%' }}>
                 <Text style={global.paragraphWithBold}>Order Number</Text>
-                <Text style={track.number}>C0106373851</Text>
+                <Text style={track.number}>{order_id}</Text>
               </Column>
               <Column>
                 <Text style={global.paragraphWithBold}>Order Date</Text>
-                <Text style={track.number}>Sep 22, 2022</Text>
+                <Text style={track.number}>{order_date}</Text>
               </Column>
             </Row>
             <Row>
               <Column align="center">
-                <Link style={global.button}>Order Status</Link>
-              </Column>
-            </Row>
-          </Section>
-          {recommendations.length > 0 && <Hr style={global.hr} />}
-          {recommendations.length > 0 && (
-            <Section style={paddingY}>
-              <Row>
-                <Text style={global.heading}>Top Picks For You</Text>
-              </Row>
-              <Row style={recomendations.container}>
-                {recommendations.map((rec, index) => (
-                  <Column
-                    style={recomendations.product}
-                    align="center"
-                    key={`recommendation-${index}`}
-                  >
-                    <Img
-                      src={`${baseUrl}/images/SubPort.jpg`}
-                      alt="Brazil 2022/23 Stadium Away Women's Nike Dri-FIT Soccer Jersey"
-                      width="100%"
-                    />
-                    <Text style={recomendations.title}>{rec}</Text>
-                    <Text style={recomendations.text}>
-                      Women&apos;s Nike Dri-FIT Soccer Jersey
-                    </Text>
-                  </Column>
-                ))}
-              </Row>
-            </Section>
-          )}
-
-          <Hr style={global.hr} />
-          <Section style={menu.container}>
-            <Row>
-              <Text style={menu.title}>Get Help</Text>
-            </Row>
-            <Row style={menu.content}>
-              <Column style={{ width: '33%' }} colSpan={1}>
-                <Link href="/help" style={menu.text}>
-                  Shipping Status
-                </Link>
-              </Column>
-              <Column style={{ width: '33%' }} colSpan={1}>
-                <Link href="/help" style={menu.text}>
-                  Shipping & Delivery
-                </Link>
-              </Column>
-              <Column style={{ width: '33%' }} colSpan={1}>
-                <Link href="/help" style={menu.text}>
-                  Returns & Exchanges
-                </Link>
-              </Column>
-            </Row>
-            <Row style={{ ...menu.content, paddingTop: '0' }}>
-              <Column style={{ width: '33%' }} colSpan={1}>
-                <Link href="/help" style={menu.text}>
-                  How to Return
-                </Link>
-              </Column>
-              <Column style={{ width: '66%' }} colSpan={2}>
-                <Link href="/send-feedback" style={menu.text}>
-                  Contact Us
+                <Link
+                  href={`${baseUrl}/dashboard/orders/${order_id}`}
+                  style={global.button}
+                >
+                  View Order
                 </Link>
               </Column>
             </Row>
@@ -238,11 +175,28 @@ export function DigitalDownloadEmail({
 }
 DigitalDownloadEmail.PreviewProps = {
   order_id: '9999999999abcdefg',
-  recommendations: [
-    'USWNT 2022/23 Stadium Home',
-    'Brazil 2022/23 Stadium Goalkeeper',
-    'FFF',
-    'EEE',
+  order_date: 'Jan 1, 2025',
+  products: [
+    {
+      image_url: `${baseUrl}/images/SubPort.jpg`,
+      name: "International Lamp Lighter Society Women's Relaxed T-Shirt",
+      type: 'T-shirt',
+      url: `${baseUrl}/product/E4rMVIWMcE1drHGiCO8k`,
+      options: 'SM - Black',
+      quantity: 1,
+      price: 1900,
+      file_url: `${baseUrl}/images/SubPort.jpg`,
+    },
+    {
+      image_url: `${baseUrl}/images/SubPort.jpg`,
+      name: "International Lamp Lighter Society Women's Relaxed T-Shirt",
+      type: 'T-shirt',
+      url: `${baseUrl}/product/E4rMVIWMcE1drHGiCO8k`,
+      options: 'SM - Black',
+      quantity: 1,
+      price: 1900,
+      file_url: `${baseUrl}/images/SubPort.jpg`,
+    },
   ],
 };
 export default DigitalDownloadEmail;
@@ -361,7 +315,7 @@ const recomendationsText = {
 
 const productStyle = {
   name: {
-    margin: '0',
+    margin: '0 0 8px 0',
     color: '#000000',
     fontWeight: '700',
   },

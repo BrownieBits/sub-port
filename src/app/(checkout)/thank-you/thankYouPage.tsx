@@ -107,6 +107,7 @@ export default function ThankYouPage(props: Props) {
         const orders: Orders = {};
         const shipments: _Shipment[] = [];
         const email_products: EmailProduct[] = [];
+        let order_status = 'Unfulfilled';
         await Promise.all(
           Object.keys(orderData.items).map(async (store) => {
             let item_total = 0;
@@ -193,87 +194,118 @@ export default function ThankYouPage(props: Props) {
             items_total += item_total;
             order_total -= store_discounts_total;
             discounts_total += store_discounts_total;
+            const shipment_statuses: string[] = [];
+            await Promise.all(
+              Object.keys(orderData.shipments).map(async (shipment) => {
+                let uploadShipment = null;
+                if (shipment.startsWith('self-')) {
+                  const shipment_items = orderData.shipments[
+                    shipment
+                  ].items.filter(
+                    (product: _Item) =>
+                      product.store_id === store && product.vendor === 'self'
+                  );
+                  if (shipment_items.length > 0) {
+                    uploadShipment = {
+                      error: null,
+                      items: shipment_items,
+                      rate: orderData.shipments[shipment].rate,
+                      name: shipment,
+                      ship_from: orderData.shipments[shipment].ship_from,
+                      ship_to: orderData.shipments[shipment].ship_to,
+                      tracking_number: '',
+                      status: 'Unfulfilled',
+                      store_id: store,
+                    };
+                    if (!shipment_statuses.includes('Unfulfilled')) {
+                      shipment_statuses.push('Unfulfilled');
+                    }
+                    shipments_total += orderData.shipments[shipment].rate.rate;
+                    store_shipping_total +=
+                      orderData.shipments[shipment].rate.rate;
+                  }
+                } else if (shipment.startsWith('printful-')) {
+                  const shipment_items = orderData.shipments[
+                    shipment
+                  ].items.filter(
+                    (product: _Item) =>
+                      product.store_id === store &&
+                      product.vendor === 'printful'
+                  );
+                  if (shipment_items.length > 0) {
+                    uploadShipment = {
+                      error: null,
+                      items: shipment_items,
+                      rate: orderData.shipments[shipment].rate,
+                      name: shipment,
+                      ship_from: 'Printful',
+                      ship_to: orderData.shipments[shipment].ship_to,
+                      tracking_number: '',
+                      status: 'Unfulfilled',
+                      store_id: store,
+                    };
+                    if (!shipment_statuses.includes('Unfulfilled')) {
+                      shipment_statuses.push('Unfulfilled');
+                    }
+                    shipments_total += orderData.shipments[shipment].rate.rate;
+                    store_shipping_total +=
+                      orderData.shipments[shipment].rate.rate;
+                  }
+                } else if (shipment === 'digital') {
+                  const shipment_items: _Item[] = orderData.shipments[
+                    shipment
+                  ].items.filter(
+                    (product: _Item) =>
+                      product.store_id === store && product.vendor === 'digital'
+                  );
+                  if (shipment_items.length > 0) {
+                    uploadShipment = {
+                      error: null,
+                      items: shipment_items,
+                      rate: orderData.shipments[shipment].rate,
+                      ship_from: 'Email',
+                      ship_to: orderData.shipments[shipment].ship_to,
+                      name: 'digital',
+                      tracking_number: '',
+                      status: 'Fulfilled',
+                      store_id: store,
+                    };
+                    if (!shipment_statuses.includes('Digital')) {
+                      shipment_statuses.push('Digital');
+                    }
+                    await fetch('/api/digital_download_email', {
+                      method: 'POST',
+                      body: JSON.stringify({
+                        send_to: orderData.email,
+                        store_id: store,
+                        order_id: payment_intent.replace('pi_', ''),
+                        order_date: format(today, 'LLL dd, yyyy'),
+                        products: shipment_items,
+                      }),
+                    });
+                  }
+                }
 
-            Object.keys(orderData.shipments).map((shipment) => {
-              let uploadShipment = null;
-              if (shipment.startsWith('self-')) {
-                const shipment_items = orderData.shipments[
-                  shipment
-                ].items.filter(
-                  (product: _Item) =>
-                    product.store_id === store && product.vendor === 'self'
-                );
-                if (shipment_items.length > 0) {
-                  uploadShipment = {
-                    error: null,
-                    items: shipment_items,
-                    rate: orderData.shipments[shipment].rate,
-                    name: shipment,
-                    ship_from: orderData.shipments[shipment].ship_from,
-                    ship_to: orderData.shipments[shipment].ship_to,
-                    tracking_number: '',
-                    status: 'Unfulfilled',
-                    store_id: store,
-                  };
-                  shipments_total += orderData.shipments[shipment].rate.rate;
-                  store_shipping_total +=
-                    orderData.shipments[shipment].rate.rate;
+                if (uploadShipment !== null) {
+                  const shipmentDoc: DocumentReference = doc(
+                    db,
+                    `/orders/${orderDoc.id}/shipments`,
+                    uploadShipment.name
+                  );
+                  shipments.push(uploadShipment);
+                  batch.set(shipmentDoc, uploadShipment);
                 }
-              } else if (shipment.startsWith('printful-')) {
-                const shipment_items = orderData.shipments[
-                  shipment
-                ].items.filter(
-                  (product: _Item) =>
-                    product.store_id === store && product.vendor === 'printful'
-                );
-                if (shipment_items.length > 0) {
-                  uploadShipment = {
-                    error: null,
-                    items: shipment_items,
-                    rate: orderData.shipments[shipment].rate,
-                    name: shipment,
-                    ship_from: 'Printful',
-                    ship_to: orderData.shipments[shipment].ship_to,
-                    tracking_number: '',
-                    status: 'Unfulfilled',
-                    store_id: store,
-                  };
-                  shipments_total += orderData.shipments[shipment].rate.rate;
-                  store_shipping_total +=
-                    orderData.shipments[shipment].rate.rate;
-                }
-              } else if (shipment === 'digital') {
-                const shipment_items = orderData.shipments[
-                  shipment
-                ].full_items.filter(
-                  (product: _Item) =>
-                    product.store_id === store && product.vendor === 'digital'
-                );
-                if (shipment_items.length > 0) {
-                  uploadShipment = {
-                    error: null,
-                    items: shipment_items,
-                    rate: orderData.shipments[shipment].rate,
-                    ship_from: 'Email',
-                    ship_to: orderData.shipments[shipment].ship_to,
-                    name: 'digital',
-                    tracking_number: '',
-                    status: 'Unfulfilled',
-                    store_id: store,
-                  };
-                }
-              }
+              })
+            );
 
-              if (uploadShipment !== null) {
-                const shipmentDoc: DocumentReference = doc(
-                  db,
-                  `/orders/${orderDoc.id}/shipments`,
-                  uploadShipment.name
-                );
-                shipments.push(uploadShipment);
-                batch.set(shipmentDoc, uploadShipment);
-              }
-            });
+            if (shipment_statuses.length > 1) {
+              order_status = 'Partially Fulfilled';
+            } else if (
+              shipment_statuses.length === 1 &&
+              shipment_statuses[0] === 'Digital'
+            ) {
+              order_status = 'Fulfilled Digital';
+            }
             const uploadOrder = {
               address: orderData.address,
               billing_address: orderData.billing_address,
@@ -281,7 +313,7 @@ export default function ThankYouPage(props: Props) {
               email: orderData.email,
               items: orderData.items[store],
               item_count: orderData.items[store].length,
-              status: 'Unfulfilled',
+              status: order_status,
               payment_intent: payment_intent,
               order_total: item_total + store_shipping_total + service_total,
               promotions: Object.prototype.hasOwnProperty.call(orderData, store)
@@ -295,7 +327,7 @@ export default function ThankYouPage(props: Props) {
               created_at: today,
               email: orderData.email,
               items: orderData.items[store],
-              status: 'Unfulfilled',
+              status: order_status,
               payment_intent: payment_intent,
               order_total: item_total + store_shipping_total + service_total,
               promotions: Object.prototype.hasOwnProperty.call(orderData, store)
@@ -347,6 +379,7 @@ export default function ThankYouPage(props: Props) {
             order_date: format(today, 'LLL dd, yyyy'),
             order_address: `${orderData.address.address_line1}, ${orderData.address.city_locality}, ${orderData.address.state_province} ${orderData.address.postal_code}`,
             order_name: orderData.address.name,
+            order_status: order_status,
             currency: 'USD',
             products: email_products,
           }),
@@ -412,7 +445,6 @@ export default function ThankYouPage(props: Props) {
             });
           })
         );
-
         setOrderInfo({
           orders: orders,
           order_id: order_id!,

@@ -1,4 +1,3 @@
-import { Timestamp } from 'firebase/firestore';
 
 type _ProductImage = {
     id: number;
@@ -29,6 +28,7 @@ type _Item = {
     id: string;
     options: string[];
     order_options?: string[];
+    digital_download?: string;
     quantity: number;
     store_id: string;
     compare_at: number;
@@ -58,7 +58,7 @@ type _Promotion = {
     promo_id: string;
     amount: number;
     minimum_order_value: number;
-    expiration_date: Timestamp | null;
+    expiration_date: Date | null;
     name: string;
     status: string;
     type: string;
@@ -83,7 +83,7 @@ type _Address = {
     postal_code: string;
     state_province: string;
     owner_id?: string;
-    created_at?: Timestamp;
+    created_at?: Date;
 };
 type _Shipment = {
     items: _Item[];

@@ -282,8 +282,8 @@ export default function CartState() {
                   promo_id: promotionDoc.id,
                   amount: promotionDoc.data().amount,
                   minimum_order_value: promotionDoc.data().minimum_order_value,
-                  expiration_date: Timestamp.fromDate(
-                    new Date(promotionDoc.data().expiration_date.seconds * 1000)
+                  expiration_date: new Date(
+                    promotionDoc.data().expiration_date.seconds * 1000
                   ),
                   name: promotionDoc.data().name,
                   status: promotionDoc.data().status,
@@ -356,6 +356,7 @@ export default function CartState() {
           items.get(item.store_id)?.push({
             cart_item_id: item.cart_item_id,
             id: item.id,
+            digital_download: '',
             options: item.options,
             quantity: item.quantity,
             store_id: item.store_id,
@@ -457,6 +458,10 @@ export default function CartState() {
                         item.track_inventory = document.data().track_inventory;
                         item.product_type = document.data().product_type;
                         item.name = document.data().name;
+                        item.digital_download =
+                          document.data().product_type === 'Digital'
+                            ? document.data().digital_file
+                            : '';
                         if (
                           document.data().ship_from_address !== undefined &&
                           document.data().ship_from_address !== null

@@ -43,7 +43,7 @@ export default function ItemDetails(props: Props) {
 
   return (
     <>
-      <Card>
+      <Card className="pt-0 pb-0">
         <CardContent className="p-0">
           {store === null ? (
             <section className="flex w-full items-center gap-4 p-4">

@@ -40,6 +40,7 @@ interface EmailProps {
   tracking_id?: string;
   order_address: string;
   order_name: string;
+  order_status: string;
   currency: string;
   recommendations?: Recommendation[];
   products: Product[];
@@ -50,6 +51,7 @@ export function NewOrderCustomer({
   tracking_id = '',
   order_address,
   order_name,
+  order_status,
   currency = 'USD',
   recommendations = [],
   products,
@@ -64,26 +66,33 @@ export function NewOrderCustomer({
       </Preview>
       <Body style={main}>
         <Container style={container}>
-          <Section style={track.container}>
-            <Row>
-              <Column>
-                <Text style={global.paragraphWithBold}>Tracking Number</Text>
-                <Text style={track.number}>
-                  {tracking_id !== '' ? tracking_id : 'Waiting on carrier'}
-                </Text>
-              </Column>
-              {tracking_id !== '' && (
-                <Column align="right">
-                  <Link style={global.button}>Track Package</Link>
-                </Column>
-              )}
-            </Row>
-          </Section>
-          <Hr style={global.hr} />
+          {order_status !== 'Fulfilled Digital' && (
+            <>
+              <Section style={track.container}>
+                <Row>
+                  <Column>
+                    <Text style={global.paragraphWithBold}>
+                      Tracking Number
+                    </Text>
+                    <Text style={track.number}>
+                      {tracking_id !== '' ? tracking_id : 'Waiting on carrier'}
+                    </Text>
+                  </Column>
+                  {tracking_id !== '' && (
+                    <Column align="right">
+                      <Link style={global.button}>Track Package</Link>
+                    </Column>
+                  )}
+                </Row>
+              </Section>
+              <Hr style={global.hr} />
+            </>
+          )}
+
           <Section style={message}>
             <Link href={baseUrl}>
               <Img
-                src={`${baseUrl}/images/SubPortLogoVertical.png`}
+                src={`https://sub-port.com/images/SubPortLogoVertical.png`}
                 width="100"
                 height="auto"
                 alt="Sub-Port.com"
@@ -93,11 +102,13 @@ export function NewOrderCustomer({
             <Heading style={global.heading}>
               Get Ready! Your Order is Confirmed.
             </Heading>
-            <Text style={global.text}>
-              {tracking_id !== ''
-                ? "Your order is officially on the move! 🚀 Track its journey to you using the link above – it's about to get exciting!"
-                : "Get ready to welcome your new goodies soon. We'll send you a tracking number shortly so you can follow along on their exciting adventure."}
-            </Text>
+            {order_status !== 'Fulfilled Digital' && (
+              <Text style={global.text}>
+                {tracking_id !== ''
+                  ? "Your order is officially on the move! 🚀 Track its journey to you using the link above – it's about to get exciting!"
+                  : "Get ready to welcome your new goodies soon. We'll send you a tracking number shortly so you can follow along on their exciting adventure."}
+              </Text>
+            )}
             <Text style={{ ...global.text, marginTop: 24 }}>
               Zap! Your payment for those awesome SubPort goodies just went
               through like a bolt of lightning. ⚡ We&apos;ve cleared your
@@ -206,41 +217,6 @@ export function NewOrderCustomer({
           )}
 
           <Hr style={global.hr} />
-          <Section style={menu.container}>
-            <Row>
-              <Text style={menu.title}>Get Help</Text>
-            </Row>
-            <Row style={menu.content}>
-              <Column style={{ width: '33%' }} colSpan={1}>
-                <Link href="/help" style={menu.text}>
-                  Shipping Status
-                </Link>
-              </Column>
-              <Column style={{ width: '33%' }} colSpan={1}>
-                <Link href="/help" style={menu.text}>
-                  Shipping & Delivery
-                </Link>
-              </Column>
-              <Column style={{ width: '33%' }} colSpan={1}>
-                <Link href="/help" style={menu.text}>
-                  Returns & Exchanges
-                </Link>
-              </Column>
-            </Row>
-            <Row style={{ ...menu.content, paddingTop: '0' }}>
-              <Column style={{ width: '33%' }} colSpan={1}>
-                <Link href="/help" style={menu.text}>
-                  How to Return
-                </Link>
-              </Column>
-              <Column style={{ width: '66%' }} colSpan={2}>
-                <Link href="/send-feedback" style={menu.text}>
-                  Contact Us
-                </Link>
-              </Column>
-            </Row>
-          </Section>
-          <Hr style={global.hr} />
           <Section style={paddingY}>
             <Row>
               <Column align="center">
@@ -304,6 +280,7 @@ NewOrderCustomer.PreviewProps = {
   order_date: 'Jan 1, 2025',
   order_name: 'Ian Brown',
   order_address: '1234 Cool Guy St, Denver, CO, 80220',
+  order_status: 'Unfulfilled',
   recommendations: [
     {
       image_url: `${baseUrl}/images/SubPort.jpg`,

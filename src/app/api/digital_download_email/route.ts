@@ -11,9 +11,11 @@ export async function POST(request: NextRequest) {
     await resend.emails.send({
         from: 'SubPort <no-reply@sub-port.com>',
         to: data.send_to,
-        subject: `Your downloads are ready: ${data.order_id}`,
+        subject: `Your digital downloads from ${data.store_id} are here!`,
         react: DigitalDownloadEmail({
             order_id: data.order_id,
+            order_date: data.order_date,
+            products: data.products,
         }),
     });
 
