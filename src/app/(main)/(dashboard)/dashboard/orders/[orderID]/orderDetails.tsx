@@ -1,5 +1,6 @@
 'use client';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -50,6 +51,7 @@ type OrderInfo = {
   shipments_total: number;
   discounts_total: number;
   service_fee_total: number;
+  status: string;
 };
 export const OrderDetails = ({ order_id }: { order_id: string }) => {
   const [orderInfo, setOrderInfo] = React.useState<OrderInfo | null>(null);
@@ -125,6 +127,7 @@ export const OrderDetails = ({ order_id }: { order_id: string }) => {
         shipments_total: shipments_total,
         discounts_total: discounts_total,
         service_fee_total: order_total - item_total - shipments_total,
+        status: orders[Object.keys(orders)[0]].status,
       });
     } else {
       goTo();
@@ -145,28 +148,53 @@ export const OrderDetails = ({ order_id }: { order_id: string }) => {
   return (
     <section>
       <section className="mx-auto w-full max-w-[1200px]">
-        <section className="flex w-full items-center justify-between gap-4 p-4">
-          <section className="flex w-auto items-center gap-4">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/dashboard/orders">
-                    <FontAwesomeIcon className="icon" icon={faCaretLeft} />
-                  </Link>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Back to Orders</p>
-              </TooltipContent>
-            </Tooltip>
-            <h1 className="line-clamp-1">{order_id}</h1>
+        <section className="flex w-full items-center gap-4 p-4">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="/dashboard/orders">
+                  <FontAwesomeIcon className="icon" icon={faCaretLeft} />
+                </Link>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Back to Orders</p>
+            </TooltipContent>
+          </Tooltip>
+          <h1 className="truncate">{order_id}</h1>
+          <section className="flex-1"></section>
+          <section className="item-end">
+            {orderInfo!.status === 'Refunded' && (
+              <Badge variant="destructive">Refunded</Badge>
+            )}
+            {orderInfo!.status === 'Cancelled' && (
+              <Badge variant="destructive">Cancelled</Badge>
+            )}
+            {orderInfo!.status === 'Fulfilled' && (
+              <Badge variant="success">Fulfilled</Badge>
+            )}
+            {orderInfo!.status === 'Fulfilled Digital' && (
+              <Badge variant="success">Fulfilled Digital</Badge>
+            )}
+            {orderInfo!.status === 'Unfulfilled' && (
+              <Badge variant="warning">UnfulFilled</Badge>
+            )}
+            {orderInfo!.status === 'Partially Fulfilled' && (
+              <Badge variant="warning">Partially FulFilled</Badge>
+            )}
+            {orderInfo!.status === 'Partially Refunded' && (
+              <Badge variant="warning">Partially Refunded</Badge>
+            )}
+            {orderInfo!.status === 'Partially Cancelled' && (
+              <Badge variant="warning">Partially Cencelled</Badge>
+            )}
           </section>
         </section>
       </section>
       <Separator />
-      <section className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-8 px-4 py-8">
-        <section className="flex w-full flex-col gap-8 md:flex-row">
-          <Card className="flex-1">
+      <section className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-8 px-4 py-4">
+        <section className="flex w-full flex-col gap-4 md:flex-row">
+          <Card className="flex-1 gap-4">
             <CardHeader>
               <CardTitle>Summary</CardTitle>
             </CardHeader>
@@ -226,7 +254,7 @@ export const OrderDetails = ({ order_id }: { order_id: string }) => {
               </section>
             </CardContent>
           </Card>
-          <Card className="flex-1">
+          <Card className="flex-1 gap-4">
             <CardHeader>
               <CardTitle>Shipping Address</CardTitle>
             </CardHeader>
@@ -277,7 +305,7 @@ export const OrderDetails = ({ order_id }: { order_id: string }) => {
               </p>
             </CardContent>
           </Card>
-          <Card className="flex-1">
+          <Card className="flex-1 gap-4">
             <CardHeader>
               <CardTitle>Billing Address</CardTitle>
             </CardHeader>
@@ -333,8 +361,10 @@ export const OrderDetails = ({ order_id }: { order_id: string }) => {
           {orderInfo!.shipments.map((shipment) => {
             return (
               <ShipmentDetails
+                order_id={Object.keys(orderInfo.orders)[0]}
                 shipment={shipment}
                 key={`shipment-info-${shipment.name}`}
+                intent_id={order_id}
               />
             );
           })}

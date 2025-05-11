@@ -48,17 +48,17 @@ TODO:
     - [ ] Build table to show payouts
     - [ ] Build page to show individual payout information
   - [ ] Integrations
-    - [ ] Printful
-    - [ ] Stripe - should this be in settings
+    - [x] Printful
+    - [x] Stripe - should this be in settings
     - [ ] Youtube
     - [ ] Twitch
     - [ ] FB/Instagram
-  - [ ] Orders
-    - [ ] My Orders
-      - [ ] Build table for showing orders
-      - [ ] Create page for seeing individual order information
-    - [ ] Store Orders
-      - [ ] Create page for seeing individual order information
+  - [x] Orders
+    - [x] My Orders
+      - [x] Build table for showing orders
+      - [x] Create page for seeing individual order information
+    - [x] Store Orders
+      - [x] Create page for seeing individual order information
   - [x] Preferences
   - [ ] Products
     - [ ] Products

@@ -22,10 +22,10 @@ import { Analytic, CitiesReached, CitiesReachedData } from '../types';
 const chartConfig = {
   count: {
     label: 'Count',
-    color: 'hsl(var(--primary))',
+    color: 'var(--primary)',
   },
   label: {
-    color: 'hsl(var(--primary-foreground))',
+    color: 'var(--primary-foreground)',
   },
 } satisfies ChartConfig;
 
@@ -43,13 +43,20 @@ export const CitiesReachedChart = (props: { data: Analytic[] }) => {
 
       if (city !== 'undefined') {
         if (
-          Object.prototype.hasOwnProperty.call(
+          !Object.prototype.hasOwnProperty.call(
             citiesReached,
             `${city}, ${country}`
           )
         ) {
           citiesReached[`${city.replaceAll('%20', ' ')}, ${country}`] = [ip];
         } else {
+          console.log(
+            citiesReached,
+            citiesReached[`${city}, ${country}`],
+            city,
+            country,
+            ip
+          );
           if (!citiesReached[`${city}, ${country}`].includes(ip)) {
             citiesReached[`${city.replaceAll('%20', ' ')}, ${country}`].push(
               ip
@@ -124,7 +131,7 @@ export const CitiesReachedChart = (props: { data: Analytic[] }) => {
                   dataKey="city"
                   position="insideLeft"
                   offset={8}
-                  className="fill-[--color-label]"
+                  className="fill-[var(--color-label)]"
                   fontSize={12}
                 />
                 <LabelList

@@ -2,7 +2,6 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -17,7 +16,6 @@ import {
   getDoc,
 } from 'firebase/firestore';
 import Image from 'next/image';
-import Link from 'next/link';
 import React from 'react';
 
 type StoreInfo = {
@@ -48,28 +46,19 @@ export default function ShipmentDetails(props: Props) {
       getStore(props.shipment.store_id);
     }
   }, []);
-  let badgeVariant:
-    | 'default'
-    | 'outline'
-    | 'destructive'
-    | 'secondary'
-    | null
-    | undefined = 'default';
-  if (props.shipment.status === 'Unfulfilled') {
-    badgeVariant = 'outline';
-  } else if (props.shipment.status === 'Cancelled') {
-    badgeVariant = 'destructive';
-  }
+
   return (
     <section className="flex w-full flex-col gap-4">
-      {props.shipment.name === 'digital' ? (
+      {props.shipment.name === 'digital' && (
         <section className="flex w-full flex-col items-center justify-between gap-4 md:flex-row">
           <section className="flex w-full gap-4">
             <FontAwesomeIcon className="icon" icon={faDownload} />
             <p className="font-bold">Digital Delivery</p>
           </section>
+          <Badge variant="success">Fulfilled Digital</Badge>
         </section>
-      ) : (
+      )}
+      {props.shipment.name !== 'digital' && (
         <section className="flex w-full gap-4">
           {storeInfo === null ? (
             <section className="flex w-full items-center gap-4">
@@ -92,43 +81,17 @@ export default function ShipmentDetails(props: Props) {
                     : 'Delivery'}
                 </p>
               </section>
-              {props.shipment.tracking_number === '' ? (
-                <Button size="xs" variant="outline">
-                  Waiting for Tracking
-                </Button>
-              ) : (
-                <>
-                  {props.shipment.rate?.service_type.startsWith('USPS') && (
-                    <Button size="xs" asChild>
-                      <Link
-                        target="_blank"
-                        href={`https://tools.usps.com/go/TrackConfirmAction?tRef=fullpage&tLc=3&text28777=&tLabels=${props.shipment.tracking_number}%2C%2C&tABt=false`}
-                      >
-                        Track
-                      </Link>
-                    </Button>
-                  )}
-                  {props.shipment.rate?.service_type.startsWith('UPS') && (
-                    <Button size="xs" asChild>
-                      <Link
-                        target="_blank"
-                        href={`https://www.ups.com/track?loc=en_US&Requester=SBN&tracknum=${props.shipment.tracking_number}&AgreeToTermsAndConditions=yes/trackdetails`}
-                      >
-                        Track
-                      </Link>
-                    </Button>
-                  )}
-                  {props.shipment.rate?.service_type.startsWith('FEDEX') && (
-                    <Button size="xs" asChild>
-                      <Link
-                        target="_blank"
-                        href={`https://www.fedex.com/fedextrack/?trknbr=${props.shipment.tracking_number}`}
-                      >
-                        Track
-                      </Link>
-                    </Button>
-                  )}
-                </>
+              {props.shipment.status === 'Fulfilled' && (
+                <Badge variant="success">Fulfilled</Badge>
+              )}
+              {props.shipment.status === 'Refunded' && (
+                <Badge variant="destructive">Refunded</Badge>
+              )}
+              {props.shipment.status === 'Cancelled' && (
+                <Badge variant="destructive">Refunded</Badge>
+              )}
+              {props.shipment.status === 'Unfulfilled' && (
+                <Badge variant="outline">Waiting for Tracking</Badge>
               )}
             </section>
           )}
@@ -139,7 +102,6 @@ export default function ShipmentDetails(props: Props) {
         <Card className="flex-1">
           <CardHeader className="flex flex-row justify-between">
             <CardTitle>Items</CardTitle>
-            <Badge variant={badgeVariant}>{props.shipment.status}</Badge>
           </CardHeader>
           <Separator />
           <CardContent className="flex flex-col gap-2">

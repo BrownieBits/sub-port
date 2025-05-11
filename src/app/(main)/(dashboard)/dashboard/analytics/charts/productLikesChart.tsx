@@ -23,10 +23,10 @@ import { buildDaily, buildHourly, buildMonthly, buildYearly } from './actions';
 const chartConfig = {
   data: {
     label: 'Likes',
-    color: 'hsl(var(--primary))',
+    color: 'var(--primary)',
   },
   label: {
-    color: 'hsl(var(--primary-foreground))',
+    color: 'var(--primary-foreground)',
   },
 } satisfies ChartConfig;
 
