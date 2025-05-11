@@ -155,10 +155,12 @@ export default function StoreItems(props: Props) {
         setPromotionError('Code is not active.');
       }
       const today = new Date();
-      const expiration_date = new Date(
-        promotions.get(props.store_id)?.expiration_date?.seconds! * 1000
-      );
-      if (expiration_date !== null && expiration_date < today) {
+      const expiration_date = promotions.get(props.store_id)?.expiration_date;
+      if (
+        expiration_date !== null &&
+        expiration_date !== undefined &&
+        expiration_date < today
+      ) {
         setPromotionError('Code is expired.');
       }
     }

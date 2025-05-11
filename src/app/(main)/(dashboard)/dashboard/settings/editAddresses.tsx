@@ -38,6 +38,24 @@ import { revalidate } from './actions';
 import AddAddress from './addAddress';
 import SelectVerifiedAddress from './selectVerifiedAddress';
 
+type UploadAddress = {
+  id?: string;
+  address_line1: string;
+  address_line2: string;
+  address_line3: string | null;
+  address_residential_indicator: string;
+  city_locality: string;
+  company_name: string | null;
+  country_code: string;
+  email: string | null;
+  name: string;
+  phone: string | null;
+  postal_code: string;
+  state_province: string;
+  owner_id?: string;
+  created_at?: Timestamp;
+};
+
 export default function EditAddresses(props: {
   userID: string;
   addresses: string[];
@@ -57,13 +75,29 @@ export default function EditAddresses(props: {
   async function addValidatedAddress(address: _Address) {
     setMatchedAddress(null);
     setOriginalAddress(null);
+
     const docRef: DocumentReference = doc(db, 'users', props.userID);
     const addressesRef: CollectionReference = collection(db, 'addresses');
-    address.owner_id = props.userID;
-    address.created_at = Timestamp.fromDate(new Date());
+    const uploadAddress: UploadAddress = {
+      address_line1: address.address_line1,
+      address_line2: address.address_line2,
+      address_line3: address.address_line3,
+      address_residential_indicator: address.address_residential_indicator,
+      city_locality: address.city_locality,
+      company_name: address.company_name,
+      country_code: address.country_code,
+      email: address.email,
+      name: address.name,
+      phone: address.phone,
+      postal_code: address.postal_code,
+      state_province: address.state_province,
+      owner_id: props.userID,
+      created_at: Timestamp.fromDate(new Date()),
+    };
+
     const newDoc: DocumentReference<DocumentData, DocumentData> = await addDoc(
       addressesRef,
-      address
+      uploadAddress
     );
     let default_address = props.default_address;
     const addresses = props.addresses;
@@ -72,7 +106,7 @@ export default function EditAddresses(props: {
     }
     addresses.push(newDoc.id);
     await updateDoc(docRef, {
-      addresses: addresses,
+      addresses: uploadAddress,
       default_address: default_address,
     });
     revalidate();

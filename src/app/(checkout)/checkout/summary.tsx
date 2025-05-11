@@ -55,7 +55,7 @@ export default function CheckoutSummary() {
           let expiration_good = true;
           if (expiration !== null) {
             const today = new Date();
-            const expiration_date = new Date(expiration.seconds * 1000);
+            const expiration_date = expiration;
             if (today.getTime() > expiration_date.getTime()) {
               expiration_good = false;
             }
