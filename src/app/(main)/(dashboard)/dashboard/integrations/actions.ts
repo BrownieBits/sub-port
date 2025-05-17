@@ -30,7 +30,7 @@ export async function CreateStripeAccount(user_id: string, country: string, emai
 }
 export async function CreateStripeLinkURL(account_id: string) {
     'use server';
-    console.log(process.env.NEXT_PUBLIC_BASE_URL)
+    console.log('NP BASE URL', process.env.NEXT_PUBLIC_BASE_URL)
     const accountLink = await stripe.accountLinks.create({
         account: account_id,
         refresh_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/integrations/stripe/${account_id}`,
