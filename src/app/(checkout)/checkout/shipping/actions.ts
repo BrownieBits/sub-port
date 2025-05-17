@@ -137,7 +137,7 @@ export async function getPrintfulRates(token: string, items: _Item[],
   const responseJson = await response.json();
 
   if (responseJson.code !== 200) {
-    console.log('RESP JSON ERROR', responseJson)
+    console.error('RESP JSON ERROR', responseJson)
     return [];
   }
   const rates: _Rate[] = responseJson.result.map((rate: any) => {

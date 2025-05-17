@@ -16,7 +16,7 @@ import {
 import * as React from 'react';
 
 const baseUrl = process.env.BASE_URL
-  ? `https://${process.env.BASE_URL}`
+  ? `${process.env.BASE_URL}`
   : 'https://localhost:3000';
 
 export function WelcomeEmail() {

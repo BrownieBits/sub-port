@@ -50,13 +50,6 @@ export const CitiesReachedChart = (props: { data: Analytic[] }) => {
         ) {
           citiesReached[`${city.replaceAll('%20', ' ')}, ${country}`] = [ip];
         } else {
-          console.log(
-            citiesReached,
-            citiesReached[`${city}, ${country}`],
-            city,
-            country,
-            ip
-          );
           if (!citiesReached[`${city}, ${country}`].includes(ip)) {
             citiesReached[`${city.replaceAll('%20', ' ')}, ${country}`].push(
               ip

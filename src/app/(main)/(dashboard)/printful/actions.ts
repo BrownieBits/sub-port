@@ -19,7 +19,6 @@ export async function connectToPrintful(code: string, store_id: string) {
   if (tokenResponse.status !== 200) {
     return { error: tokenJson.error.message, status: tokenResponse.status };
   }
-  console.log('TokenJson', tokenJson);
   const webhookeResponse = await fetch('https://api.printful.com/webhooks', {
     method: 'POST',
     headers: {
@@ -47,9 +46,6 @@ export async function connectToPrintful(code: string, store_id: string) {
   if (webhookeResponse.status !== 200) {
     return { error: webHookJson.error.message, status: webhookeResponse.status };
   }
-  console.log('ACCESS TOKEN', tokenJson.access_token);
-  console.log('WEBHOOK STATUS', webhookeResponse.status);
-  console.log('WEBHOOK', webhookeResponse);
   return { status: 200, access_token: tokenJson.access_token, refresh_token: tokenJson.refresh_token };
 }
 

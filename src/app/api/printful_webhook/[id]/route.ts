@@ -74,7 +74,6 @@ type AddVariant = {
 export async function POST(request: NextRequest, context: { params: Promise<Params> }) {
   const data = await request.json();
   const parameters = await context.params;
-  console.log('REQUEST', data);
   if (data.type === 'product_updated') {
 
     const storeRef = doc(db, 'stores', parameters.id);

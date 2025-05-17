@@ -10,7 +10,6 @@ export async function RetrieveStripeAccount(account_id: string) {
 }
 export async function CreateStripeLinkURL(account_id: string) {
     'use server';
-    console.log('NP BASE URL', process.env.NEXT_PUBLIC_BASE_URL)
     const accountLink = await stripe.accountLinks.create({
         account: account_id,
         refresh_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/integrations/stripe/${account_id}`,
