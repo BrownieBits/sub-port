@@ -30,7 +30,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useMediaQuery } from '@/hooks/use-media-query';
 import { db } from '@/lib/firebase';
 import userStore from '@/stores/userStore';
-import { faClose, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
+import { faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { DialogClose } from '@radix-ui/react-dialog';
@@ -136,14 +136,12 @@ export default function NewCollectionButton() {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>
-              <h3>Add Collection</h3>
-            </DialogTitle>
-            <DialogDescription className="flex flex-col">
+            <DialogTitle>Add Collection</DialogTitle>
+            <DialogDescription className="flex flex-col" asChild>
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="w-full space-y-8"
+                  className="w-full space-y-8 pt-4"
                 >
                   <FormField
                     control={form.control}
@@ -224,14 +222,12 @@ export default function NewCollectionButton() {
       <DrawerContent>
         <DrawerHeader className="mx-auto w-full max-w-[2428px]">
           <DrawerTitle className="flex justify-between">
-            <h3>Add Collection</h3>
-            <DrawerClose>
-              <Button variant="outline" size="sm">
-                <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
-              </Button>
-            </DrawerClose>
+            Add Collection
           </DrawerTitle>
-          <DrawerDescription className="flex w-full flex-col items-start text-left">
+          <DrawerDescription
+            className="flex w-full flex-col items-start text-left"
+            asChild
+          >
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}

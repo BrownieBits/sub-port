@@ -84,7 +84,7 @@ const formSchema = z.object({
     .number()
     .int({ message: 'Min Order Value must be a number' })
     .nonnegative({ message: 'Min Order Value must be a positive number' }),
-  expiration_date: z.date().optional().or(z.literal('')),
+  expiration_date: z.date().optional(),
 });
 
 export const EditPromotionButton = (props: {
@@ -93,7 +93,7 @@ export const EditPromotionButton = (props: {
   minimum_order_value: number;
   amount: number;
   type: 'Flat Amount' | 'Percentage' | undefined;
-  expiration_date: Timestamp | undefined;
+  expiration_date: Date | undefined;
 }) => {
   const user_store = userStore((state) => state.user_store);
   const user_loaded = userStore((state) => state.user_loaded);
@@ -106,15 +106,13 @@ export const EditPromotionButton = (props: {
       type: props.type,
       amount: props.amount,
       min_order_value: props.minimum_order_value,
-      expiration_date: props.expiration_date
-        ? new Date(props.expiration_date!.toString())
-        : undefined,
+      expiration_date: props.expiration_date,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     let expiration_date = null;
-    if (values.expiration_date !== undefined && values.expiration_date !== '') {
+    if (values.expiration_date !== undefined) {
       expiration_date = Timestamp.fromDate(values.expiration_date);
     }
     const promotionDoc: DocumentReference = doc(
@@ -165,7 +163,7 @@ export const EditPromotionButton = (props: {
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="w-full space-y-8"
+                  className="w-full space-y-8 pt-4"
                 >
                   <FormField
                     control={form.control}
@@ -282,6 +280,7 @@ export const EditPromotionButton = (props: {
                           <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                               mode="single"
+                              selected={field.value!}
                               onSelect={field.onChange}
                               disabled={(date) => date < new Date()}
                             />
@@ -443,9 +442,9 @@ export const EditPromotionButton = (props: {
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
+                            selected={field.value!}
                             onSelect={field.onChange}
                             disabled={(date) => date < new Date()}
-                            initialFocus
                           />
                         </PopoverContent>
                       </Popover>

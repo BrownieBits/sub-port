@@ -18,6 +18,7 @@ import {
   CollectionReference,
   collection,
   getDocs,
+  onSnapshot,
   query,
   where,
 } from 'firebase/firestore';
@@ -57,16 +58,18 @@ export const OrderDetails = ({ order_id }: { order_id: string }) => {
   const [orderInfo, setOrderInfo] = React.useState<OrderInfo | null>(null);
   const user_store = userStore((state) => state.user_store);
 
-  async function getOrder() {
+  function getOrder() {
     const ordersRef: CollectionReference = collection(db, 'orders');
     let q = query(
       ordersRef,
       where('store_id', '==', user_store),
       where('payment_intent', '==', `pi_${order_id}`)
     );
-    const ordersDocs = await getDocs(q);
-
-    if (!ordersDocs.empty) {
+    const unsubscribe = onSnapshot(q, async (snapshot) => {
+      if (snapshot.empty) {
+        goTo();
+        return;
+      }
       let order_total = 0;
       let shipments_total = 0;
       let discounts_total = 0;
@@ -74,7 +77,7 @@ export const OrderDetails = ({ order_id }: { order_id: string }) => {
       const orders: Orders = {};
       const shipments: _Shipment[] = [];
       await Promise.all(
-        ordersDocs.docs.map(async (doc) => {
+        snapshot.docs.map(async (doc) => {
           orders[doc.id] = {
             address: doc.data().address,
             billing_address: doc.data().billing_address,
@@ -129,12 +132,11 @@ export const OrderDetails = ({ order_id }: { order_id: string }) => {
         service_fee_total: order_total - item_total - shipments_total,
         status: orders[Object.keys(orders)[0]].status,
       });
-    } else {
-      goTo();
-    }
+    });
+    return unsubscribe;
   }
   React.useEffect(() => {
-    getOrder();
+    return getOrder();
   }, []);
 
   if (orderInfo === null) {

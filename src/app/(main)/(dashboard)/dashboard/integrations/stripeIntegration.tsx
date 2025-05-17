@@ -65,6 +65,7 @@ export default function StripeIntegration() {
     const getData = async () => {
       const userRef: DocumentReference = doc(db, 'users', user_id);
       const userDoc = await getDoc(userRef);
+      console.log(userDoc.id);
       const userData = {
         id: userDoc.id,
         default_currency: userDoc.data()?.default_currency,

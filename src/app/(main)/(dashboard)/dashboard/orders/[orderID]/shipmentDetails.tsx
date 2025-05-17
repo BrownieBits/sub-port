@@ -141,14 +141,19 @@ export default function ShipmentDetails(props: Props) {
               {props.shipment.status === 'Cancelled' && (
                 <Badge variant="destructive">Refunded</Badge>
               )}
-              {props.shipment.status === 'Unfulfilled' && (
-                <UploadTrackingButton
-                  shipment_id={props.shipment.name!}
-                  carrier={props.shipment.rate?.carrier_name!}
-                  order_id={props.order_id}
-                  checkFulFilled={checkFulFilled}
-                />
-              )}
+              {props.shipment.status === 'Unfulfilled' &&
+                props.shipment.name?.startsWith('self-') && (
+                  <UploadTrackingButton
+                    shipment_id={props.shipment.name!}
+                    carrier={props.shipment.rate?.carrier_name!}
+                    order_id={props.order_id}
+                    checkFulFilled={checkFulFilled}
+                  />
+                )}
+              {props.shipment.status === 'Unfulfilled' &&
+                !props.shipment.name?.startsWith('self-') && (
+                  <Badge variant="outline">Waiting for Tracking</Badge>
+                )}
             </section>
           )}
         </section>

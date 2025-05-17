@@ -84,7 +84,7 @@ const formSchema = z.object({
     .number()
     .int({ message: 'Min Order Value must be a number' })
     .nonnegative({ message: 'Min Order Value must be a positive number' }),
-  expiration_date: z.date().optional().or(z.literal('')),
+  expiration_date: z.date().optional(),
 });
 
 export const NewPromotionButton = (props: {
@@ -114,13 +114,13 @@ export const NewPromotionButton = (props: {
       type: 'Flat Amount',
       amount: 1,
       min_order_value: 0,
-      expiration_date: '',
+      expiration_date: undefined,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     let expiration_date = null;
-    if (values.expiration_date !== undefined && values.expiration_date !== '') {
+    if (values.expiration_date !== undefined) {
       expiration_date = Timestamp.fromDate(values.expiration_date);
     }
     const documentReference: DocumentReference = doc(
@@ -181,14 +181,12 @@ export const NewPromotionButton = (props: {
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>
-              <h3>Add Promotion</h3>
-            </DialogTitle>
-            <DialogDescription className="flex flex-col">
+            <DialogTitle>Add Promotion</DialogTitle>
+            <DialogDescription className="flex flex-col" asChild>
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
-                  className="w-full space-y-8"
+                  className="w-full space-y-8 pt-4"
                 >
                   <FormField
                     control={form.control}
@@ -305,6 +303,7 @@ export const NewPromotionButton = (props: {
                           <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                               mode="single"
+                              selected={field.value!}
                               onSelect={field.onChange}
                               disabled={(date) => date < new Date()}
                             />
@@ -342,14 +341,17 @@ export const NewPromotionButton = (props: {
       <DrawerContent>
         <DrawerHeader className="mx-auto w-full max-w-[2428px]">
           <DrawerTitle className="flex justify-between">
-            <h3>Add Promotion</h3>
-            <DrawerClose>
+            Add Promotion
+            <DrawerClose asChild>
               <Button variant="outline" size="sm">
                 <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
               </Button>
             </DrawerClose>
           </DrawerTitle>
-          <DrawerDescription className="flex w-full flex-col items-start text-left">
+          <DrawerDescription
+            className="flex w-full flex-col items-start text-left"
+            asChild
+          >
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -468,9 +470,9 @@ export const NewPromotionButton = (props: {
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
                             mode="single"
+                            selected={field.value!}
                             onSelect={field.onChange}
                             disabled={(date) => date < new Date()}
-                            initialFocus
                           />
                         </PopoverContent>
                       </Popover>

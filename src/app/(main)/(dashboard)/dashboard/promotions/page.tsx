@@ -35,7 +35,9 @@ async function getData(store_id: string) {
       number_of_uses: item.data().number_of_used,
       times_used: item.data().times_used,
       type: item.data().type,
-      expiration_date: new Date(item.data().expiration_date.seconds * 1000),
+      expiration_date: item.data().expiration_date
+        ? new Date(item.data().expiration_date.seconds * 1000)
+        : undefined,
       user_id: item.data().user_id,
       status: item.data().status,
       store_id: item.data().store_id,

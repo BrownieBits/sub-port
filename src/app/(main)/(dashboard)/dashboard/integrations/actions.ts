@@ -32,8 +32,8 @@ export async function CreateStripeLinkURL(account_id: string) {
     'use server';
     const accountLink = await stripe.accountLinks.create({
         account: account_id,
-        refresh_url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/integrations/stripe/${account_id}`,
-        return_url: `https://${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/integrations/stripe/${account_id}`,
+        refresh_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/integrations/stripe/${account_id}`,
+        return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/dashboard/integrations/stripe/${account_id}`,
         type: "account_onboarding",
     });
 

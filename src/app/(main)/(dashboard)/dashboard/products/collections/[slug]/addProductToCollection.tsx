@@ -119,11 +119,11 @@ export default function AddProductsToCollectionForm(props: {
                     <span className="flex-1">{doc.data().name}</span>
                     <span className="flex-1">{doc.data().product_type}</span>
                     {doc.data().status === 'Public' ? (
-                      <span className="mr-2 rounded bg-success px-2.5 py-0.5 text-xs font-medium text-success-foreground">
+                      <span className="bg-success text-success-foreground mr-2 rounded px-2.5 py-0.5 text-xs font-medium">
                         {doc.data().status}
                       </span>
                     ) : (
-                      <span className="mr-2 rounded bg-destructive px-2.5 py-0.5 text-xs font-medium text-destructive-foreground">
+                      <span className="bg-destructive text-destructive-foreground mr-2 rounded px-2.5 py-0.5 text-xs font-medium">
                         {doc.data().status}
                       </span>
                     )}
@@ -137,7 +137,7 @@ export default function AddProductsToCollectionForm(props: {
         </ScrollArea>
       )}
 
-      <section className="flex items-center justify-between gap-4">
+      <section className="flex items-center justify-between gap-4 pt-4">
         <span>
           {selectedProducts?.length} Product
           {selectedProducts?.length === 1 ? '' : 's'} Selected

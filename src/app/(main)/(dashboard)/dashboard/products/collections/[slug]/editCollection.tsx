@@ -19,6 +19,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,6 +28,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
+import { TagsInput } from '@/components/ui/tags-input';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Tooltip,
@@ -78,13 +80,13 @@ const formSchema = z.object({
     required_error: 'You need to select a collection type.',
   }),
   description: z.string().optional(),
-  tags: z.string().optional(),
+  tags: z.array(z.string()),
 });
 
 export default function Edit(props: {
   name: string;
   description: string;
-  tags: string[];
+  tags?: string[];
   type: 'Manual' | 'Smart';
   products: string[];
   status: string;
@@ -108,35 +110,23 @@ export default function Edit(props: {
       name: props.name || '',
       type: props.type || 'Manual',
       description: props.description || '',
-      tags: props.tags?.join(',') || '',
+      tags: props.tags || [],
     },
   });
 
   async function onSubmit() {
     setDisabled(true);
-    if (form.getValues('type') === 'Smart' && form.getValues('tags') === '') {
-      form.setError('tags', {
-        message: 'A tags are required for Smart Collections',
-      });
-      setDisabled(false);
-      return;
-    }
     const docRef: DocumentReference = doc(
       db,
       `stores/${props.store_id}/collections`,
       props.id
     );
-
-    const tags = form.getValues('tags')?.split(',') || [];
-    tags.map((tag) => {
-      tag = tag.trim();
-    });
     await updateDoc(docRef, {
       name: form.getValues('name'),
       type: form.getValues('type'),
       products: form.getValues('type') === 'Manual' ? selectedProducts : [],
       description: form.getValues('description'),
-      tags: form.getValues('type') === 'Smart' ? tags : [],
+      tags: form.getValues('type') === 'Smart' ? form.getValues('tags') : [],
     });
     toast('Colletion Updated', {
       description: `The ${form.getValues('name')} was updated.`,
@@ -174,6 +164,11 @@ export default function Edit(props: {
     setSelectedProducts(props.products);
   }, [props.products]);
   React.useEffect(() => {
+    if (props.tags) {
+      setSelectedTags(props.tags);
+    }
+  }, [props.tags]);
+  React.useEffect(() => {
     if (tagField && tagField !== '') {
       if (tagField!.charAt(tagField.length - 1) === ',') {
         let tags: string[] = tagField.split(',');
@@ -189,7 +184,7 @@ export default function Edit(props: {
   return (
     <section>
       <section className="mx-auto w-full max-w-[1754px]">
-        <section className="flex w-full items-center justify-between gap-4 px-4 pb-4 pt-[10px]">
+        <section className="flex w-full items-center justify-between gap-4 px-4 pt-[10px] pb-4">
           <section className="flex w-auto items-center gap-4">
             <Tooltip>
               <TooltipTrigger asChild>
@@ -300,7 +295,7 @@ export default function Edit(props: {
       </section>
       <Separator />
       <section className="mx-auto w-full max-w-[1754px]">
-        <section className="flex w-full flex-col gap-8 px-4 pb-8 pt-4">
+        <section className="flex w-full flex-col gap-8 px-4 pt-4 pb-8">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <section className="flex flex-col gap-8 md:flex-row">
@@ -362,7 +357,7 @@ export default function Edit(props: {
                               defaultValue={field.value}
                               className="flex items-center space-x-6"
                             >
-                              <FormItem className="flex items-center space-x-3 space-y-0">
+                              <FormItem className="flex items-center space-y-0 space-x-3">
                                 <FormControl>
                                   <RadioGroupItem value="Manual" />
                                 </FormControl>
@@ -370,7 +365,7 @@ export default function Edit(props: {
                                   Manual
                                 </FormLabel>
                               </FormItem>
-                              <FormItem className="flex items-center space-x-3 space-y-0">
+                              <FormItem className="flex items-center space-y-0 space-x-3">
                                 <FormControl>
                                   <RadioGroupItem value="Smart" />
                                 </FormControl>
@@ -406,16 +401,21 @@ export default function Edit(props: {
                         control={form.control}
                         name="tags"
                         render={({ field }) => (
-                          <FormItem className="w-full">
+                          <FormItem>
                             <FormLabel>Tags</FormLabel>
                             <FormControl>
-                              <Input
-                                onChangeCapture={field.onChange}
-                                id="tags"
-                                {...field}
-                                {...register('tags')}
+                              <TagsInput
+                                value={field.value}
+                                onValueChange={field.onChange}
                               />
                             </FormControl>
+                            <FormDescription>
+                              Use{' '}
+                              <kbd className="bg-muted text-muted-foreground pointer-events-none inline-flex h-5 items-center gap-1 rounded border px-1.5 font-mono text-[10px] font-medium opacity-100 select-none">
+                                Enter
+                              </kbd>{' '}
+                              to add tags to list.
+                            </FormDescription>
                             <FormMessage />
                           </FormItem>
                         )}
@@ -452,7 +452,7 @@ export default function Edit(props: {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Select Products</AlertDialogTitle>
                       <Separator className="mb-4" />
-                      <AlertDialogDescription>
+                      <AlertDialogDescription asChild>
                         <AddProductsToCollectionForm
                           closeModal={closeModal}
                           preselected={selectedProducts}
