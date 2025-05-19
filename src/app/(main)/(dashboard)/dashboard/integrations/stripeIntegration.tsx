@@ -79,7 +79,8 @@ export default function StripeIntegration() {
 
       if (
         userDoc.data()?.stripe_connect_id !== undefined &&
-        userDoc.data()?.stripe_connect_id !== null
+        userDoc.data()?.stripe_connect_id !== null &&
+        userDoc.data()?.stripe_connect_id !== ''
       ) {
         setStripeConnectID(userDoc.data()?.stripe_connect_id);
         const linkURL = await CreateStripeLinkURL(
