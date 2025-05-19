@@ -158,7 +158,7 @@ export const LatestProduct = (props: { user_id: string }) => {
             {new Intl.NumberFormat('en-US', {
               style: 'currency',
               currency: latestProduct.currency,
-            }).format(latestProduct.revenue!)}
+            }).format(latestProduct.revenue! / 100)}
           </p>
         </section>
       </CardContent>

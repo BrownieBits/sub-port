@@ -36,6 +36,7 @@ export async function ChangeStatus(
   item: 'status' | 'show',
   store_id: string
 ) {
+  console.log('ChangeStatus', action, id, item, store_id);
   const docRef = doc(db, `stores/${store_id}/promotions`, id);
   if (action === 'Delete') {
     await deleteDoc(docRef);
@@ -421,66 +422,66 @@ export const columns: ColumnDef<Promotion>[] = [
       );
     },
   },
-  {
-    accessorKey: 'show_in_banner',
-    header: ({ column }) => {
-      if (column.getIsSorted() === 'asc') {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="text-foreground bg-inherit p-0 hover:bg-inherit"
-          >
-            Show In Banner
-            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowDown} />
-          </Button>
-        );
-      } else if (column.getIsSorted() === 'desc') {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-            className="text-foreground bg-inherit p-0 hover:bg-inherit"
-          >
-            Show In Banner
-            <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowUp} />
-          </Button>
-        );
-      }
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          className="bg-inherit p-0 hover:bg-inherit"
-        >
-          Show In Banner
-          <FontAwesomeIcon
-            className="icon text-muted-foreground hover:text-foreground ml-[5px]"
-            icon={faArrowDown}
-          />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      const id = row.getValue('id') as string;
-      const store_id = row.getValue('store_id') as string;
-      return (
-        <Switch
-          id="status"
-          aria-label={`Status ${row.getValue('show_in_banner')}`}
-          title={`Status ${row.getValue('show_in_banner')}`}
-          checked={row.getValue('show_in_banner')}
-          onCheckedChange={(event) => {
-            if (event) {
-              ChangeStatus(true, id, 'show', store_id);
-            } else {
-              ChangeStatus(false, id, 'show', store_id);
-            }
-          }}
-        />
-      );
-    },
-  },
+  // {
+  //   accessorKey: 'show_in_banner',
+  //   header: ({ column }) => {
+  //     if (column.getIsSorted() === 'asc') {
+  //       return (
+  //         <Button
+  //           variant="ghost"
+  //           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+  //           className="text-foreground bg-inherit p-0 hover:bg-inherit"
+  //         >
+  //           Show In Banner
+  //           <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowDown} />
+  //         </Button>
+  //       );
+  //     } else if (column.getIsSorted() === 'desc') {
+  //       return (
+  //         <Button
+  //           variant="ghost"
+  //           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+  //           className="text-foreground bg-inherit p-0 hover:bg-inherit"
+  //         >
+  //           Show In Banner
+  //           <FontAwesomeIcon className="icon ml-[5px]" icon={faArrowUp} />
+  //         </Button>
+  //       );
+  //     }
+  //     return (
+  //       <Button
+  //         variant="ghost"
+  //         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+  //         className="bg-inherit p-0 hover:bg-inherit"
+  //       >
+  //         Show In Banner
+  //         <FontAwesomeIcon
+  //           className="icon text-muted-foreground hover:text-foreground ml-[5px]"
+  //           icon={faArrowDown}
+  //         />
+  //       </Button>
+  //     );
+  //   },
+  //   cell: ({ row }) => {
+  //     const id = row.getValue('id') as string;
+  //     const store_id = row.getValue('store_id') as string;
+  //     return (
+  //       <Switch
+  //         id="status"
+  //         aria-label={`Status ${row.getValue('show_in_banner')}`}
+  //         title={`Status ${row.getValue('show_in_banner')}`}
+  //         checked={row.getValue('show_in_banner')}
+  //         onCheckedChange={(event) => {
+  //           if (event) {
+  //             ChangeStatus(true, id, 'show', store_id);
+  //           } else {
+  //             ChangeStatus(false, id, 'show', store_id);
+  //           }
+  //         }}
+  //       />
+  //     );
+  //   },
+  // },
   {
     accessorKey: 'actions',
     header: '',

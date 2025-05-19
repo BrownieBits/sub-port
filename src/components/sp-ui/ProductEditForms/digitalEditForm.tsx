@@ -641,8 +641,8 @@ export default function DigitalEditForm(props: Props) {
                   <b>Title and meta description</b>
                 </p>
                 <p>
-                  The title and meta description help define how your store
-                  shows up on search engines.
+                  This is the title and description that will be shown on your
+                  product page. This is also used for SEO purposes.
                 </p>
               </aside>
               <Card className="w-full flex-1">
@@ -837,7 +837,9 @@ export default function DigitalEditForm(props: Props) {
                   <b>Digital File</b>
                 </p>
                 <p className="pb-4">
-                  This will be the file sent to the customer once purchased.
+                  This is the file that will be sent to your customers after
+                  they purchase your product. This can be a PDF, ZIP, or any
+                  other file type.
                 </p>
                 {digitalFile === '' ? (
                   <Button
@@ -866,7 +868,7 @@ export default function DigitalEditForm(props: Props) {
                   render={({ field: { onChange, value, ...rest } }) => (
                     <FormItem>
                       <FormControl>
-                        {digitalFile === '' ? (
+                        {digitalFile === '' && (
                           <Input
                             type="file"
                             hidden={true}
@@ -893,8 +895,6 @@ export default function DigitalEditForm(props: Props) {
                               onChange(files);
                             }}
                           />
-                        ) : (
-                          <></>
                         )}
                       </FormControl>
                       <FormMessage />
@@ -943,12 +943,9 @@ export default function DigitalEditForm(props: Props) {
             <section className="flex flex-col gap-8 md:flex-row">
               <aside className="w-full md:w-[200px] lg:w-[300px] xl:w-[600px]">
                 <p className="pb-4">
-                  <b>Options and Pricing</b>
+                  <b>Pricing and Currency</b>
                 </p>
-                <p>
-                  These options will help define your product and make them
-                  searchable.
-                </p>
+                <p>This is the price of your product.</p>
               </aside>
               <Card className="w-full flex-1">
                 <CardContent className="flex w-full flex-col gap-8">
@@ -1022,6 +1019,22 @@ export default function DigitalEditForm(props: Props) {
                       )}
                     />
                   </section>
+                </CardContent>
+              </Card>
+            </section>
+
+            <section className="flex flex-col gap-8 md:flex-row">
+              <aside className="w-full md:w-[200px] lg:w-[300px] xl:w-[600px]">
+                <p className="pb-4">
+                  <b>Tags, Sku, and Featured</b>
+                </p>
+                <p>
+                  These are the tags that will be used to help customers find
+                  your product. This is also used for SEO purposes.
+                </p>
+              </aside>
+              <Card className="w-full flex-1">
+                <CardContent className="flex w-full flex-col gap-8">
                   <FormField
                     control={form.control}
                     name="tags"
@@ -1054,7 +1067,7 @@ export default function DigitalEditForm(props: Props) {
                         <FormControl>
                           <Input
                             onChangeCapture={field.onChange}
-                            id="tags"
+                            id="sku"
                             {...field}
                           />
                         </FormControl>

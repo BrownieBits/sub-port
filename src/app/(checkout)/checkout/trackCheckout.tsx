@@ -71,9 +71,6 @@ export default function TrackCheckout(props: {
         });
       }
     }
-    if (items.size > 0) {
-      getAndSetAnalytics();
-    }
   }, [user_loaded]);
   React.useEffect(() => {
     if (items.size > 0) {

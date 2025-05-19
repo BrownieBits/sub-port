@@ -40,7 +40,7 @@ async function getData(store_id: string) {
         : undefined,
       user_id: item.data().user_id,
       status: item.data().status,
-      store_id: item.data().store_id,
+      store_id: store_id,
       show_in_banner: item.data().show_in_banner,
       filter: `${item.id}_${item.data().type}`,
     };

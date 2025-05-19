@@ -87,7 +87,7 @@ export default function StoreItems(props: Props) {
       });
       return;
     }
-    const expiration = document.data().expiration_date as Timestamp;
+    const expiration = document.data().expiration_date as Timestamp | null;
     if (expiration !== null) {
       const expiration_date = new Date(expiration.seconds * 1000);
       const today = new Date();

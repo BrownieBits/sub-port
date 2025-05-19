@@ -282,9 +282,11 @@ export default function CartState() {
                   promo_id: promotionDoc.id,
                   amount: promotionDoc.data().amount,
                   minimum_order_value: promotionDoc.data().minimum_order_value,
-                  expiration_date: new Date(
-                    promotionDoc.data().expiration_date.seconds * 1000
-                  ),
+                  expiration_date: promotionDoc.data().expiration_date
+                    ? new Date(
+                        promotionDoc.data().expiration_date.seconds * 1000
+                      )
+                    : null,
                   name: promotionDoc.data().name,
                   status: promotionDoc.data().status,
                   type: promotionDoc.data().type,

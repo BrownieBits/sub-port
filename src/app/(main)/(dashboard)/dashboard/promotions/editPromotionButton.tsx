@@ -130,7 +130,8 @@ export const EditPromotionButton = (props: {
         name: values.name.toUpperCase(),
         number_of_uses: 0,
         minimum_order_value: values.min_order_value,
-        amount: values.amount,
+        amount:
+          values.type === 'Percentage' ? values.amount : values.amount * 100,
         type: values.type,
         expiration_date: expiration_date,
         updated_at: Timestamp.fromDate(new Date()),

@@ -60,9 +60,8 @@ TODO:
     - [x] Store Orders
       - [x] Create page for seeing individual order information
   - [x] Preferences
-  - [ ] Products
-    - [ ] Products
-      - [ ] Add in Edit form for POD products
+  - [x] Products
+    - [x] Products
     - [x] Collections
   - [x] Promotions
   - [x] Settings

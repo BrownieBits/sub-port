@@ -19,13 +19,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { TagsInput } from '@/components/ui/tags-input';
 import { Textarea } from '@/components/ui/textarea';
@@ -46,7 +39,6 @@ import {
   faSave,
   faSquareUpRight,
   faTrash,
-  faUpload,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -70,9 +62,6 @@ import { toast } from 'sonner';
 import * as z from 'zod';
 import { goTo, revalidate } from './actions';
 import AddOptionDrawer from './addOptionDrawer';
-import { AiDescriptionWriter } from './aiDescriptionWriter';
-import DraggableImages from './draggableImages';
-import { ShipFromSelect } from './ShipFrom';
 
 const MAX_IMAGE_SIZE = 5242880; // 5 MB
 const ALLOWED_IMAGE_TYPES = [
@@ -289,7 +278,7 @@ type Props = {
   options?: _Option[];
 };
 
-export default function SelfEditForm(props: Props) {
+export default function PODEditForm(props: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const [disabled, setDisabled] = React.useState<boolean>(false);
@@ -989,8 +978,9 @@ export default function SelfEditForm(props: Props) {
                   <b>Title and meta description</b>
                 </p>
                 <p>
-                  This is the title and description that will be shown on your
-                  product page. This is also used for SEO purposes.
+                  The title, description and produc type have been pulled in
+                  from Printful. We will use this information to help define how
+                  your product shows up on search engines.
                 </p>
               </aside>
               <Card className="w-full flex-1">
@@ -998,6 +988,7 @@ export default function SelfEditForm(props: Props) {
                   <FormField
                     control={form.control}
                     name="name"
+                    disabled
                     render={({ field }) => (
                       <FormItem className="w-full">
                         <FormLabel>Name</FormLabel>
@@ -1015,6 +1006,7 @@ export default function SelfEditForm(props: Props) {
                   <FormField
                     control={form.control}
                     name="description"
+                    disabled
                     render={({ field }) => (
                       <FormItem className="w-full">
                         <FormLabel>Meta Description</FormLabel>
@@ -1026,10 +1018,6 @@ export default function SelfEditForm(props: Props) {
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>
-                          Having trouble writing a description? Use Ai to
-                          help... <AiDescriptionWriter />
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -1037,6 +1025,7 @@ export default function SelfEditForm(props: Props) {
                   <FormField
                     control={form.control}
                     name="product_type"
+                    disabled
                     render={({ field }) => (
                       <FormItem className="w-full">
                         <FormLabel>Product Type</FormLabel>
@@ -1070,6 +1059,7 @@ export default function SelfEditForm(props: Props) {
                         <FormControl>
                           <Input
                             type="file"
+                            disabled
                             accept={ALLOWED_IMAGE_TYPES.join(',')}
                             hidden={true}
                             className="hidden"
@@ -1101,10 +1091,6 @@ export default function SelfEditForm(props: Props) {
                             }}
                           />
                         </FormControl>
-                        <FormDescription>
-                          For best results we suggest an image that is 1000x1000
-                          pixels.
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     </>
@@ -1113,366 +1099,310 @@ export default function SelfEditForm(props: Props) {
               </aside>
               <Card className="w-full flex-1">
                 <CardContent className="flex w-full flex-col gap-8">
-                  {productImages.length === 0 && (
-                    <section className="grid grid-cols-2 grid-rows-2 gap-4 md:grid-cols-5 md:grid-rows-2">
-                      <section className="col-span-2 row-span-2 aspect-square w-full">
-                        <section className="flex aspect-square items-center justify-center overflow-hidden rounded">
-                          <Button
-                            onClick={(event) => {
-                              event.preventDefault();
-                              productImagesRef.current?.click();
-                            }}
-                            className="hover: text-foreground h-full w-full rounded"
-                          >
-                            <p className="text-4xl">
-                              <FontAwesomeIcon
-                                className="icon"
-                                icon={faUpload}
-                              />
-                            </p>
-                          </Button>
-                        </section>
-                      </section>
+                  {productImages.length === 0 ? (
+                    <section className="flex w-full flex-col gap-8">
+                      No images pulled from Printful
                     </section>
-                  )}
-                  {productImages.length === 1 && (
-                    <section className="grid grid-cols-2 grid-rows-3 gap-4 md:grid-cols-5 md:grid-rows-2">
-                      <section className="col-span-2 row-span-2 aspect-square w-full">
-                        <section className="relative flex aspect-square items-center justify-center overflow-hidden rounded">
-                          <section className="absolute top-[2px] right-[2px]">
-                            <Button
-                              size="sm"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                removeImage(productImages[0].id);
-                              }}
-                              className="border-destructive bg-destructive text-destructive-foreground hover:bg-destructive h-auto p-2"
-                            >
-                              <FontAwesomeIcon
-                                className="icon"
-                                icon={faTrash}
-                              />
-                            </Button>
-                          </section>
-                          <Image
-                            src={productImages[0].image}
-                            height={400}
-                            width={400}
-                            alt="Main Product Image"
-                          />
-                        </section>
-                      </section>
-                      <section
-                        className="slot col-start-1 row-start-3 aspect-square md:col-start-3 md:row-start-1"
-                        data-swapy-slot="2"
-                      >
-                        <section className="flex aspect-square items-center justify-center overflow-hidden rounded">
-                          <Button
-                            onClick={(event) => {
-                              event.preventDefault();
-                              productImagesRef.current?.click();
-                            }}
-                            className="hover: text-foreground h-full w-full rounded"
-                          >
-                            <p className="text-4xl">
-                              <FontAwesomeIcon
-                                className="icon"
-                                icon={faUpload}
-                              />
-                            </p>
-                          </Button>
-                        </section>
-                      </section>
-                    </section>
-                  )}
-                  {productImages.length > 1 && (
-                    <DraggableImages
-                      product_images={productImages}
-                      uploadRef={productImagesRef}
-                      removeImage={removeImage}
-                      reOrderImages={setProductImages}
-                    />
-                  )}
-                </CardContent>
-              </Card>
-            </section>
-
-            <section className="flex flex-col gap-8 md:flex-row">
-              <aside className="w-full md:w-[200px] lg:w-[300px] xl:w-[600px]">
-                <p className="pb-4">
-                  <b>Pricing and Currency</b>
-                </p>
-                <p>This is the price of your product.</p>
-              </aside>
-              <Card className="w-full flex-1">
-                <CardContent className="flex w-full flex-col gap-8">
-                  <FormField
-                    control={form.control}
-                    name="prices.price"
-                    render={({ field }) => (
-                      <FormItem
-                        className={cn(
-                          'w-full flex-1',
-                          variants.length > 0 ? 'hidden' : 'block'
-                        )}
-                      >
-                        <FormLabel>Price</FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="price"
-                            type="number"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="prices.compare_at"
-                    render={({ field }) => (
-                      <FormItem
-                        className={cn(
-                          'w-full flex-1',
-                          variants.length > 0 ? 'hidden' : 'block'
-                        )}
-                      >
-                        <FormLabel>Compare At Price</FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="compare_at"
-                            type="number"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="currency"
-                    render={({ field }) => (
-                      <FormItem className="w-full flex-1">
-                        <FormLabel>Currency</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a currency type" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {currency_list.map((item) => {
-                              return (
-                                <SelectItem
-                                  value={item.value}
-                                  key={`currency_option_${item.value}`}
-                                >
-                                  {item.name}
-                                </SelectItem>
-                              );
-                            })}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-            </section>
-
-            <section className="flex flex-col gap-8 md:flex-row">
-              <aside className="w-full md:w-[200px] lg:w-[300px] xl:w-[600px]">
-                <p className="pb-4">
-                  <b>Variants</b>
-                </p>
-                <p>
-                  Variants are created from the options you have selected. You
-                  can add or remove options to create new variants. If you have
-                  no options, you can set a price for the product.
-                </p>
-              </aside>
-              <Card className="w-full flex-1">
-                <CardContent className="flex w-full flex-col gap-8">
-                  <section className="flex w-full items-center justify-between gap-4">
-                    <p>
-                      <b>Options</b>
-                    </p>
-                    {options.length < 2 && (
-                      <AddOptionDrawer
-                        optionList={options}
-                        setOptions={setOptions}
-                      />
-                    )}
-                  </section>
-                  {options.length === 0 ? (
-                    <p className="text-sm">No options created.</p>
                   ) : (
-                    <>
-                      {options.map((item, index) => (
-                        <section
-                          className="flex w-full items-center gap-4"
-                          key={`option_${item.id}`}
-                        >
-                          <aside className="flex flex-1 flex-col gap-4">
-                            <p>{item.name}</p>
-                            <div className="flex w-full gap-4">
-                              {item.options.map((opt, i) => {
-                                return (
-                                  <span
-                                    className="text-muted-foreground rounded text-xs font-medium"
-                                    key={`variant_option_${i}`}
-                                  >
-                                    {opt}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          </aside>
-                          <aside>
-                            <AddOptionDrawer
-                              optionList={options}
-                              setOptions={setOptions}
-                              name={item.name}
-                              index={index}
-                              id={item.id!}
-                              options={item.options}
+                    <section
+                      className={cn(
+                        'grid grid-cols-2 gap-4 md:grid-cols-5 md:grid-rows-2',
+                        {
+                          'grid-rows-3':
+                            productImages.length === 1 ||
+                            productImages.length === 2,
+                          'grid-rows-4':
+                            productImages.length === 3 ||
+                            productImages.length === 4,
+                          'grid-rows-5': productImages.length >= 5,
+                        }
+                      )}
+                    >
+                      {productImages.length > 0 && (
+                        <section className="col-span-2 row-span-2 aspect-square w-full">
+                          <section className="relative flex aspect-square items-center justify-center overflow-hidden rounded">
+                            <Image
+                              src={productImages[0].image}
+                              height={400}
+                              width={400}
+                              alt="Main Product Image"
+                              priority
                             />
-                          </aside>
-                          <aside>
-                            <Button
-                              variant="destructive"
-                              size="icon"
-                              type="button"
-                              className="text-xl"
-                              onClick={(event) => {
-                                event.preventDefault();
-                                removeOption(index);
-                              }}
-                              asChild
-                            >
-                              <p className="text-lg">
+                          </section>
+                        </section>
+                      )}
+                      {productImages.length > 1 && (
+                        <>
+                          {productImages.map((item, index) => {
+                            if (index === 0) {
+                              return null;
+                            }
+                            return (
+                              <section
+                                className={`aspect-square`}
+                                key={`product_image_${index}`}
+                              >
+                                <section className="relative flex aspect-square items-center justify-center overflow-hidden rounded">
+                                  <Image
+                                    src={item.image}
+                                    height={400}
+                                    width={400}
+                                    alt="Product Image"
+                                  />
+                                </section>
+                              </section>
+                            );
+                          })}
+                        </>
+                      )}
+                    </section>
+                  )}
+                </CardContent>
+              </Card>
+            </section>
+
+            {options.length === 0 && (
+              <section className="flex flex-col gap-8 md:flex-row">
+                <aside className="w-full md:w-[200px] lg:w-[300px] xl:w-[600px]">
+                  <p className="pb-4">
+                    <b>Pricing and Currency</b>
+                  </p>
+                  <p>
+                    Pricing and currency are pulled in from Printful. You can
+                    edit the compare at price to set a sale price for your
+                    product.
+                  </p>
+                </aside>
+                <Card className="w-full flex-1">
+                  <CardContent className="flex w-full flex-col gap-8">
+                    <FormField
+                      control={form.control}
+                      name="prices.price"
+                      render={({ field }) => (
+                        <FormItem
+                          className={cn(
+                            'w-full flex-1',
+                            variants.length > 0 ? 'hidden' : 'block'
+                          )}
+                        >
+                          <FormLabel>Price</FormLabel>
+                          <FormControl>
+                            <Input
+                              onChangeCapture={field.onChange}
+                              id="price"
+                              type="number"
+                              disabled
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="prices.compare_at"
+                      render={({ field }) => (
+                        <FormItem
+                          className={cn(
+                            'w-full flex-1',
+                            variants.length > 0 ? 'hidden' : 'block'
+                          )}
+                        >
+                          <FormLabel>Compare At Price</FormLabel>
+                          <FormControl>
+                            <Input
+                              onChangeCapture={field.onChange}
+                              id="compare_at"
+                              type="number"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CardContent>
+                </Card>
+              </section>
+            )}
+
+            {options.length > 0 && (
+              <section className="flex flex-col gap-8 md:flex-row">
+                <aside className="w-full md:w-[200px] lg:w-[300px] xl:w-[600px]">
+                  <p className="pb-4">
+                    <b>Variants</b>
+                  </p>
+                  <p>
+                    Variants are created from the options you have selected in
+                    Printful. If you have no options, you can set a price for
+                    the product.
+                  </p>
+                </aside>
+                <Card className="w-full flex-1">
+                  <CardContent className="flex w-full flex-col gap-8">
+                    <section className="flex w-full items-center justify-between gap-4">
+                      <p>
+                        <b>Options</b>
+                      </p>
+                    </section>
+                    {options.length === 0 ? (
+                      <p className="text-sm">No options created.</p>
+                    ) : (
+                      <>
+                        {options.map((item, index) => (
+                          <section
+                            className="flex w-full items-center gap-4"
+                            key={`option_${item.id}`}
+                          >
+                            <aside className="flex flex-1 flex-col gap-4">
+                              <p>{item.name}</p>
+                              <div className="flex w-full gap-4">
+                                {item.options.map((opt, i) => {
+                                  return (
+                                    <span
+                                      className="text-muted-foreground rounded text-xs font-medium"
+                                      key={`variant_option_${i}`}
+                                    >
+                                      {opt}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            </aside>
+                            <aside>
+                              <AddOptionDrawer
+                                optionList={options}
+                                setOptions={setOptions}
+                                name={item.name}
+                                index={index}
+                                id={item.id!}
+                                options={item.options}
+                              />
+                            </aside>
+                            <aside>
+                              <Button
+                                variant="destructive"
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  removeOption(index);
+                                }}
+                                asChild
+                              >
                                 <FontAwesomeIcon
                                   className="icon"
                                   icon={faTrash}
                                 />
-                              </p>
-                            </Button>
-                          </aside>
-                        </section>
-                      ))}
-                    </>
-                  )}
-                  <Separator />
-                  <section className="flex w-full items-center justify-between gap-4">
-                    <p>
-                      <b>Variants</b>
-                    </p>
-                  </section>
-                  {variants.length === 0 ? (
-                    <p className="text-sm">Add options to create variants.</p>
-                  ) : (
-                    <>
-                      {variants.map((variant, index) => (
-                        <div
-                          key={`variant-${index}`}
-                          className="grid w-full flex-1 grid-cols-4 items-center gap-4"
-                        >
-                          <p>{variant}</p>
-                          <div className="col-span-4 grid grid-cols-6 gap-4 md:col-span-3">
-                            <div className="col-span-3 md:col-span-2">
-                              <FormField
-                                control={form.control}
-                                name={`variant.${index}.prices.price`}
-                                render={({ field }) => (
-                                  <FormItem className="w-full">
-                                    <FormLabel>Price</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        onChangeCapture={field.onChange}
-                                        id={`variant.${index}.prices.price`}
-                                        type="number"
-                                        {...field}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
-                            <div className="col-span-3 md:col-span-2">
-                              <FormField
-                                control={form.control}
-                                name={`variant.${index}.prices.compare_at`}
-                                render={({ field }) => (
-                                  <FormItem className="w-full">
-                                    <FormLabel>Compare At</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        onChangeCapture={field.onChange}
-                                        id={`variant.${index}.prices.compare_at`}
-                                        type="number"
-                                        {...field}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
+                              </Button>
+                            </aside>
+                          </section>
+                        ))}
+                      </>
+                    )}
+                    <Separator />
+                    <section className="flex w-full items-center justify-between gap-4">
+                      <p>
+                        <b>Variants</b>
+                      </p>
+                    </section>
+                    {variants.length === 0 ? (
+                      <p className="text-sm">Add options to create variants.</p>
+                    ) : (
+                      <>
+                        {variants.map((variant, index) => (
+                          <div
+                            key={`variant-${index}`}
+                            className="grid w-full flex-1 grid-cols-4 items-center gap-4"
+                          >
+                            <p>{variant}</p>
+                            <div className="col-span-4 grid grid-cols-6 gap-4 md:col-span-3">
+                              <div className="col-span-3 md:col-span-2">
+                                <FormField
+                                  control={form.control}
+                                  name={`variant.${index}.prices.price`}
+                                  render={({ field }) => (
+                                    <FormItem className="w-full">
+                                      <FormLabel>Price</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          onChangeCapture={field.onChange}
+                                          id={`variant.${index}.prices.price`}
+                                          type="number"
+                                          disabled
+                                          {...field}
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
+                              <div className="col-span-3 md:col-span-2">
+                                <FormField
+                                  control={form.control}
+                                  name={`variant.${index}.prices.compare_at`}
+                                  render={({ field }) => (
+                                    <FormItem className="w-full">
+                                      <FormLabel>Compare At</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          onChangeCapture={field.onChange}
+                                          id={`variant.${index}.prices.compare_at`}
+                                          type="number"
+                                          {...field}
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
 
-                            <div
-                              className={cn(
-                                'col-span-6 md:col-span-2',
-                                !trackInventory ? 'hidden' : 'block'
-                              )}
-                            >
-                              <FormField
-                                control={form.control}
-                                name={`variant.${index}.inventory`}
-                                render={({ field }) => (
-                                  <FormItem className="w-full">
-                                    <FormLabel>Inventory</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        onChangeCapture={field.onChange}
-                                        id={`variant.${index}.inventory`}
-                                        type="number"
-                                        {...field}
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
+                              <div
+                                className={cn(
+                                  'col-span-6 md:col-span-2',
+                                  !trackInventory ? 'hidden' : 'block'
                                 )}
-                              />
+                              >
+                                <FormField
+                                  control={form.control}
+                                  name={`variant.${index}.inventory`}
+                                  render={({ field }) => (
+                                    <FormItem className="w-full">
+                                      <FormLabel>Inventory</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          onChangeCapture={field.onChange}
+                                          id={`variant.${index}.inventory`}
+                                          type="number"
+                                          {...field}
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
-                    </>
-                  )}
-                </CardContent>
-              </Card>
-            </section>
+                        ))}
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              </section>
+            )}
 
             <section className="flex flex-col gap-8 md:flex-row">
               <aside className="w-full md:w-[200px] lg:w-[300px] xl:w-[600px]">
                 <p className="pb-4">
-                  <b>Tags, Inventory, and Featured</b>
+                  <b>Tags and Featured</b>
                 </p>
                 <p>
-                  Tags are used to help you find your product. Inventory is used
-                  to track your product. Featured is used to show your product
-                  on the homepage.
+                  Tags are used to help you organize your products. You can
+                  create tags for different categories, collections, or anything
+                  else you want to use to help you find your products.
                 </p>
               </aside>
               <Card className="w-full flex-1">
@@ -1502,23 +1432,6 @@ export default function SelfEditForm(props: Props) {
                   />
                   <FormField
                     control={form.control}
-                    name="sku"
-                    render={({ field }) => (
-                      <FormItem className="w-full">
-                        <FormLabel>SKU</FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="sku"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
                     name="is_featured"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-start space-y-0 space-x-3">
@@ -1533,207 +1446,6 @@ export default function SelfEditForm(props: Props) {
                         </div>
                       </FormItem>
                     )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="track_inventory"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-y-0 space-x-3">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={(event: any) => {
-                              field.onChange(event);
-                              setTrackInventory(!field.value);
-                            }}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>Track Inventory</FormLabel>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="inventory"
-                    render={({ field }) => (
-                      <FormItem
-                        className={cn(
-                          'w-full',
-                          !trackInventory || variants.length > 0
-                            ? 'hidden'
-                            : 'block'
-                        )}
-                      >
-                        <FormLabel>Inventory</FormLabel>
-                        <FormControl>
-                          <Input
-                            onChangeCapture={field.onChange}
-                            id="inventory"
-                            type="number"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </CardContent>
-              </Card>
-            </section>
-
-            <section className="flex flex-col gap-8 md:flex-row">
-              <aside className="w-full md:w-[200px] lg:w-[300px] xl:w-[600px]">
-                <p className="pb-4">
-                  <b>Shipping</b>
-                </p>
-                <p>
-                  This is the shipping information for your product. This is
-                  used to calculate shipping rates.
-                </p>
-              </aside>
-              <Card className="w-full flex-1">
-                <CardContent className="flex w-full flex-col gap-8">
-                  <section className="flex w-full flex-col gap-4 md:flex-row">
-                    <FormField
-                      control={form.control}
-                      name="weight"
-                      render={({ field }) => (
-                        <FormItem className="w-full flex-1">
-                          <FormLabel>Weight</FormLabel>
-                          <FormControl>
-                            <Input
-                              onChangeCapture={field.onChange}
-                              id="weight"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="weight_units"
-                      render={({ field }) => (
-                        <FormItem className="w-full flex-1">
-                          <FormLabel>Weight Units</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a weight unit" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="pound" key="pound">
-                                LBS
-                              </SelectItem>
-                              <SelectItem value="ounce" key="ounce">
-                                OZ
-                              </SelectItem>
-                              <SelectItem value="gram" key="gram">
-                                GM
-                              </SelectItem>
-                              <SelectItem value="kilogram" key="kilogram">
-                                KG
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </section>
-                  <section className="flex w-full flex-col gap-4 md:flex-row">
-                    <FormField
-                      control={form.control}
-                      name="length"
-                      render={({ field }) => (
-                        <FormItem className="w-full flex-1">
-                          <FormLabel>Length</FormLabel>
-                          <FormControl>
-                            <Input
-                              onChangeCapture={field.onChange}
-                              id="length"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="width"
-                      render={({ field }) => (
-                        <FormItem className="w-full flex-1">
-                          <FormLabel>Width</FormLabel>
-                          <FormControl>
-                            <Input
-                              onChangeCapture={field.onChange}
-                              id="width"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="height"
-                      render={({ field }) => (
-                        <FormItem className="w-full flex-1">
-                          <FormLabel>Height</FormLabel>
-                          <FormControl>
-                            <Input
-                              onChangeCapture={field.onChange}
-                              id="height"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="dimension_units"
-                      render={({ field }) => (
-                        <FormItem className="w-full flex-1">
-                          <FormLabel>Measurment Units</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a weight unit" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="inch" key="inch">
-                                IN
-                              </SelectItem>
-                              <SelectItem value="centimeter" key="centimeter">
-                                CM
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </section>
-                  <ShipFromSelect
-                    userID={props.userID}
-                    address={props.ship_from_address}
-                    setAddress={setAddress}
-                    form={form}
                   />
                 </CardContent>
               </Card>

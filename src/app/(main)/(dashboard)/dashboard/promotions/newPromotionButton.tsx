@@ -141,7 +141,8 @@ export const NewPromotionButton = (props: {
       name: values.name.toUpperCase(),
       number_of_uses: 0,
       minimum_order_value: values.min_order_value,
-      amount: values.amount,
+      amount:
+        values.type === 'Percentage' ? values.amount : values.amount * 100,
       type: values.type,
       status: 'Inactive',
       times_used: 0,

@@ -154,7 +154,7 @@ export default function DraggableImages(props: Props) {
               src={productImages[1].image}
               height={400}
               width={400}
-              alt="Main Product Image"
+              alt="2nd Product Image"
             />
           </section>
         </section>
@@ -195,7 +195,7 @@ export default function DraggableImages(props: Props) {
               src={productImages[2].image}
               height={400}
               width={400}
-              alt="Main Product Image"
+              alt="3rd Product Image"
             />
           </section>
         </section>
@@ -236,7 +236,7 @@ export default function DraggableImages(props: Props) {
               src={productImages[3].image}
               height={400}
               width={400}
-              alt="Main Product Image"
+              alt="4th Product Image"
             />
           </section>
         </section>
@@ -277,7 +277,7 @@ export default function DraggableImages(props: Props) {
               src={productImages[4].image}
               height={400}
               width={400}
-              alt="Main Product Image"
+              alt="5th Product Image"
             />
           </section>
         </section>
@@ -318,7 +318,7 @@ export default function DraggableImages(props: Props) {
               src={productImages[5].image}
               height={400}
               width={400}
-              alt="Main Product Image"
+              alt="6th Product Image"
             />
           </section>
         </section>

@@ -1,4 +1,5 @@
 import DigitalEditForm from '@/components/sp-ui/ProductEditForms/digitalEditForm';
+import PODEditForm from '@/components/sp-ui/ProductEditForms/podEditForm';
 import SelfEditForm from '@/components/sp-ui/ProductEditForms/selfEditForm';
 import { db } from '@/lib/firebase';
 import { _ProductImage } from '@/lib/types';
@@ -170,5 +171,29 @@ export default async function DashboardProduct({ params }: { params: Params }) {
       />
     );
   }
-  return <></>;
+  return (
+    <PODEditForm
+      storeID={default_store?.value!}
+      userID={user_id?.value!}
+      docID={data.product.id}
+      name={data.product.data().name}
+      description={data.product.data().description}
+      product_type={data.product.data().product_type}
+      product_images={images}
+      tags={data.product.data().tags}
+      price={data.product.data().price}
+      compare_at={data.product.data().compare_at}
+      currency={data.product.data().currency}
+      sku={data.product.data().sku}
+      is_featured={data.product.data().is_featured}
+      status={data.product.data().status}
+      track_inventory={data.product.data().track_inventory}
+      inventory={data.product.data().inventory}
+      ship_from_address={data.product.data().ship_from_address}
+      weight={data.product.data().weight}
+      dimensions={data.product.data().dimensions}
+      variants={variants}
+      options={options}
+    />
+  );
 }
