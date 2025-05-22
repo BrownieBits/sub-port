@@ -5,8 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
 import { _Address, _Item, _Promotion, _Shipment } from '@/lib/types';
-import { faTruckFast } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { format } from 'date-fns';
 import {
   collection,
@@ -146,6 +144,7 @@ export default function ThankYouPage(props: Props) {
       </section>
     );
   }
+
   return (
     <section className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-8 px-4 py-8">
       <section className="flex w-full items-center justify-between">
@@ -162,9 +161,13 @@ export default function ThankYouPage(props: Props) {
           </p>
         </section>
       </section>
-      <h1 className="text-center">Woohoo! Your Order is Confirmed</h1>
-      <p>
-        <FontAwesomeIcon className="icon !h-12 !w-12" icon={faTruckFast} />
+      <h1 className="text-center">
+        Your Order is Confirmed! Thanks for Supporting Creativity!
+      </h1>
+      <p className="w-full max-w-[800px] text-center">
+        Hooray! Your order is all set and on its way to becoming a reality.
+        You&apos;ve just made a creator&apos;s day and helped bring something
+        unique into the world!
       </p>
       <section className="flex w-full flex-col gap-8 md:flex-row">
         <Card className="flex-1">

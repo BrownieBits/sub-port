@@ -98,7 +98,6 @@ export default function StripeIntegration() {
   if (user === null) {
     return <></>;
   }
-  console.log('stripeLinkURL', stripeLinkURL);
   if (
     user.stripe_charges_enabled &&
     user.stripe_details_submitted &&

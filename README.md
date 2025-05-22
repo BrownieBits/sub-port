@@ -37,21 +37,16 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 TODO:
 
-- [ ] Checkout
-  - [ ] Checkout
-    - [ ] Swith to live
-  - [ ] Thank You
-    - [ ] Add in branding imagery
+- [x] Checkout
+  - [x] Checkout
+  - [x] Thank You
 - [ ] Dashboard
   - [x] Analytics
   - [x] Payouts
     - [x] Build table to show payouts
-  - [ ] Integrations
+  - [x] Integrations
     - [x] Printful
     - [x] Stripe - should this be in settings
-    - [ ] Youtube
-    - [ ] Twitch
-    - [ ] FB/Instagram
   - [x] Orders
     - [x] My Orders
       - [x] Build table for showing orders
@@ -78,8 +73,7 @@ TODO:
         - [ ] Put store Live
     - [ ] Whats New
       - [ ] Create Whats New Blog
-  - [ ] Switch Store
-    - [ ] Figure out plan level to allow multiple stores
+  - [x] Switch Store
 - [x] Login
 - [ ] Market
   - [x] About
@@ -101,6 +95,6 @@ TODO:
     - [ ] Need to get a terms of service and lay it out
   - [ ] Home Page
     - [ ] More Modules
-- [ ] Admin
+- [x] Admin
   - [x] Blog
   - [x] Analytics

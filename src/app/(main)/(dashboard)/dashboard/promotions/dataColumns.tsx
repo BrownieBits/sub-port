@@ -36,7 +36,6 @@ export async function ChangeStatus(
   item: 'status' | 'show',
   store_id: string
 ) {
-  console.log('ChangeStatus', action, id, item, store_id);
   const docRef = doc(db, `stores/${store_id}/promotions`, id);
   if (action === 'Delete') {
     await deleteDoc(docRef);

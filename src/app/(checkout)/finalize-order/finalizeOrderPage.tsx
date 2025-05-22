@@ -328,7 +328,6 @@ export default function FinalizeOrderPage(props: Props) {
           order_total += store_shipping_total + service_total + tax_total;
 
           const stripe_fee = Math.round(order_total * 0.029) + 30;
-          console.log('order_total', order_total, stripe_fee);
           const uploadOrder = {
             address: orderData.address,
             billing_address: orderData.billing_address,
