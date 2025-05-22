@@ -9,19 +9,14 @@ export async function revalidate() {
   revalidatePath(`/dashboard/settings`);
 }
 
-export async function getAnswer(question: string) {
-  console.log('question', question);
+export async function getAnswer(question: string, store_name: string) {
   try {
     const { text, finishReason, usage } = await generateText({
       model: google('gemini-2.0-flash'),
-      prompt: `Write several store descriptions that would be helpful to shoppers and for page SEO for an ecommerce store based on this prompt: "${question}". Try in a serious voice, funny voice, a sarcastic voice, and anything that might sell the best.`,
+      prompt: `Write several store descriptions that would be helpful to shoppers and for page SEO for an ecommerce store called ${store_name} based on this prompt: "${question}". Try in a serious voice, funny voice, a sarcastic voice, and anything that might sell the best.`,
     });
-    console.log('finishReason', finishReason);
-    console.log('usage', usage);
-    console.log('text', text);
     return { text, finishReason, usage };
   } catch (error) {
-    console.error('Error in getAnswer:', error);
     return { text: '', finishReason: '', usage: '' };
   }
 

@@ -26,9 +26,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { cn } from '@/lib/utils';
 import { faClose, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -45,7 +45,11 @@ const formSchema = z.object({
       message: 'Prompt must be no more than 256 characters long',
     }),
 });
-export const AiDescriptionWriter = () => {
+export const AiDescriptionWriter = ({
+  product_name,
+}: {
+  product_name: string;
+}) => {
   const [open, setOpen] = React.useState(false);
   const [thinking, setThinking] = React.useState(false);
   const [generation, setGeneration] = React.useState<string>('');
@@ -54,9 +58,13 @@ export const AiDescriptionWriter = () => {
   async function onSubmit() {
     setThinking(true);
     setGeneration('');
-    const { text } = await getAnswer(aiForm.getValues('prompt'));
+    const { text } = await getAnswer(aiForm.getValues('prompt'), product_name);
     setThinking(false);
-    setGeneration(text);
+    const newText = text
+      .replaceAll('> ', '')
+      .replace(/ \*\*([^*]*)\*\* /g, `<i>$1</i> `)
+      .replace(/\*\*([^*]*)\*\*/g, `<br /><b>$1</b>`);
+    setGeneration(newText);
   }
 
   const aiForm = useForm<z.infer<typeof formSchema>>({
@@ -128,13 +136,14 @@ export const AiDescriptionWriter = () => {
                   </Button>
                 )}
 
-                <p
-                  className={cn('text-foreground pt-4 whitespace-pre-wrap', {
-                    hidden: generation === '',
-                  })}
-                >
-                  {generation.replaceAll(' **', '\n**')}
-                </p>
+                {generation !== '' && (
+                  <ScrollArea className="h-auto max-h-[400px] pt-4">
+                    <p
+                      className="text-foreground whitespace-pre-wrap"
+                      dangerouslySetInnerHTML={{ __html: generation }}
+                    ></p>
+                  </ScrollArea>
+                )}
               </section>
             </DialogDescription>
           </DialogHeader>
@@ -159,7 +168,7 @@ export const AiDescriptionWriter = () => {
         <DrawerHeader className="mx-auto w-full max-w-[2428px]">
           <DrawerTitle className="flex items-center justify-between">
             Ai Generation
-            <DrawerClose>
+            <DrawerClose asChild>
               <Button variant="outline" size="sm">
                 <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
               </Button>
@@ -211,13 +220,14 @@ export const AiDescriptionWriter = () => {
                 </Button>
               )}
 
-              <p
-                className={cn('text-foreground pt-4 whitespace-pre-wrap', {
-                  hidden: generation === '',
-                })}
-              >
-                {generation.replaceAll(' **', '\n**')}
-              </p>
+              {generation !== '' && (
+                <ScrollArea className="h-auto max-h-[400px] pt-4">
+                  <p
+                    className="text-foreground whitespace-pre-wrap"
+                    dangerouslySetInnerHTML={{ __html: generation }}
+                  ></p>
+                </ScrollArea>
+              )}
             </section>
           </DrawerDescription>
         </DrawerHeader>

@@ -680,7 +680,10 @@ export default function DigitalEditForm(props: Props) {
                         </FormControl>
                         <FormDescription>
                           Having trouble writing a description? Use Ai to
-                          help... <AiDescriptionWriter />
+                          help...{' '}
+                          <AiDescriptionWriter
+                            product_name={form.getValues('name')}
+                          />
                         </FormDescription>
                         <FormMessage />
                       </FormItem>

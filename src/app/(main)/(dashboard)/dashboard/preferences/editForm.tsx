@@ -336,7 +336,10 @@ export default function EditForm(props: {}) {
                         </FormControl>
                         <FormDescription>
                           Having trouble writing a description? Use Ai to
-                          help... <AiDescriptionWriter />
+                          help...{' '}
+                          <AiDescriptionWriter
+                            store_name={form.getValues('name')}
+                          />
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
