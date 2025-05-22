@@ -14,11 +14,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { _NavItem } from '@/lib/types';
 import userStore from '@/stores/userStore';
 import { ChevronRight } from 'lucide-react';
@@ -44,22 +39,20 @@ export function NavSection({
             if (item.needs_user && user_id === '') {
               return (
                 <SidebarMenuItem key={`menu_item_${item.name}`}>
-                  <SidebarMenuButton tooltip={item.name} asChild>
-                    <Tooltip>
-                      <TooltipTrigger asChild className="w-full">
-                        <Link
-                          href={`/sign-in?redirect=${item.url}`}
-                          aria-label={`Sign In to Access ${item.name}`}
-                          className="text-muted-foreground flex w-full justify-start"
-                        >
-                          <p>
-                            <i className={`${item.icon} mr-2 h-4 w-4`}></i>
-                          </p>
-                          {item.name}
-                        </Link>
-                      </TooltipTrigger>
-                      <TooltipContent>Sign In to Access</TooltipContent>
-                    </Tooltip>
+                  <SidebarMenuButton
+                    tooltip={`Sign In to Access ${item.name}`}
+                    asChild
+                  >
+                    <Link
+                      href={`/sign-in?redirect=${item.url}`}
+                      aria-label={`Sign In to Access ${item.name}`}
+                      className="text-muted-foreground flex w-full justify-start"
+                    >
+                      <p>
+                        <i className={`${item.icon} mr-2 h-4 w-4`}></i>
+                      </p>
+                      <p>{item.name}</p>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               );

@@ -98,6 +98,7 @@ export default function StripeIntegration() {
   if (user === null) {
     return <></>;
   }
+  console.log('stripeLinkURL', stripeLinkURL);
   if (
     user.stripe_charges_enabled &&
     user.stripe_details_submitted &&
@@ -121,7 +122,11 @@ export default function StripeIntegration() {
         </CardContent>
         <Separator />
         <CardFooter>
-          <Button variant="outline">Account Connected!</Button>
+          <Button variant="outline" asChild>
+            <Link href={stripeLinkURL!} target="_blank">
+              Update Information
+            </Link>
+          </Button>
         </CardFooter>
       </Card>
     );
