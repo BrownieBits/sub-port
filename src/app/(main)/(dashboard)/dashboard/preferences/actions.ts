@@ -10,6 +10,7 @@ export async function revalidate() {
 }
 
 export async function getAnswer(question: string) {
+  console.log('question', question);
   const { text, finishReason, usage } = await generateText({
     model: google('gemini-1.5-pro-latest'),
     prompt: `Write several store descriptions that would be helpful to shoppers and for page SEO for an ecommerce store based on this prompt: "${question}". Try in a serious voice, funny voice, a sarcastic voice, and anything that might sell the best.`,
