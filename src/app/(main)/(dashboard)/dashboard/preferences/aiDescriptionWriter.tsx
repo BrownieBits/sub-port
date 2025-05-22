@@ -26,9 +26,9 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { cn } from '@/lib/utils';
 import { faClose, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -124,14 +124,13 @@ export const AiDescriptionWriter = (props: {}) => {
                   Get suggestions
                 </Button>
               )}
-
-              <p
-                className={cn('text-foreground pt-4 whitespace-pre-wrap', {
-                  hidden: generation === '',
-                })}
-              >
-                {generation.replaceAll(' **', '\n**')}
-              </p>
+              {generation !== '' && (
+                <ScrollArea className="h-auto max-h-[400px] pt-4">
+                  <p className="text-foreground whitespace-pre-wrap">
+                    {generation.replaceAll(' **', '\n**')}
+                  </p>
+                </ScrollArea>
+              )}
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
@@ -153,62 +152,67 @@ export const AiDescriptionWriter = (props: {}) => {
       <DrawerContent>
         <DrawerHeader className="mx-auto w-full max-w-[2428px]">
           <DrawerTitle className="flex justify-between">
-            <h3>Ai Generation</h3>
-            <DrawerClose>
+            Ai Generation
+            <DrawerClose asChild>
               <Button variant="outline" size="sm">
                 <FontAwesomeIcon className="icon h-4 w-4" icon={faClose} />
               </Button>
             </DrawerClose>
           </DrawerTitle>
-          <DrawerDescription className="flex w-full flex-col items-start text-left">
-            <Form {...aiForm}>
-              <form
-                onSubmit={aiForm.handleSubmit(onSubmit)}
-                className="flex w-full flex-col gap-8 py-8"
-              >
-                <FormField
-                  control={aiForm.control}
-                  name="prompt"
-                  render={({ field }) => (
-                    <FormItem className="text-foreground w-full">
-                      <FormLabel>Prompt</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          onChangeCapture={field.onChange}
-                          placeholder="Tell us a little bit about this product..."
-                          className="resize-none"
-                          {...field}
-                        />
-                      </FormControl>
+          <DrawerDescription
+            className="flex w-full flex-col items-start text-left"
+            asChild
+          >
+            <>
+              <Form {...aiForm}>
+                <form
+                  onSubmit={aiForm.handleSubmit(onSubmit)}
+                  className="flex w-full flex-col gap-8 py-8"
+                >
+                  <FormField
+                    control={aiForm.control}
+                    name="prompt"
+                    render={({ field }) => (
+                      <FormItem className="text-foreground w-full">
+                        <FormLabel>Prompt</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            onChangeCapture={field.onChange}
+                            placeholder="Tell us a little bit about this product..."
+                            className="resize-none"
+                            {...field}
+                          />
+                        </FormControl>
 
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </form>
-            </Form>
-            {thinking ? (
-              <Button variant="outline">
-                <FontAwesomeIcon
-                  className="icon mr-2 h-4 w-4"
-                  icon={faSpinner}
-                  spin
-                />
-                Thinking
-              </Button>
-            ) : (
-              <Button type="submit" onClick={aiForm.handleSubmit(onSubmit)}>
-                Get suggestions
-              </Button>
-            )}
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </form>
+              </Form>
+              {thinking ? (
+                <Button variant="outline">
+                  <FontAwesomeIcon
+                    className="icon mr-2 h-4 w-4"
+                    icon={faSpinner}
+                    spin
+                  />
+                  Thinking
+                </Button>
+              ) : (
+                <Button type="submit" onClick={aiForm.handleSubmit(onSubmit)}>
+                  Get suggestions
+                </Button>
+              )}
 
-            <p
-              className={cn('text-foreground pt-4 whitespace-pre-wrap', {
-                hidden: generation === '',
-              })}
-            >
-              {generation.replaceAll(' **', '\n**')}
-            </p>
+              {generation !== '' && (
+                <ScrollArea className="h-[400px] pt-4">
+                  <p className="text-foreground whitespace-pre-wrap">
+                    {generation.replaceAll(' **', '\n**')}
+                  </p>
+                </ScrollArea>
+              )}
+            </>
           </DrawerDescription>
         </DrawerHeader>
       </DrawerContent>
