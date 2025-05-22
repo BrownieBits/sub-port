@@ -15,7 +15,7 @@ export async function goTo(url: string) {
 
 export async function getAnswer(question: string) {
   const { text, finishReason, usage } = await generateText({
-    model: google('gemini-1.5-pro-latest'),
+    model: google('gemini-2.0-flash'),
     prompt: `Write several product descriptions that help sell the item and is good for seo on an ecommerce product page based on this prompt: "${question}". Try in a serious voice, funny voice, a sarcastic voice, and anything that might sell the best.`,
   });
 
