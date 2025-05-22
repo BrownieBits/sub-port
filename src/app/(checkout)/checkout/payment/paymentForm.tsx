@@ -134,8 +134,9 @@ export default function PaymentForm(props: Props) {
             service_total += item.price * item.quantity * item.service_percent;
           }
         });
-
-        if (Object.prototype.hasOwnProperty.call(cart_promotions, store)) {
+        console.log('promotions', cart_promotions, store);
+        if (cart_promotions.has(store)) {
+          console.log('cart_promotions', cart_promotions.get(store));
           let expiration_good = true;
           if (cart_promotions.get(store)?.expiration_date !== null) {
             const today = new Date();
@@ -168,6 +169,7 @@ export default function PaymentForm(props: Props) {
       });
       const total =
         item_total + service_total + shipping_total - discounts_total;
+      console.log('total', total, discounts_total);
       createPaymentIntent(total);
       setPaymentReady(true);
     }

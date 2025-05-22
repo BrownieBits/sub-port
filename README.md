@@ -44,9 +44,8 @@ TODO:
     - [ ] Add in branding imagery
 - [ ] Dashboard
   - [x] Analytics
-  - [ ] Commissions
-    - [ ] Build table to show payouts
-    - [ ] Build page to show individual payout information
+  - [x] Payouts
+    - [x] Build table to show payouts
   - [ ] Integrations
     - [x] Printful
     - [x] Stripe - should this be in settings

@@ -19,7 +19,10 @@ export async function CreateStripeAccount(user_id: string, country: string, emai
             requirement_collection: "application",
         },
         capabilities: {
-            transfers: { requested: true }
+            transfers: { requested: true },
+            card_payments: {
+                requested: true,
+            },
         },
         country: country,
         email: email,

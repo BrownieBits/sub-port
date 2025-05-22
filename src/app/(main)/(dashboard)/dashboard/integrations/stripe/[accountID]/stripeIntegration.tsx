@@ -43,6 +43,15 @@ export default function StripeIntegration(props: Props) {
         stripe_payouts_enabled: account.payouts_enabled,
         updated_at: Timestamp.fromDate(new Date()),
       });
+      setStripeConnectID(account.id);
+      setUser({
+        id: user_id,
+        default_currency: account.default_currency,
+        email: account.email,
+        name: account.business_profile?.name,
+        country: account.country,
+        stripe_connect_id: account.id,
+      });
     };
     if (user_loaded) {
       getData();
@@ -68,7 +77,7 @@ export default function StripeIntegration(props: Props) {
         </section>
       </section>
       <Separator />
-      <section className="mx-auto w-full max-w-[2428px]">
+      <section className="mx-auto w-full max-w-[2428px] p-4">
         <div className="content">
           <h2>Details submitted</h2>
           <p>That&apos;s everything we need for now</p>

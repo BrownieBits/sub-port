@@ -45,7 +45,7 @@ export const dashboardNavSections: _NavSection[] = [
                 ]
             },
             { name: 'Analytics', url: '/dashboard/analytics', icon: 'fa-solid fa-chart-line', needs_user: true, required_plans: [], sub_menu: [] },
-            { name: 'Commissions', url: '/dashboard/commissions', icon: 'fa-solid fa-dollar-sign', needs_user: true, required_plans: [], sub_menu: [] },
+            { name: 'Payouts', url: '/dashboard/payouts', icon: 'fa-solid fa-dollar-sign', needs_user: true, required_plans: [], sub_menu: [] },
             {
                 name: 'Orders', url: '/dashboard/orders', icon: 'fa-solid fa-cart-shopping', needs_user: true, required_plans: [], sub_menu: [
                     { name: 'Store Orders', url: '/dashboard/orders', needs_user: true, required_plans: [] },

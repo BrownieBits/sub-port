@@ -38,7 +38,7 @@ export default async function Integrations() {
         </section>
       </section>
       <Separator />
-      <section className="mx-auto grid w-full max-w-[2428px] grid-cols-1 gap-8 p-4 md:grid-cols-3 xl:grid-cols-6">
+      <section className="mx-auto grid w-full max-w-[2428px] grid-cols-1 gap-8 p-4 md:grid-cols-3 xl:grid-cols-4">
         <PrintfulIntegration />
         <StripeIntegration />
       </section>

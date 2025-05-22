@@ -55,7 +55,7 @@ export default function StripeIntegration() {
     const userRef: DocumentReference = doc(db, 'users', user_id);
     await updateDoc(userRef, {
       stripe_connect_id: connectID,
-      stripe_charges_engabled: false,
+      stripe_charges_enabled: false,
       stripe_details_submitted: false,
       payouts_enabled: false,
       updated_at: Timestamp.fromDate(new Date()),

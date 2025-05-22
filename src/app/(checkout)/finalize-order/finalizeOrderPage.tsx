@@ -86,6 +86,7 @@ export default function FinalizeOrderPage(props: Props) {
           let service_total = 0;
           let store_discounts_total = 0;
           let store_shipping_total = 0;
+          const tax_total = 0;
           const store_email_products: EmailProduct[] = [];
           const orderColRef: CollectionReference = collection(db, `orders`);
           const orderDoc: DocumentReference = doc(orderColRef);
@@ -324,6 +325,10 @@ export default function FinalizeOrderPage(props: Props) {
           ) {
             order_status = 'Fulfilled Digital';
           }
+          order_total += store_shipping_total + service_total + tax_total;
+
+          const stripe_fee = Math.round(order_total * 0.029) + 30;
+          console.log('order_total', order_total, stripe_fee);
           const uploadOrder = {
             address: orderData.address,
             billing_address: orderData.billing_address,
@@ -333,11 +338,17 @@ export default function FinalizeOrderPage(props: Props) {
             item_count: orderData.items[store].length,
             status: order_status,
             payment_intent: payment_intent,
-            order_total: order_total + store_shipping_total + service_total,
+            order_total: order_total,
             service_total: service_total,
             shipping_total: store_shipping_total,
-            payout_total: item_total - discounts_total,
+            payout_total:
+              item_total +
+              store_shipping_total -
+              stripe_fee -
+              store_discounts_total,
             discounts_total: store_discounts_total,
+            processing_fee: stripe_fee,
+            tax_total: tax_total,
             payout_status: 'Pending',
             promotions: Object.prototype.hasOwnProperty.call(
               orderData.promotions,
@@ -387,9 +398,12 @@ export default function FinalizeOrderPage(props: Props) {
             affiliation: store,
             currency: 'USD',
             value: order_total / 100,
-            tax: 0.0,
+            tax: tax_total,
             shipping: store_shipping_total,
-            coupon: Object.prototype.hasOwnProperty.call(orderData, store)
+            coupon: Object.prototype.hasOwnProperty.call(
+              orderData.promotions,
+              store
+            )
               ? orderData.promotions[store]
               : null,
             items: orderData.items[store],

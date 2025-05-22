@@ -14,6 +14,8 @@ import {
   Text,
 } from '@react-email/components';
 import * as React from 'react';
+import { EmailFooter } from '../footerSection';
+import { LinkSection } from '../linkSection';
 
 const baseUrl = process.env.BASE_URL
   ? `${process.env.BASE_URL}`
@@ -132,60 +134,8 @@ export function NewOrderStore({
               </Column>
             </Row>
           </Section>
-          <Hr style={global.hr} />
-          <Section style={paddingY}>
-            <Row>
-              <Column align="center">
-                <Link href={baseUrl} style={global.heading}>
-                  Sub-Port.com
-                </Link>
-              </Column>
-            </Row>
-            <Row style={categories.container}>
-              <Column align="center">
-                <Link href={`${baseUrl}/market/men`} style={categories.text}>
-                  Men
-                </Link>
-              </Column>
-              <Column align="center">
-                <Link href={`${baseUrl}/market/women`} style={categories.text}>
-                  Women
-                </Link>
-              </Column>
-              <Column align="center">
-                <Link href={`${baseUrl}/market/new`} style={categories.text}>
-                  New
-                </Link>
-              </Column>
-              <Column align="center">
-                <Link
-                  href={`${baseUrl}/market/staff-picks`}
-                  style={categories.text}
-                >
-                  Staff Picks
-                </Link>
-              </Column>
-            </Row>
-          </Section>
-          <Hr style={{ ...global.hr, marginTop: '12px' }} />
-          <Section style={paddingY}>
-            <Row>
-              <Text style={{ ...footer.text, paddingBottom: '16px' }}>
-                Please contact us if you have any questions. (If you reply to
-                this email, we won&apos;t be able to see it.)
-              </Text>
-            </Row>
-            <Row>
-              <Text style={footer.text}>
-                ©2025 SubPort. All Rights Reserved.
-              </Text>
-            </Row>
-            <Row>
-              <Text style={footer.text}>
-                SubPort. 1116 Quince St, Denver, CO 80220, USA.
-              </Text>
-            </Row>
-          </Section>
+          <LinkSection />
+          <EmailFooter />
         </Container>
       </Body>
     </Html>
@@ -224,12 +174,10 @@ const paddingX = {
   paddingLeft: '24px',
   paddingRight: '24px',
 };
-
 const paddingY = {
   paddingTop: '16px',
   paddingBottom: '16px',
 };
-
 const paragraph = {
   margin: '0',
   lineHeight: '2',
@@ -284,14 +232,12 @@ const global = {
     margin: '0',
   },
 };
-
 const main = {
   backgroundColor: '#FFFFFF',
   fontSize: '12px',
   fontFamily:
     '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif',
 };
-
 const container = {
   margin: '8px auto',
   width: '600px',
@@ -299,7 +245,6 @@ const container = {
   border: '1px solid #E4E4E7',
   color: '#000000',
 };
-
 const track = {
   container: {
     padding: '16px 24px',
@@ -312,26 +257,15 @@ const track = {
     color: '#000000',
   },
 };
-
 const message = {
   padding: '16px 24px',
   textAlign: 'center',
 } as React.CSSProperties;
-
 const adressTitle = {
   ...paragraph,
   fontSize: '12px',
   fontWeight: 'bold',
 };
-
-const recomendationsText = {
-  margin: '0',
-  fontSize: '12px',
-  lineHeight: '1',
-  paddingLeft: '8px',
-  paddingRight: '8px',
-};
-
 const productStyle = {
   name: {
     margin: '0',
@@ -347,84 +281,4 @@ const productStyle = {
     margin: '0',
     color: '#4D4D4D',
   },
-};
-const recomendations = {
-  container: {
-    width: '600px',
-    padding: '16px 0',
-  },
-  product: {
-    width: '25%',
-    verticalAlign: 'top',
-    textAlign: 'left' as const,
-    paddingLeft: '4px',
-    paddingRight: '4px',
-  },
-  title: {
-    ...recomendationsText,
-    paddingTop: '8px',
-    fontWeight: '500',
-    color: '#000000',
-  },
-  text: {
-    ...recomendationsText,
-    paddingTop: '4px',
-    color: '#4D4D4D',
-  },
-};
-
-const menu = {
-  container: {
-    paddingLeft: '16px',
-    paddingRight: '16px',
-    paddingTop: '16px',
-    backgroundColor: '#F2F2F2',
-  },
-  content: {
-    ...paddingY,
-    paddingLeft: '16px',
-    paddingRight: '16px',
-  },
-  title: {
-    paddingLeft: '16px',
-    paddingRight: '16px',
-    fontWeight: 'bold',
-  },
-  text: {
-    fontSize: '12px',
-    marginTop: 0,
-    fontWeight: 500,
-    color: '#000',
-  },
-  tel: {
-    paddingLeft: '16px',
-    paddingRight: '16px',
-    paddingTop: '24px',
-    paddingBottom: '24px',
-  },
-};
-
-const categories = {
-  container: {
-    width: '370px',
-    margin: 'auto',
-    paddingTop: '8px',
-  },
-  text: {
-    fontWeight: '500',
-    color: '#000',
-  },
-};
-
-const footer = {
-  policy: {
-    width: '166px',
-    margin: 'auto',
-  },
-  text: {
-    margin: '0',
-    color: '#4D4D4D',
-    fontSize: '12px',
-    textAlign: 'center',
-  } as React.CSSProperties,
 };
