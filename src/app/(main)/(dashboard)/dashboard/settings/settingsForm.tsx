@@ -26,10 +26,9 @@ import { faSave } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
-  DocumentData,
   DocumentReference,
   doc,
-  getDoc,
+  onSnapshot,
   updateDoc,
 } from 'firebase/firestore';
 import { isValidPhoneNumber, parsePhoneNumber } from 'libphonenumber-js';
@@ -100,23 +99,24 @@ export default function SettingsForm() {
     }
   }
 
-  async function getData() {
-    const userDataRef: DocumentReference = doc(db, 'users', user_id);
-    const userDoc: DocumentData = await getDoc(userDataRef);
-    if (userDoc.exists) {
-      form.setValue('name', userDoc.data().name);
-      form.setValue('email', userDoc.data().email);
-      form.setValue('phone', userDoc.data().phone);
-      setAddresses(userDoc.data().addresses);
-      seDefaultAddress(userDoc.data().default_address);
-      setCurrency(userDoc.data().default_currency);
-      setFormLoaded(true);
-    }
-  }
-
   React.useEffect(() => {
+    const getLatest = () => {
+      const userDataRef: DocumentReference = doc(db, 'users', user_id);
+      const userUnsubscribe = onSnapshot(userDataRef, async (snapshot) => {
+        if (snapshot.exists()) {
+          form.setValue('name', snapshot.data().name);
+          form.setValue('email', snapshot.data().email);
+          form.setValue('phone', snapshot.data().phone);
+          setAddresses(snapshot.data().addresses);
+          seDefaultAddress(snapshot.data().default_address);
+          setCurrency(snapshot.data().default_currency);
+          setFormLoaded(true);
+        }
+      });
+      return userUnsubscribe;
+    };
     if (user_id !== '') {
-      getData();
+      getLatest();
     }
   }, [user_id]);
   if (!user_loaded || user_id === '' || !formLoaded) {

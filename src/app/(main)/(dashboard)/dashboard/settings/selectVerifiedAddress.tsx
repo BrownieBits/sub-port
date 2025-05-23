@@ -102,10 +102,11 @@ export default function SelectVerifiedAddress(props: Props) {
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
-              <h3>Address Verification</h3>
-            </AlertDialogTitle>
-            <AlertDialogDescription className="gap-4y flex flex-col items-center justify-center pt-4">
+            <AlertDialogTitle>Address Verification</AlertDialogTitle>
+            <AlertDialogDescription
+              className="gap-4y flex flex-col items-center justify-center pt-4"
+              asChild
+            >
               <Form {...form}>
                 <form
                   onSubmit={form.handleSubmit(onSubmit)}
@@ -126,42 +127,44 @@ export default function SelectVerifiedAddress(props: Props) {
                               <FormControl>
                                 <RadioGroupItem value="matched" />
                               </FormControl>
-                              <FormLabel className="text-foreground flex flex-col gap-1">
+                              <FormLabel className="text-foreground flex flex-col items-start gap-2">
                                 <p>
                                   <b>Verified Address:</b>
                                 </p>
-                                <span>
-                                  <p>{matchedAddress?.address_line1}</p>
+                                <p className="flex flex-col items-start gap-1">
+                                  <span>{matchedAddress?.address_line1}</span>
                                   {matchedAddress?.address_line2 && (
-                                    <p>{matchedAddress?.address_line2}</p>
+                                    <span>{matchedAddress?.address_line2}</span>
                                   )}
-                                  <p>
+                                  <span>
                                     {matchedAddress?.city_locality},{' '}
                                     {matchedAddress?.state_province}{' '}
                                     {matchedAddress?.postal_code}
-                                  </p>
-                                </span>
+                                  </span>
+                                </p>
                               </FormLabel>
                             </FormItem>
                             <FormItem className="flex items-center gap-4">
                               <FormControl>
                                 <RadioGroupItem value="original" />
                               </FormControl>
-                              <FormLabel className="text-foreground flex flex-col gap-1">
+                              <FormLabel className="text-foreground flex flex-col items-start gap-2">
                                 <p>
                                   <b>Original Address:</b>
                                 </p>
-                                <span>
-                                  <p>{originalAddress?.address_line1}</p>
+                                <p className="flex flex-col items-start gap-1">
+                                  <span>{originalAddress?.address_line1}</span>
                                   {originalAddress?.address_line2 && (
-                                    <p>{originalAddress?.address_line2}</p>
+                                    <span>
+                                      {originalAddress?.address_line2}
+                                    </span>
                                   )}
-                                  <p>
+                                  <span>
                                     {originalAddress?.city_locality},{' '}
                                     {originalAddress?.state_province}{' '}
                                     {originalAddress?.postal_code}
-                                  </p>
-                                </span>
+                                  </span>
+                                </p>
                               </FormLabel>
                             </FormItem>
                           </RadioGroup>
@@ -186,7 +189,10 @@ export default function SelectVerifiedAddress(props: Props) {
           <DrawerTitle className="flex justify-between">
             <h3>Address Verification</h3>
           </DrawerTitle>
-          <DrawerDescription className="flex w-full flex-col items-center gap-4 text-left">
+          <DrawerDescription
+            className="flex w-full flex-col items-center gap-4 text-left"
+            asChild
+          >
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -207,42 +213,42 @@ export default function SelectVerifiedAddress(props: Props) {
                             <FormControl>
                               <RadioGroupItem value="matched" />
                             </FormControl>
-                            <FormLabel className="text-foreground flex flex-col gap-1">
+                            <FormLabel className="text-foreground flex flex-col items-start gap-2">
                               <p>
                                 <b>Verified Address:</b>
                               </p>
-                              <span>
-                                <p>{matchedAddress?.address_line1}</p>
+                              <p className="flex flex-col items-start gap-1">
+                                <span>{matchedAddress?.address_line1}</span>
                                 {matchedAddress?.address_line2 && (
-                                  <p>{matchedAddress?.address_line2}</p>
+                                  <span>{matchedAddress?.address_line2}</span>
                                 )}
-                                <p>
+                                <span>
                                   {matchedAddress?.city_locality},{' '}
                                   {matchedAddress?.state_province}{' '}
                                   {matchedAddress?.postal_code}
-                                </p>
-                              </span>
+                                </span>
+                              </p>
                             </FormLabel>
                           </FormItem>
                           <FormItem className="flex items-center gap-4">
                             <FormControl>
                               <RadioGroupItem value="original" />
                             </FormControl>
-                            <FormLabel className="text-foreground flex flex-col gap-1">
+                            <FormLabel className="text-foreground flex flex-col items-start gap-2">
                               <p>
                                 <b>Original Address:</b>
                               </p>
-                              <span>
-                                <p>{originalAddress?.address_line1}</p>
+                              <p className="flex flex-col items-start gap-1">
+                                <span>{originalAddress?.address_line1}</span>
                                 {originalAddress?.address_line2 && (
-                                  <p>{originalAddress?.address_line2}</p>
+                                  <span>{originalAddress?.address_line2}</span>
                                 )}
-                                <p>
+                                <span>
                                   {originalAddress?.city_locality},{' '}
                                   {originalAddress?.state_province}{' '}
                                   {originalAddress?.postal_code}
-                                </p>
-                              </span>
+                                </span>
+                              </p>
                             </FormLabel>
                           </FormItem>
                         </RadioGroup>

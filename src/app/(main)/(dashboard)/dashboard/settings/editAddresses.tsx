@@ -105,8 +105,9 @@ export default function EditAddresses(props: {
       default_address = newDoc.id;
     }
     addresses.push(newDoc.id);
+    console.log('Addresses', addresses);
     await updateDoc(docRef, {
-      addresses: uploadAddress,
+      addresses: addresses,
       default_address: default_address,
     });
     revalidate();
