@@ -233,11 +233,13 @@ export default function EditAddresses(props: {
                   {doc.id === defaultAddress ? (
                     <TooltipProvider>
                       <Tooltip>
-                        <TooltipTrigger>
-                          <FontAwesomeIcon
-                            className="icon text-muted-foreground h-4 w-4"
-                            icon={faTrash}
-                          />
+                        <TooltipTrigger asChild>
+                          <Button variant="outline">
+                            <FontAwesomeIcon
+                              className="icon text-muted-foreground h-4 w-4"
+                              icon={faTrash}
+                            />
+                          </Button>
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Cannot delete while default</p>
@@ -247,10 +249,9 @@ export default function EditAddresses(props: {
                   ) : (
                     <TooltipProvider>
                       <Tooltip>
-                        <TooltipTrigger>
+                        <TooltipTrigger asChild>
                           <Button
-                            variant="ghost"
-                            className="p-0"
+                            variant="destructive"
                             onClick={() => {
                               deleteAddress(doc.id);
                             }}
