@@ -119,7 +119,6 @@ export default function SettingsForm() {
       getData();
     }
   }, [user_id]);
-
   if (!user_loaded || user_id === '' || !formLoaded) {
     return <></>;
   }
@@ -226,6 +225,7 @@ export default function SettingsForm() {
                           <Select
                             value={currency}
                             onValueChange={(value) => {
+                              field.onChange(value);
                               setCurrency(value);
                             }}
                           >
