@@ -1,4 +1,5 @@
 import { DashboardHeader } from '@/components/sp-ui/Menus/dashboardHeader';
+import TOSAgreement from '@/components/sp-ui/terms_of_service_agreement';
 
 export default function NoUserLayout({
   children, // will be a page or nested layout
@@ -13,6 +14,7 @@ export default function NoUserLayout({
       <section className="w-full">
         <main className="overflow-x-hidden">{children}</main>
       </section>
+      <TOSAgreement />
     </section>
   );
 }

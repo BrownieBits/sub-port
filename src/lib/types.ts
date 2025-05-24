@@ -121,6 +121,7 @@ type _SetUserProps = {
     user_country: string;
     user_currency: string;
     user_store: string;
+    tos_agreed: string;
 }
 type _UserStore = {
     user_id: string;
@@ -135,6 +136,7 @@ type _UserStore = {
     product_likes: string[];
     store_subscribes: string[];
     comment_likes: string[];
+    tos_agreed: string;
     setUser: (props: _SetUserProps) => void;
     clearUser: () => void;
     setUserLoaded: (loaded: boolean) => void;

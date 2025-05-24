@@ -12,6 +12,7 @@ const userStore = create<_UserStore>(set => ({
     user_country: '',
     user_currency: '',
     user_store: '',
+    tos_agreed: '',
     user_loaded: false,
     product_likes: [],
     store_subscribes: [],
@@ -25,6 +26,7 @@ const userStore = create<_UserStore>(set => ({
         user_country: props.user_country,
         user_currency: props.user_currency,
         user_store: props.user_store,
+        tos_agreed: props.tos_agreed,
     })),
     clearUser: () => set(() => ({
         user_id: '',
@@ -37,6 +39,7 @@ const userStore = create<_UserStore>(set => ({
         user_store: '',
         user_store_avatart: '',
         user_store_name: '',
+        tos_agreed: '',
     })),
     setUserLoaded: () => set(() => ({
         user_loaded: true,

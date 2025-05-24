@@ -77,7 +77,6 @@ export default async function BlogArticlePage() {
       <section className="mx-auto w-full max-w-[2428px]">
         <section className="flex w-full items-center justify-between gap-4 px-4 py-4">
           <h1>Blog Posts</h1>
-          {/* <AddProductButton copy="Add Product" variant="outline" /> */}
           <Button size="sm" asChild>
             <Link href="/admin/blog/new" title="Create Post">
               Create Post

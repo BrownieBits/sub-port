@@ -10,6 +10,7 @@ import { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { LatestBlog } from './latestBlog';
+import { LatestFeatures } from './latestFeatures';
 import { LatestProduct } from './latestProduct';
 import { StoreAnalytics } from './storeAnalytics';
 
@@ -75,8 +76,9 @@ export default async function Dashboard() {
         <section className="flex-1">
           <StoreAnalytics />
         </section>
-        <section className="flex-1">
+        <section className="flex flex-1 flex-col gap-4">
           <LatestBlog />
+          <LatestFeatures />
         </section>
       </section>
     </>

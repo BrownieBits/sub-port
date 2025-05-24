@@ -61,7 +61,7 @@ export const dashboardNavSections: _NavSection[] = [
         name: 'Help',
         items: [
             { name: 'Settings', url: '/dashboard/settings', icon: 'fa-solid fa-gear', needs_user: true, required_plans: [], sub_menu: [] },
-            { name: 'Help', url: '/help', icon: 'fa-solid fa-question', needs_user: false, required_plans: [], sub_menu: [] },
+            { name: 'Help Center', url: '/help', icon: 'fa-solid fa-question', needs_user: false, required_plans: [], sub_menu: [] },
             { name: 'Send Feedback', url: '/send-feedback', icon: 'fa-solid fa-comment', needs_user: false, required_plans: [], sub_menu: [] },
         ]
     }
@@ -78,9 +78,10 @@ export const adminNavSections: _NavSection[] = [
 ];
 export const footerNavItems: _FooterNavItem[] = [
     { name: 'About', url: '/about' },
-    { name: 'Press', url: '/press' },
+    // { name: 'Press', url: '/press' },
     { name: 'Blog', url: '/blog' },
     { name: 'Contact', url: '/send-feedback' },
     { name: 'Terms of Service', url: '/terms-of-service' },
     { name: 'Privacy Policy', url: '/privacy-policy' },
+    { name: 'Refund Policy', url: '/refund-policy' },
 ];

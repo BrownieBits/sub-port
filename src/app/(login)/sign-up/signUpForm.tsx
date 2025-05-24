@@ -80,6 +80,7 @@ const formSchema = z.object({
       path: ['confirm'], // path of error
     }),
 });
+const tos_id = process.env.NEXT_PUBLIC_TOS_ID;
 
 export function SignUpForm({
   country,
@@ -118,6 +119,12 @@ export function SignUpForm({
     await updateProfile({
       displayName: form.getValues('displayName').toLowerCase(),
     });
+    let tos_agreed = '01-01-2025';
+    const tosRef: DocumentReference = doc(db, `terms_of_service/${tos_id}`);
+    const tosDoc: DocumentData = await getDoc(tosRef);
+    if (tosDoc.exists()) {
+      tos_agreed = tosDoc.data().latest_date;
+    }
     const docRef: DocumentReference = doc(db, 'users', newUser?.user.uid!);
     const storeRef: DocumentReference = doc(
       db,
@@ -168,6 +175,7 @@ export function SignUpForm({
       stripe_connect_id: '',
       stripe_details_submitted: false,
       stripe_payouts_enabled: false,
+      tos_agreed: tos_agreed,
       created_at: Timestamp.fromDate(new Date()),
       updated_at: Timestamp.fromDate(new Date()),
     });

@@ -297,8 +297,10 @@ export default function EditForm(props: {}) {
                   <b>Name and meta description</b>
                 </p>
                 <p>
-                  The name and meta description help define how your store shows
-                  up on search engines.
+                  Give your unique vessel a catchy name! Then, craft a
+                  compelling description that tells fans what your store&apos;s
+                  all about. This helps them find you and lets new fans surface
+                  your amazing merch through search engines.
                 </p>
               </aside>
               <Card className="w-full flex-1">
@@ -389,8 +391,11 @@ export default function EditForm(props: {}) {
                   <b>Avatar and Store Banner</b>
                 </p>
                 <p>
-                  The avatar and store banner help create and show off your
-                  brand and personality.
+                  Chart your visual course with a striking avatar and a
+                  captivating store banner! These images are the first
+                  impression of your vessel, helping fans instantly recognize
+                  your brand and enticing them to dive deeper into your amazing
+                  products. Make them truly represent your creative spirit!
                 </p>
               </aside>
               <Card className="w-full flex-1">

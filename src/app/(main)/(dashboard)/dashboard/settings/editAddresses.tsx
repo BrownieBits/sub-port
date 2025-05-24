@@ -105,7 +105,6 @@ export default function EditAddresses(props: {
       default_address = newDoc.id;
     }
     addresses.push(newDoc.id);
-    console.log('Addresses', addresses);
     await updateDoc(docRef, {
       addresses: addresses,
       default_address: default_address,
@@ -164,8 +163,10 @@ export default function EditAddresses(props: {
           <b>Addresses</b>
         </p>
         <p className="pb-4">
-          These are addresses we can use for quicker checkouts or for
-          subscription based services.
+          Set your docking locations! This is where you can manage all your
+          essential addresses, whether you&apos;re shipping out awesome merch
+          from your base or receiving new treasures from other stores. Keep them
+          updated for smooth voyages!
         </p>
         <AddAddress setValidated={setValidated} />
       </aside>

@@ -66,6 +66,7 @@ export default function AuthState() {
           user_country: doc.data().country,
           user_currency: doc.data().default_currency,
           user_store: doc.data().default_store,
+          tos_agreed: doc.data().tos_agreed,
         };
         setUser(data);
         SetCookies(data);

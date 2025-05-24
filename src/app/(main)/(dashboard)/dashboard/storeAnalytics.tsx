@@ -28,64 +28,111 @@ type Analytics = {
   subscription_count: number;
   view_count: number;
   like_count: number;
-  products: {
-    image_url: string;
-    name: string;
-    revenue: number;
-    currency: string;
-  }[];
+};
+type Product = {
+  image_url: string;
+  name: string;
+  revenue: number;
+  currency: string;
 };
 
 export const StoreAnalytics = (props: {}) => {
   const user_store = userStore((state) => state.user_store);
   const user_loaded = userStore((state) => state.user_loaded);
   const [analytics, setAnalytics] = React.useState<Analytics | null>(null);
+  const [products, setProducts] = React.useState<Product[]>([]);
 
   React.useEffect(() => {
     const getAnalytics: Unsubscribe = async () => {
+      const ordersRef: CollectionReference = collection(db, `orders`);
       const analyticsRef: CollectionReference = collection(
         db,
         `stores/${user_store}/analytics`
       );
       const today = new Date();
       const thirtyDaysAgo = new Date(today.setDate(today.getDate() - 30));
-      const q = query(analyticsRef, where('created_at', '>', thirtyDaysAgo));
-      const unsubscribe = await onSnapshot(q, (snapshot) => {
-        if (snapshot.empty) {
-          const newAnalytics: Analytics = {
-            subscription_count: 0,
-            view_count: 0,
-            like_count: 0,
-            products: [],
-          };
-          setAnalytics(newAnalytics);
-        } else {
-          const newAnalytics: Analytics = {
-            subscription_count: 0,
-            view_count: 0,
-            like_count: 0,
-            products: [],
-          };
-          snapshot.docs.map((doc) => {
-            if (doc.data().type === 'store_view') {
-              newAnalytics.view_count += 1;
-            } else if (doc.data().type === 'product_view') {
-              newAnalytics.view_count += 1;
-            } else if (doc.data().type === 'subscribe') {
-              newAnalytics.subscription_count += 1;
-            } else if (doc.data().type === 'unsubscribe') {
-              newAnalytics.subscription_count -= 1;
-            } else if (doc.data().type === 'like') {
-              newAnalytics.like_count += 1;
-            } else if (doc.data().type === 'unlike') {
-              newAnalytics.like_count -= 1;
-            }
-          });
+      const analyticsQuery = query(
+        analyticsRef,
+        where('created_at', '>', thirtyDaysAgo)
+      );
+      const orderQuery = query(
+        ordersRef,
+        where('created_at', '>', thirtyDaysAgo),
+        where('store_id', '==', user_store)
+      );
+      const analyticsUnsubscribe = await onSnapshot(
+        analyticsQuery,
+        (snapshot) => {
+          if (snapshot.empty) {
+            const newAnalytics: Analytics = {
+              subscription_count: 0,
+              view_count: 0,
+              like_count: 0,
+            };
+            setAnalytics(newAnalytics);
+          } else {
+            const newAnalytics: Analytics = {
+              subscription_count: 0,
+              view_count: 0,
+              like_count: 0,
+            };
+            snapshot.docs.map((doc) => {
+              if (doc.data().type === 'store_view') {
+                newAnalytics.view_count += 1;
+              } else if (doc.data().type === 'product_view') {
+                newAnalytics.view_count += 1;
+              } else if (doc.data().type === 'subscribe') {
+                newAnalytics.subscription_count += 1;
+              } else if (doc.data().type === 'unsubscribe') {
+                newAnalytics.subscription_count -= 1;
+              } else if (doc.data().type === 'like') {
+                newAnalytics.like_count += 1;
+              } else if (doc.data().type === 'unlike') {
+                newAnalytics.like_count -= 1;
+              }
+            });
 
-          setAnalytics(newAnalytics);
+            setAnalytics(newAnalytics);
+          }
+        }
+      );
+      const ordersUnsubscribe = await onSnapshot(orderQuery, (snapshot) => {
+        if (snapshot.empty) {
+          setProducts([]);
+        } else {
+          const newProducts: Product[] = [];
+          snapshot.docs.map((doc) => {
+            doc.data().items.map((item: any) => {
+              const i = newProducts.findIndex(
+                (product) => product.name === item.name
+              );
+              let price = item.price;
+              if (item.compare_at > 0) {
+                price = item.compare_at;
+              }
+              if (i > -1) {
+                newProducts[i].revenue += price;
+              } else {
+                newProducts.push({
+                  image_url: item.images[0],
+                  name: item.name,
+                  revenue: price,
+                  currency: item.currency,
+                });
+              }
+            });
+          });
+          newProducts.sort((a, b) => {
+            return b.revenue - a.revenue;
+          });
+          newProducts.splice(5);
+          setProducts(newProducts);
         }
       });
-      return unsubscribe;
+      return {
+        analyticsUnsub: analyticsUnsubscribe,
+        ordersUnsub: ordersUnsubscribe,
+      };
     };
     if (user_store !== '') {
       getAnalytics();
@@ -159,7 +206,7 @@ export const StoreAnalytics = (props: {}) => {
               <p>
                 <b>Summary</b>
               </p>
-              <p className="text-sm text-muted-foreground">Last 30 Days</p>
+              <p className="text-muted-foreground text-sm">Last 30 Days</p>
             </section>
             <section className="flex w-full justify-between gap-4">
               <p>Views</p>
@@ -176,19 +223,23 @@ export const StoreAnalytics = (props: {}) => {
               <p>
                 <b>Top Products</b>
               </p>
-              <p className="text-sm text-muted-foreground">Last 30 Days</p>
+              <p className="text-muted-foreground text-sm">Last 30 Days</p>
             </section>
-            {analytics.products.length === 0 ? (
-              <p>No product sales during this period.</p>
+            {products.length === 0 ? (
+              <p>
+                Your sales sonar is quiet. Consider creating a promotion or
+                sharing your unique vessel to attract more buyers and get the
+                currents flowing!
+              </p>
             ) : (
               <>
-                {analytics.products.map((product) => {
+                {products.map((product) => {
                   return (
                     <section
                       className="flex w-full items-center gap-4"
                       key={product.name}
                     >
-                      <section className="flex aspect-square items-center justify-center overflow-hidden rounded border">
+                      <section className="flex aspect-square size-[75px] items-center justify-center overflow-hidden rounded border">
                         <Image
                           src={product.image_url}
                           width="300"
@@ -197,13 +248,12 @@ export const StoreAnalytics = (props: {}) => {
                           className="flex w-full"
                         />
                       </section>
-                      <Skeleton className="aspect-square w-[50px]" />
                       <p className="flex-1">{product.name}</p>
                       <p>
                         {new Intl.NumberFormat('en-US', {
                           style: 'currency',
                           currency: product.currency,
-                        }).format(product.revenue)}
+                        }).format(product.revenue / 100)}
                       </p>
                     </section>
                   );

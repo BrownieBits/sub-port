@@ -156,8 +156,9 @@ export default function SettingsForm() {
                     <b>Profile</b>
                   </p>
                   <p>
-                    This is your basic information like Name, Email, Phone, and
-                    more that we will use in various locations on the site.
+                    Chart your personal course! Keep your logbook updated with
+                    your name, email, phone, and default currency. This ensures
+                    smooth sailing and accurate transactions across SubPort.
                   </p>
                 </aside>
                 <Card className="w-full flex-1">

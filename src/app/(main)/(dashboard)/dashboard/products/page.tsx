@@ -93,7 +93,7 @@ export default async function Products() {
       <section className="mx-auto w-full max-w-[2428px]">
         <section className="flex w-full items-center justify-between gap-4 px-4 py-4">
           <h1>Products</h1>
-          <AddProductButton copy="Add Product" variant="outline" />
+          <AddProductButton copy="Add Product" />
         </section>
       </section>
       <Separator />

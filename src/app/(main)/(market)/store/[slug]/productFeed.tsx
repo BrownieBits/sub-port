@@ -161,7 +161,14 @@ export function ProductFeed(props: { store_id: string }) {
   if (products.length === 0) {
     return (
       <section className="mx-auto w-full max-w-[2428px]">
-        <p>This store has no products at this time.</p>
+        <section className="flex w-full flex-col items-center justify-start p-8">
+          <h3 className="mb-4">Something Awesome Is Brewing!</h3>
+          <p className="mb-8">
+            This store is gearing up to launch some incredible merchandise.
+            Subscribe now to be the first to know when unique art, apparel, and
+            more drop!
+          </p>
+        </section>
       </section>
     );
   }

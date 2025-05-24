@@ -106,7 +106,7 @@ export const LatestBlog = (props: {}) => {
         <p>
           <b>{blog.name}</b>
         </p>
-        <p className="line-clamp-3 text-sm text-muted-foreground">
+        <p className="text-muted-foreground line-clamp-3 text-sm">
           {blog.summary}
         </p>
       </CardContent>

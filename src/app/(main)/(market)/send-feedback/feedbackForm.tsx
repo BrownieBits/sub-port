@@ -20,9 +20,11 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { db, storage } from '@/lib/firebase';
+import userStore from '@/stores/userStore';
 import { faSpinner, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { format } from 'date-fns';
 import {
   collection,
   CollectionReference,
@@ -33,7 +35,6 @@ import {
 } from 'firebase/firestore';
 import { getDownloadURL, ref, StorageReference } from 'firebase/storage';
 import Image from 'next/image';
-import { useSearchParams } from 'next/navigation';
 import React from 'react';
 import { useUploadFile } from 'react-firebase-hooks/storage';
 import { useForm } from 'react-hook-form';
@@ -90,7 +91,8 @@ export function FeedbackForm({
   region: string;
   ip: string;
 }) {
-  const searchParams = useSearchParams();
+  const user_id = userStore((state) => state.user_id);
+  const user_loaded = userStore((state) => state.user_loaded);
   const [disabled, setDisabled] = React.useState<boolean>(false);
   const [uploadFile, uploading, snapshot, uploadError] = useUploadFile();
   const [screenshot, setScreenshot] = React.useState<string>('');
@@ -123,8 +125,7 @@ export function FeedbackForm({
   }
   async function clearScreenshot() {
     setScreenshot('');
-    const data = new DataTransfer();
-    form.setValue('screenshot', data.files);
+    form.resetField('screenshot');
   }
   async function onSubmit() {
     setDisabled(true);
@@ -135,7 +136,6 @@ export function FeedbackForm({
       if (screenshot !== '') {
         screenshotUrl = await uploadImage(feedbackDoc.id);
       }
-
       await setDoc(feedbackDoc, {
         description: form.getValues('description'),
         email: form.getValues('email'),
@@ -146,12 +146,25 @@ export function FeedbackForm({
         ip: ip,
         created_at: Timestamp.fromDate(new Date()),
       });
+      await fetch('/api/new_feedback_email', {
+        method: 'POST',
+        body: JSON.stringify({
+          user_id: user_id,
+          email: form.getValues('email'),
+          description: form.getValues('description'),
+          file: screenshotUrl,
+          country: country,
+          city: city,
+          region: region,
+          ip: ip,
+          created_at: format(new Date(), 'LLL dd, yyyy'),
+        }),
+      });
       toast.success('Feedback Submitted', {
         description: 'Your feedback has been successfully submitted.',
       });
-      form.setValue('email', '');
-      form.setValue('description', '');
-      clearScreenshot();
+      form.reset();
+      setScreenshot('');
     } catch (error) {
       console.error(error);
       toast.error('Error Submitting', {
@@ -163,6 +176,9 @@ export function FeedbackForm({
     }
   }
 
+  if (user_loaded === false) {
+    return;
+  }
   return (
     <section className="flex h-full min-h-screen flex-col items-center justify-center p-4">
       <Card className="w-full max-w-[600px]">

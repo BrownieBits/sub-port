@@ -117,9 +117,12 @@ export const LatestProduct = (props: { user_id: string }) => {
           <Skeleton className="mt-4 aspect-square w-full rounded" />
 
           <p>
-            <b>No Products Yet</b>
+            <b>Looks like your product bays are empty!</b>
           </p>
-          <p>Create your first product and sell to the world!</p>
+          <p>
+            You&apos;ll need to create your first product to launch your amazing
+            merch and see it appear here.
+          </p>
           <AddProductButton copy="Create Product" variant="default" />
         </CardContent>
       </Card>

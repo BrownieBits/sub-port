@@ -61,8 +61,7 @@ TODO:
   - [x] Settings
   - [ ] Dashboard
     - [x] Latest Product Performance
-    - [ ] Store Analytics
-      - [ ] Top Products
+    - [x] Store Analytics
     - [x] News
     - [ ] Getting Started Guide
       - [ ] Create Getting Started Guid
@@ -71,28 +70,23 @@ TODO:
         - [ ] Integrate with Stripe for payouts
         - [ ] Add Product
         - [ ] Put store Live
-    - [ ] Whats New
-      - [ ] Create Whats New Blog
+    - [x] Whats New
   - [x] Switch Store
 - [x] Login
 - [ ] Market
   - [x] About
   - [x] Blog
   - [x] Cart
-  - [ ] Help
-    - [ ] Create system for posting help articles and organizing them
+  - [x] Help
   - [x] Market
   - [x] My Likes
-  - [ ] Press
-    - [ ] Create system to post press articles
-  - [ ] Privacy Policy
-    - [ ] Need to get a privacy policy and lay it out
+  - [x] Privacy Policy
   - [x] Product
   - [x] Send Feedback
   - [x] Store
   - [x] Subscriptions
-  - [ ] Terms of Services
-    - [ ] Need to get a terms of service and lay it out
+  - [x] Terms of Services
+  - [x] Refund Policy
   - [ ] Home Page
     - [ ] More Modules
 - [x] Admin

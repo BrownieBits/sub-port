@@ -124,7 +124,7 @@ export default function NewCollectionButton() {
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline" asChild>
+          <Button asChild>
             <div>
               <FontAwesomeIcon
                 className="icon mr-2 h-4 w-4"
@@ -209,7 +209,7 @@ export default function NewCollectionButton() {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline" asChild>
+        <Button asChild>
           <div>
             <FontAwesomeIcon
               className="icon mr-2 h-4 w-4"
