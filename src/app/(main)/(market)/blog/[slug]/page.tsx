@@ -109,7 +109,7 @@ export default async function BlogPost({ params }: { params: Params }) {
     <section>
       <section className="mx-auto w-full max-w-[1754px]">
         <section className="flex w-full flex-col items-start gap-4 p-4">
-          {data.banner !== '' ? (
+          {data.banner !== '' && (
             <section className="w-full overflow-hidden rounded">
               <Image
                 src={data.banner}
@@ -119,12 +119,10 @@ export default async function BlogPost({ params }: { params: Params }) {
                 priority
               />
             </section>
-          ) : (
-            <></>
           )}
           <h1>{data.name}</h1>
           <section className="flex gap-4">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {format(data.created_at, 'LLL dd, yyyy')}
             </p>
             {data.tags !== undefined && data.tags.length > 0 && (

@@ -161,11 +161,7 @@ export default function LoginForm(props: Props) {
                         </FormItem>
                       )}
                     />
-                    {error ? (
-                      <p className="text-destructive">{error.code}</p>
-                    ) : (
-                      <></>
-                    )}
+                    {error && <p className="text-destructive">{error.code}</p>}
                     <Button type="submit" className="w-full">
                       Submit
                     </Button>
@@ -226,11 +222,7 @@ export default function LoginForm(props: Props) {
                       </FormItem>
                     )}
                   />
-                  {error ? (
-                    <p className="text-destructive">{error.code}</p>
-                  ) : (
-                    <></>
-                  )}
+                  {error && <p className="text-destructive">{error.code}</p>}
                   <Button type="submit" className="w-full">
                     Submit
                   </Button>

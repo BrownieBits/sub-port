@@ -170,10 +170,10 @@ export default function BlogListPage() {
         <section className="flex flex-col gap-8">
           <section className="flex w-full flex-col items-start gap-4">
             <h1>{posts[0].name}</h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {format(posts[0].created_at, 'LLL dd, yyyy')}
             </p>
-            {posts[0].banner_url !== '' ? (
+            {posts[0].banner_url !== '' && (
               <section className="w-full overflow-hidden rounded">
                 <Image
                   src={posts[0].banner_url}
@@ -182,8 +182,6 @@ export default function BlogListPage() {
                   alt={`${posts[0].name} blog post banner`}
                 />
               </section>
-            ) : (
-              <></>
             )}
             <p className="line-clamp-3">{posts[0].summary}</p>
             <Button size="sm" asChild>
@@ -235,7 +233,7 @@ export default function BlogListPage() {
                       )}
 
                       <p className="text-xl font-bold">{post.name}</p>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-muted-foreground text-sm">
                         {format(posts[0].created_at, 'LLL dd, yyyy')}
                       </p>
                       <p className="line-clamp-2">{post.summary}</p>

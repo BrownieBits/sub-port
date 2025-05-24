@@ -172,7 +172,7 @@ export default function FeaturesListPage() {
             <p className="text-muted-foreground text-sm">
               {format(posts[0].created_at, 'LLL dd, yyyy')}
             </p>
-            {posts[0].banner_url !== '' ? (
+            {posts[0].banner_url !== '' && (
               <section className="w-full overflow-hidden rounded">
                 <Image
                   src={posts[0].banner_url}
@@ -181,8 +181,6 @@ export default function FeaturesListPage() {
                   alt={`${posts[0].name} blog post banner`}
                 />
               </section>
-            ) : (
-              <></>
             )}
             <p className="line-clamp-3">{posts[0].summary}</p>
             <Button size="sm" asChild>

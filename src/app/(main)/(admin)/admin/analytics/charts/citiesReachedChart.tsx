@@ -22,10 +22,10 @@ import { Analytic, CitiesReached, CitiesReachedData } from '../types';
 const chartConfig = {
   count: {
     label: 'Count',
-    color: 'hsl(var(--primary))',
+    color: 'var(--primary)',
   },
   label: {
-    color: 'hsl(var(--primary-foreground))',
+    color: 'var(--primary-foreground)',
   },
 } satisfies ChartConfig;
 
@@ -124,7 +124,7 @@ export const CitiesReachedChart = (props: { data: Analytic[] }) => {
                   dataKey="city"
                   position="insideLeft"
                   offset={8}
-                  className="fill-[--color-label]"
+                  className="fill-[var(--color-label)]"
                   fontSize={12}
                 />
                 <LabelList

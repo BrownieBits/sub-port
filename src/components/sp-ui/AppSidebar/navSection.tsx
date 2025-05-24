@@ -19,6 +19,7 @@ import userStore from '@/stores/userStore';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { MarketplaceSection } from './marketplace_menu';
 
 export function NavSection({
   name,
@@ -30,6 +31,9 @@ export function NavSection({
   const pathname = usePathname();
   const user_id = userStore((state) => state.user_id);
 
+  if (name === 'Marketplace') {
+    return <MarketplaceSection />;
+  }
   return (
     <SidebarGroup>
       {name !== 'Main' && <SidebarGroupLabel>{name}</SidebarGroupLabel>}

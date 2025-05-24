@@ -142,9 +142,7 @@ export default async function StoreCollection({ params }: { params: Params }) {
     <Suspense fallback={<StoreLoading />}>
       <>
         <section className="mx-auto w-full max-w-[2428px]">
-          {data.store.data().banner_url === '' ? (
-            <></>
-          ) : (
+          {data.store.data().banner_url !== '' && (
             <section
               className="flex aspect-[6/1] items-center justify-start overflow-hidden rounded md:aspect-[128/15]"
               style={{
@@ -162,15 +160,15 @@ export default async function StoreCollection({ params }: { params: Params }) {
               <div className="flex flex-col gap-1">
                 <h1 className="text-xl">{data.store.data().name}</h1>
                 <section className="flex w-full flex-wrap gap-1 md:w-auto">
-                  <p className="w-auto text-sm text-muted-foreground">
+                  <p className="text-muted-foreground w-auto text-sm">
                     @{slug}
                   </p>
-                  <span className="text-sm text-muted-foreground">&bull;</span>
-                  <p className="w-auto text-sm text-muted-foreground">
+                  <span className="text-muted-foreground text-sm">&bull;</span>
+                  <p className="text-muted-foreground w-auto text-sm">
                     {data.store.data().subscription_count} subscriber
                     {data.store.data().subscription_count > 1 ? 's' : ''}
                   </p>
-                  <span className="text-sm text-muted-foreground">&bull;</span>
+                  <span className="text-muted-foreground text-sm">&bull;</span>
                   {/* <p className="block w-auto text-sm text-muted-foreground">
                     {data.products.docs.length} product
                     {data.products.docs.length > 1 ? 's' : ''}
@@ -214,14 +212,12 @@ export default async function StoreCollection({ params }: { params: Params }) {
             </section>
           </section>
 
-          {data.collections.docs.length === 0 ? (
-            <></>
-          ) : (
+          {data.collections.docs.length !== 0 && (
             <section className="flex w-full justify-start gap-8 px-4">
               <Button
                 asChild
                 variant="link"
-                className="text-md rounded-none border-b-[2px] border-transparent px-0 text-foreground hover:no-underline"
+                className="text-md text-foreground rounded-none border-b-[2px] border-transparent px-0 hover:no-underline"
               >
                 <Link href={`/store/${slug}`} aria-label={`${slug} Store`}>
                   Home
@@ -232,7 +228,7 @@ export default async function StoreCollection({ params }: { params: Params }) {
                   asChild
                   variant="link"
                   className={cn(
-                    'text-md rounded-none border-b-[2px] px-0 text-foreground hover:no-underline',
+                    'text-md text-foreground rounded-none border-b-[2px] px-0 hover:no-underline',
                     { 'border-transparent': collection !== doc.id }
                   )}
                   key={doc.id}

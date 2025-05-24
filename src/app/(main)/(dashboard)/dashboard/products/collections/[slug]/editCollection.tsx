@@ -382,9 +382,7 @@ export default function Edit(props: {
                   </CardContent>
                 </Card>
               </section>
-              {props.type === 'Manual' ? (
-                <></>
-              ) : (
+              {props.type !== 'Manual' && (
                 <section className="flex flex-col gap-8 pt-8 md:flex-row">
                   <aside className="w-full md:w-[200px] lg:w-[300px] xl:w-[600px]">
                     <p className="pb-4">

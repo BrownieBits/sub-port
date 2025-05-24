@@ -269,7 +269,12 @@ export default function EditForm(props: {}) {
           <h1>Preferences</h1>
           <div className="flex items-center gap-4">
             {disabled ? (
-              <></>
+              <Button disabled variant="outline" asChild>
+                <div>
+                  <FontAwesomeIcon className="icon mr-[5px]" icon={faSave} />
+                  Saving
+                </div>
+              </Button>
             ) : (
               <Button type="submit" onClick={onSubmit} asChild>
                 <div>

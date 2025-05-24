@@ -12,17 +12,7 @@ export const marketNavSections: _NavSection[] = [
     },
     {
         name: 'Marketplace',
-        items: [
-            { name: 'Trending', url: '/market/trending', icon: 'fa-solid fa-fire', needs_user: false, required_plans: [], sub_menu: [] },
-            { name: 'New', url: '/market/new', icon: 'fa-solid fa-bolt', needs_user: false, required_plans: [], sub_menu: [] },
-            { name: 'Holiday', url: '/market/holiday', icon: 'fa-solid fa-gift', needs_user: false, required_plans: [], sub_menu: [] },
-            { name: 'Staff Picks', url: '/market/staff-picks', icon: 'fa-solid fa-user-tag', needs_user: false, required_plans: [], sub_menu: [] },
-            { name: 'Pop Culture', url: '/market/pop-culture', icon: 'fa-solid fa-film', needs_user: false, required_plans: [], sub_menu: [] },
-            { name: 'T-Shirts', url: '/market/t-shirts', icon: 'fa-solid fa-shirt', needs_user: false, required_plans: [], sub_menu: [] },
-            { name: 'Outerwear', url: '/market/outerwear', icon: 'fa-solid fa-shirt', needs_user: false, required_plans: [], sub_menu: [] },
-            { name: 'Accessories', url: '/market/accessories', icon: 'fa-solid fa-mug-saucer', needs_user: false, required_plans: [], sub_menu: [] },
-            { name: 'Homegoods', url: '/market/homegoods', icon: 'fa-solid fa-couch', needs_user: false, required_plans: [], sub_menu: [] },
-        ]
+        items: []
     },
     {
         name: 'Help',
@@ -72,6 +62,10 @@ export const adminNavSections: _NavSection[] = [
         items: [
             { name: 'Admin', url: '/admin', icon: 'fa-solid fa-toolbox', needs_user: true, required_plans: [], sub_menu: [] },
             { name: 'Blog', url: '/admin/blog', icon: 'fa-solid fa-square-rss', needs_user: true, required_plans: [], sub_menu: [] },
+            { name: 'Whats New', url: '/admin/whats-new', icon: 'fa-solid fa-square-rss', needs_user: true, required_plans: [], sub_menu: [] },
+            { name: 'Help Center', url: '/admin/help=center', icon: 'fa-solid fa-square-rss', needs_user: true, required_plans: [], sub_menu: [] },
+            { name: 'Market Categories', url: '/admin/market-categories', icon: 'fa-solid fa-square-rss', needs_user: true, required_plans: [], sub_menu: [] },
+            { name: 'Users', url: '/admin/users', icon: 'fa-solid fa-square-rss', needs_user: true, required_plans: [], sub_menu: [] },
             { name: 'Analytics', url: '/admin/analytics', icon: 'fa-solid fa-chart-line', needs_user: true, required_plans: [], sub_menu: [] },
         ]
     },

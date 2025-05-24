@@ -844,7 +844,7 @@ export default function DigitalEditForm(props: Props) {
                   they purchase your product. This can be a PDF, ZIP, or any
                   other file type.
                 </p>
-                {digitalFile === '' ? (
+                {digitalFile === '' && (
                   <Button
                     variant="outline"
                     onClick={(event) => {
@@ -861,8 +861,6 @@ export default function DigitalEditForm(props: Props) {
                       Add File
                     </div>
                   </Button>
-                ) : (
-                  <></>
                 )}
 
                 <FormField

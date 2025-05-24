@@ -190,7 +190,7 @@ export default function NewCollectionButton() {
                       </FormItem>
                     )}
                   />
-                  {error ? <p className="text-destructive">{error}</p> : <></>}
+                  {error && <p className="text-destructive">{error}</p>}
                   <section className="flex w-full justify-end gap-4">
                     <DialogClose>Cancel</DialogClose>
                     <Button disabled={pending} type="submit">
@@ -278,7 +278,7 @@ export default function NewCollectionButton() {
                     </FormItem>
                   )}
                 />
-                {error ? <p className="text-destructive">{error}</p> : <></>}
+                {error && <p className="text-destructive">{error}</p>}
                 <section className="flex w-full justify-end gap-4">
                   <DrawerClose>Cancel</DrawerClose>
                   <Button disabled={pending} type="submit">

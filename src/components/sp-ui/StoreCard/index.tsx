@@ -29,7 +29,7 @@ export default function StoreCard(props: Props) {
           <p className="font-bold">{props.name}</p>
           <p className="text-muted-foreground">
             {props.subscription_count} subscriber
-            {props.subscription_count > 1 ? <>s</> : <></>}
+            {props.subscription_count > 1 && <>s</>}
           </p>
         </section>
       </Link>

@@ -32,10 +32,10 @@ const chartData = [
 const chartConfig = {
   data: {
     label: 'Orders',
-    color: 'hsl(var(--primary))',
+    color: 'var(--primary)',
   },
   label: {
-    color: 'hsl(var(--primary-foreground))',
+    color: 'var(--primary-foreground)',
   },
 } satisfies ChartConfig;
 

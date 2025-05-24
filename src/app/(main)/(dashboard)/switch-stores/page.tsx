@@ -120,7 +120,7 @@ export default async function SwitchStores() {
       </section>
       <Separator />
       <section className="mx-auto w-full max-w-[1754px]">
-        <section className="flex w-full flex-col gap-8 px-4 pb-8 pt-4">
+        <section className="flex w-full flex-col gap-8 px-4 pt-4 pb-8">
           <section className="flex flex-col gap-8 md:flex-row">
             <aside className="w-full md:w-[200px] lg:w-[300px] xl:w-[600px]">
               <p className="pb-4">
@@ -140,7 +140,7 @@ export default async function SwitchStores() {
                           className="flex flex-col items-center gap-8 rounded-lg border p-3 shadow-sm md:flex-row"
                           key={doc.id}
                         >
-                          <Avatar className="h-[72px] w-[72px] bg-secondary text-foreground">
+                          <Avatar className="bg-secondary text-foreground h-[72px] w-[72px]">
                             <AvatarImage
                               src={doc.data().avatar_url}
                               alt={doc.data().name}
@@ -155,13 +155,11 @@ export default async function SwitchStores() {
                             <p>
                               <b>{doc.data().name}</b>
                             </p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-muted-foreground text-sm">
                               {doc.data().description.substring(0, 50)}...
                             </p>
                           </div>
-                          {doc.id === default_store?.value ? (
-                            <></>
-                          ) : (
+                          {doc.id !== default_store?.value && (
                             <SwitchButton
                               storeID={doc.id}
                               userID={user_id?.value!}
@@ -199,7 +197,7 @@ export default async function SwitchStores() {
                           className="flex flex-col items-center gap-8 rounded-lg border p-3 shadow-sm md:flex-row"
                           key={doc.id}
                         >
-                          <Avatar className="h-[72px] w-[72px] bg-secondary text-foreground">
+                          <Avatar className="bg-secondary text-foreground h-[72px] w-[72px]">
                             <AvatarImage
                               src={doc.data().avatar_url}
                               alt={doc.data().name}
@@ -214,13 +212,11 @@ export default async function SwitchStores() {
                             <p>
                               <b>{doc.data().name}</b>
                             </p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-muted-foreground text-sm">
                               {doc.data().description.substring(0, 50)}...
                             </p>
                           </div>
-                          {doc.id === default_store?.value ? (
-                            <></>
-                          ) : (
+                          {doc.id !== default_store?.value && (
                             <SwitchButton
                               storeID={doc.id}
                               userID={user_id?.value!}
@@ -258,7 +254,7 @@ export default async function SwitchStores() {
                           className="flex flex-col items-center gap-8 rounded-lg border p-3 shadow-sm md:flex-row"
                           key={doc.id}
                         >
-                          <Avatar className="h-[72px] w-[72px] bg-secondary text-foreground">
+                          <Avatar className="bg-secondary text-foreground h-[72px] w-[72px]">
                             <AvatarImage
                               src={doc.data().avatar_url}
                               alt={doc.data().name}
@@ -273,13 +269,11 @@ export default async function SwitchStores() {
                             <p>
                               <b>{doc.data().name}</b>
                             </p>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-muted-foreground text-sm">
                               {doc.data().description.substring(0, 50)}...
                             </p>
                           </div>
-                          {doc.id === default_store?.value ? (
-                            <></>
-                          ) : (
+                          {doc.id !== default_store?.value && (
                             <AcceptButton
                               storeID={doc.id}
                               revalidate={revalidate}

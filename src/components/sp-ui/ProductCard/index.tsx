@@ -54,12 +54,10 @@ export default function ProductCard({
         />
       </Link>
       <section className="flex w-full gap-4">
-        {show_creator ? (
+        {show_creator && (
           <Link href={`/store/${product.store_id}`}>
             <ShowAvatar store_id={product.store_id} size="sm" />
           </Link>
-        ) : (
-          <></>
         )}
         <aside className="flex flex-1 justify-between">
           <section className="flex flex-col">
@@ -71,15 +69,13 @@ export default function ProductCard({
               <p className="text-muted-foreground">{product.product_type}</p>
             </Link>
 
-            {show_creator ? (
+            {show_creator && (
               <Link
                 href={`/store/${product.store_id}`}
                 className="text-muted-foreground"
               >
                 {product.store_id}
               </Link>
-            ) : (
-              <></>
             )}
             <p className="text-muted-foreground">
               {product.like_count} Likes{' '}
