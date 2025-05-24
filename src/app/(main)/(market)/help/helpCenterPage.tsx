@@ -218,7 +218,7 @@ export default function HelpCenterPage() {
             </p>
             <div className="flex flex-col gap-4 sm:flex-row">
               <Button asChild>
-                <Link href="/contact">Contact Support</Link>
+                <Link href="/send-feedback">Contact Support</Link>
               </Button>
             </div>
           </CardContent>
